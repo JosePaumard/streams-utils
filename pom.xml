@@ -14,7 +14,7 @@
 
     <url>http://github.com/JosePaumard/streams-utils</url>
 
-    <groupId>streams-utils</groupId>
+    <groupId>org.paumard</groupId>
     <artifactId>streams-utils</artifactId>
     <version>1.0.0</version>
 
