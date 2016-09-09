@@ -18,6 +18,8 @@ You can use this API directly with Maven, by adding the following dependency.
 </dependency>
 ```
 
+This project was previously called More Spliterators (you can see it on my more-spliterators Github repo). Quite oddly, nobody had any clue about what is was about. So I decided to rename it to a more explicit name. 
+
 # Operations provided
 
 ## Cycling
