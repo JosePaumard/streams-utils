@@ -12,7 +12,7 @@ You can use this API directly with Maven, by adding the following dependency.
 
 ```
 <dependency>
-    <groupId>streams-utils</groupId>
+    <groupId>org.paumard</groupId>
     <artifactId>streams-utils</artifactId>
     <version>1.0</version>
 </dependency>
