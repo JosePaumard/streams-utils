@@ -20,14 +20,16 @@ import org.paumard.spliterators.*;
 
 import java.util.Objects;
 import java.util.Spliterator;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.UnaryOperator;
+import java.util.function.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.averagingDouble;
+import static java.util.stream.Collectors.averagingInt;
+import static java.util.stream.Collectors.averagingLong;
 
 /**
  * <p>A factory class used to create streams from other streams. There are currently seven ways of rearranging streams.
@@ -343,5 +345,33 @@ public class StreamsUtils {
         Objects.requireNonNull(stream);
         GatingSpliterator<E> spliterator = GatingSpliterator.of(stream.spliterator(), validator);
         return StreamSupport.stream(spliterator, false);
+    }
+
+    public static <E, T> Stream<T> shiftingWindowCollect(Stream<E> stream, int rollingFactor, Collector<E, ?, T> collector) {
+        Objects.requireNonNull(stream);
+        Objects.requireNonNull(collector);
+
+        return roll(stream, rollingFactor).map(str -> str.collect(collector));
+    }
+
+    public static <E> Stream<Double> shiftingWindowAveragingInt(Stream<E> stream, int rollingFactor, ToIntFunction<E> mapper) {
+        Objects.requireNonNull(stream);
+        Objects.requireNonNull(mapper);
+
+        return shiftingWindowCollect(stream, rollingFactor, averagingInt(mapper));
+    }
+
+    public static <E> Stream<Double> shiftingWindowAveragingLong(Stream<E> stream, int rollingFactor, ToLongFunction<E> mapper) {
+        Objects.requireNonNull(stream);
+        Objects.requireNonNull(mapper);
+
+        return shiftingWindowCollect(stream, rollingFactor, averagingLong(mapper));
+    }
+
+    public static <E> Stream<Double> shiftingWindowAveragingDouble(Stream<E> stream, int rollingFactor, ToDoubleFunction<E> mapper) {
+        Objects.requireNonNull(stream);
+        Objects.requireNonNull(mapper);
+
+        return shiftingWindowCollect(stream, rollingFactor, averagingDouble(mapper));
     }
 }
