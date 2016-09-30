@@ -18,8 +18,7 @@ package org.paumard.streams;
 
 import org.paumard.spliterators.*;
 
-import java.util.Objects;
-import java.util.Spliterator;
+import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
@@ -27,9 +26,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static java.util.function.Function.identity;
-import static java.util.stream.Collectors.averagingDouble;
-import static java.util.stream.Collectors.averagingInt;
-import static java.util.stream.Collectors.averagingLong;
+import static java.util.stream.Collectors.*;
 
 /**
  * <p>A factory class used to create streams from other streams. There are currently seven ways of rearranging streams.
@@ -361,6 +358,13 @@ public class StreamsUtils {
         return shiftingWindowCollect(stream, rollingFactor, averagingInt(mapper));
     }
 
+    public static <E> Stream<IntSummaryStatistics> shiftingWindowSummarizingInt(Stream<E> stream, int rollingFactor, ToIntFunction<E> mapper) {
+        Objects.requireNonNull(stream);
+        Objects.requireNonNull(mapper);
+
+        return shiftingWindowCollect(stream, rollingFactor, summarizingInt(mapper));
+    }
+
     public static <E> Stream<Double> shiftingWindowAveragingLong(Stream<E> stream, int rollingFactor, ToLongFunction<E> mapper) {
         Objects.requireNonNull(stream);
         Objects.requireNonNull(mapper);
@@ -368,10 +372,24 @@ public class StreamsUtils {
         return shiftingWindowCollect(stream, rollingFactor, averagingLong(mapper));
     }
 
+    public static <E> Stream<LongSummaryStatistics> shiftingWindowSummarizingLong(Stream<E> stream, int rollingFactor, ToLongFunction<E> mapper) {
+        Objects.requireNonNull(stream);
+        Objects.requireNonNull(mapper);
+
+        return shiftingWindowCollect(stream, rollingFactor, summarizingLong(mapper));
+    }
+
     public static <E> Stream<Double> shiftingWindowAveragingDouble(Stream<E> stream, int rollingFactor, ToDoubleFunction<E> mapper) {
         Objects.requireNonNull(stream);
         Objects.requireNonNull(mapper);
 
         return shiftingWindowCollect(stream, rollingFactor, averagingDouble(mapper));
+    }
+
+    public static <E> Stream<DoubleSummaryStatistics> shiftingWindowSummarizingLong(Stream<E> stream, int rollingFactor, ToDoubleFunction<E> mapper) {
+        Objects.requireNonNull(stream);
+        Objects.requireNonNull(mapper);
+
+        return shiftingWindowCollect(stream, rollingFactor, summarizingDouble(mapper));
     }
 }
