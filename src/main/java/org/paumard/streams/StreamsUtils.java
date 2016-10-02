@@ -20,10 +20,7 @@ import org.paumard.spliterators.*;
 
 import java.util.*;
 import java.util.function.*;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+import java.util.stream.*;
 
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.*;
@@ -62,6 +59,8 @@ public class StreamsUtils {
      * @return A cycling stream.
      */
     public static <E> Stream<E> cycle(Stream<E> stream) {
+        Objects.requireNonNull(stream);
+
         CyclingSpliterator<E> spliterator = CyclingSpliterator.of(stream.spliterator());
         return StreamSupport.stream(spliterator, false).flatMap(identity());
     }
@@ -90,6 +89,8 @@ public class StreamsUtils {
      * @return A grouped stream of streams.
      */
     public static <E> Stream<Stream<E>> group(Stream<E> stream, int groupingFactor) {
+        Objects.requireNonNull(stream);
+
         GroupingSpliterator<E> spliterator = GroupingSpliterator.of(stream.spliterator(), groupingFactor);
         return StreamSupport.stream(spliterator, false);
     }
@@ -112,6 +113,7 @@ public class StreamsUtils {
      * Believe me, trying to repeat an infinite stream is not a good idea.</p>
      * <p>The repeating of the provided stream should no lead to the producing of more than <code>Long.MAX_VALUE</code>.
      * Weird effects will occur in that case. </p>
+     * <p>A <code>NullPointerException</code> is thrown if the provided stream is null.</p>
      * <p>The returned stream is <code>ORDERED</code>.</p>
      * @param stream The stream to be repeated. Will throw a <code>NullPointerException</code> if <code>null</code>.
      * @param repeatingFactor The repeating factor, should be greater of equal than 2.
@@ -119,6 +121,8 @@ public class StreamsUtils {
      * @return A repeating stream.
      */
     public static <E> Stream<E> repeat(Stream<E> stream, int repeatingFactor) {
+        Objects.requireNonNull(stream);
+
         RepeatingSpliterator<E> spliterator = RepeatingSpliterator.of(stream.spliterator(), repeatingFactor);
         return StreamSupport.stream(spliterator, false);
     }
@@ -147,12 +151,17 @@ public class StreamsUtils {
      * <p>The returned stream has the same characteristics as the provided stream, and is thus <code>ORDERED</code>.</p>
      * <p>All the returned substreams are guaranteed to produce <code>rollingFactor</code> elements. So there might be
      * elements from the provided stream that will not be consumed in the grouped stream. </p>
+     * <p>A <code>NullPointerException</code> is thrown if the provided stream is null. </p>
+     * <p>An <code>IllegalArgumentException</code> is thrown if the <code>rollingFactor</code> is less than 2,
+     * or if the provided stream is non-ordered.</p>
      * @param stream The stream to be rolled. Will throw a <code>NullPointerException</code> if <code>null</code>.
      * @param rollingFactor The rolling factor, should be greater of equal than 2.
      * @param <E> The type of the elements of the provided stream.
      * @return A rolling stream of streams.
      */
     public static <E> Stream<Stream<E>> roll(Stream<E> stream, int rollingFactor) {
+        Objects.requireNonNull(stream);
+
         RollingSpliterator<E> spliterator = RollingSpliterator.of(stream.spliterator(), rollingFactor);
         return StreamSupport.stream(spliterator, false);
     }
@@ -173,16 +182,19 @@ public class StreamsUtils {
      *                             ["a03", "a13", "a23", "a33"]]
      * }</pre>
      * <p>An <code>IllegalArgumentException</code> is thrown if there is only one stream provided in the varargs. In
-     * that casse, the traversing would be a mapping with <code>Stream::of</code>.</p>
+     * that case, the traversing would be a mapping with <code>Stream::of</code>.</p>
      * <p>An <code>IllegalArgumentException</code> is also thrown if one of the provided streams is not <code>ORDERED</code>. </p>
      * <p>The characteristics of the returned stream is the bitwise <code>AND</code> of all the characteristics of
      * the provided streams. In most of the cases, all these streams will share the same characteristics, so in this
      * case it will be the same as well. The returned stream is thus <code>ORDERED</code>.</p>
+     * <p>A <code>NullPointerException</code> is thrown if one of the provided streams is null.</p>
      * @param streams The streams to be traversed. Will throw a <code>NullPointerException</code> if <code>null</code>.
      * @param <E> The type of the elements of the provided stream.
      * @return A traversing stream of streams.
      */
     public static <E> Stream<Stream<E>> traverse(Stream<E>... streams) {
+        Arrays.stream(streams).forEach(Objects::requireNonNull);
+
         Spliterator[] spliterators = Stream.of(streams).map(Stream::spliterator).toArray(Spliterator[]::new);
         TraversingSpliterator<E> spliterator = TraversingSpliterator.of(spliterators);
         return StreamSupport.stream(spliterator, false);
@@ -208,11 +220,14 @@ public class StreamsUtils {
      * case it will be the same as well. The returned stream is thus <code>ORDERED</code>.</p>
      * <p>The returned stream will stop producing elements as soon as one of the provided stream stops to do so.
      * So some of the elements of the provided streams might not be consumed. </p>
+     * <p>A <code>NullPointerException</code> is thrown if one of the provided streams is null.</p>
      * @param streams The streams to be weaved. Will throw a <code>NullPointerException</code> if <code>null</code>.
      * @param <E> The type of the elements of the provided stream.
      * @return A weaved stream.
      */
     public static <E> Stream<E> weave(Stream<E>... streams) {
+        Arrays.stream(streams).forEach(Objects::requireNonNull);
+
         Spliterator[] spliterators = Stream.of(streams).map(Stream::spliterator).toArray(Spliterator[]::new);
         WeavingSpliterator<E> spliterator = WeavingSpliterator.of(spliterators);
         return StreamSupport.stream(spliterator, false);
@@ -344,6 +359,22 @@ public class StreamsUtils {
         return StreamSupport.stream(spliterator, false);
     }
 
+    /**
+     * <p>Generates a stream that is computed from a provided stream following two steps.</p>
+     * <p>The first steps consists in building a rolling stream with the <code>rollingFactor</code> passed as
+     * a parameter. This rolling stream is the same the one built using the <code>roll()</code> method.
+     * </p>
+     * <p>Then each substream is collected using the collector passed as the third parameter.</p>
+     * <p>The result is set up in a stream that has the same number of elements as the provided stream,
+     * minus the size of the window width, to preserve consistency of each collection. </p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the collector is null.</p>
+     * @param stream the processed stream
+     * @param rollingFactor the size of the window to apply the collector on
+     * @param collector the collector to be applied
+     * @param <E> the type of the provided stream
+     * @param <T>the type of the returned stream
+     * @return a stream in which each value is the collection of the provided stream
+     */
     public static <E, T> Stream<T> shiftingWindowCollect(Stream<E> stream, int rollingFactor, Collector<E, ?, T> collector) {
         Objects.requireNonNull(stream);
         Objects.requireNonNull(collector);
@@ -351,45 +382,174 @@ public class StreamsUtils {
         return roll(stream, rollingFactor).map(str -> str.collect(collector));
     }
 
-    public static <E> Stream<Double> shiftingWindowAveragingInt(Stream<E> stream, int rollingFactor, ToIntFunction<E> mapper) {
+    /**
+     * <p>Generates a stream that is computed from a provided stream following two steps.</p>
+     * <p>The first steps maps this stream to an <code>IntStream</code> that is then rolled following
+     * the same principle as the <code>roll()</code> method. This steps builds a <code>Stream&lt;IntStream&gt;</code>.
+     * </p>
+     * <p>Then the <code>average()</code> method is called on each <code>IntStream</code> using a mapper, and a
+     * <code>DoubleStream</code> of averages is returned.</p>
+     * <p>The resulting stream has the same number of elements as the provided stream,
+     * minus the size of the window width, to preserve consistency of each collection. </p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the collector is null.</p>
+     * @param stream the processed stream
+     * @param rollingFactor the size of the window to apply the collector on
+     * @param mapper the mapper applied
+     * @param <E> the type of the provided stream
+     * @return a stream in which each value is the collection of the provided stream
+     */
+    public static <E> DoubleStream shiftingWindowAveragingInt(Stream<E> stream, int rollingFactor, ToIntFunction<E> mapper) {
         Objects.requireNonNull(stream);
         Objects.requireNonNull(mapper);
 
-        return shiftingWindowCollect(stream, rollingFactor, averagingInt(mapper));
+        IntStream intStream = stream.mapToInt(mapper);
+        RollingOfIntSpliterator ofIntSpliterator = RollingOfIntSpliterator.of(intStream.spliterator(), rollingFactor);
+
+        return StreamSupport.stream(ofIntSpliterator, false).mapToDouble(subStream -> subStream.average().getAsDouble());
     }
 
+    /**
+     * <p>Generates a stream that is computed from a provided stream following two steps.</p>
+     * <p>The first steps maps this stream to an <code>LongStream</code> that is then rolled following
+     * the same principle as the <code>roll()</code> method. This steps builds a <code>Stream&lt;LongStream&gt;</code>.
+     * </p>
+     * <p>Then the <code>average()</code> method is called on each <code>LongStream</code> using a mapper, and a
+     * <code>DoubleStream</code> of averages is returned.</p>
+     * <p>The resulting stream has the same number of elements as the provided stream,
+     * minus the size of the window width, to preserve consistency of each collection. </p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the collector is null.</p>
+     * @param stream the processed stream
+     * @param rollingFactor the size of the window to apply the collector on
+     * @param mapper the mapper applied
+     * @param <E> the type of the provided stream
+     * @return a stream in which each value is the collection of the provided stream
+     */
+    public static <E> DoubleStream shiftingWindowAveragingLong(Stream<E> stream, int rollingFactor, ToLongFunction<E> mapper) {
+        Objects.requireNonNull(stream);
+        Objects.requireNonNull(mapper);
+
+        LongStream longStream = stream.mapToLong(mapper);
+        RollingOfLongSpliterator ofLongSpliterator = RollingOfLongSpliterator.of(longStream.spliterator(), rollingFactor);
+
+        return StreamSupport.stream(ofLongSpliterator, false).mapToDouble(subStream -> subStream.average().getAsDouble());
+    }
+
+    /**
+     * <p>Generates a stream that is computed from a provided stream following two steps.</p>
+     * <p>The first steps maps this stream to an <code>DoubleStream</code> that is then rolled following
+     * the same principle as the <code>roll()</code> method. This steps builds a <code>Stream&lt;DoubleStream&gt;</code>.
+     * </p>
+     * <p>Then the <code>average()</code> method is called on each <code>DoubleStream</code> using a mapper, and a
+     * <code>DoubleStream</code> of averages is returned.</p>
+     * <p>The resulting stream has the same number of elements as the provided stream,
+     * minus the size of the window width, to preserve consistency of each collection. </p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the collector is null.</p>
+     * @param stream the processed stream
+     * @param rollingFactor the size of the window to apply the collector on
+     * @param mapper the mapper applied
+     * @param <E> the type of the provided stream
+     * @return a stream in which each value is the collection of the provided stream
+     */
+    public static <E> DoubleStream shiftingWindowAveragingDouble(Stream<E> stream, int rollingFactor, ToDoubleFunction<E> mapper) {
+        Objects.requireNonNull(stream);
+        Objects.requireNonNull(mapper);
+
+        return roll(stream, rollingFactor).mapToDouble(subStream -> subStream.mapToDouble(mapper).average().getAsDouble());
+    }
+
+    /**
+     * <p>Generates a stream that is computed from a provided stream following two steps.</p>
+     * <p>The first steps maps this stream to an <code>IntStream</code> that is then rolled following
+     * the same principle as the <code>roll()</code> method. This steps builds a <code>Stream&lt;IntStream&gt;</code>.
+     * </p>
+     * <p>Then int summary statistics are computed on each <code>IntStream</code> using a <code>collect()</code> call,
+     * and a <code>Stream&lt;IntSummaryStatistics&gt;</code> is returned.</p>
+     * <p>The resulting stream has the same number of elements as the provided stream,
+     * minus the size of the window width, to preserve consistency of each collection. </p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the collector is null.</p>
+     * @param stream the processed stream
+     * @param rollingFactor the size of the window to apply the collector on
+     * @param mapper the mapper applied
+     * @param <E> the type of the provided stream
+     * @return a stream in which each value is the collection of the provided stream
+     */
     public static <E> Stream<IntSummaryStatistics> shiftingWindowSummarizingInt(Stream<E> stream, int rollingFactor, ToIntFunction<E> mapper) {
         Objects.requireNonNull(stream);
         Objects.requireNonNull(mapper);
 
-        return shiftingWindowCollect(stream, rollingFactor, summarizingInt(mapper));
+        IntStream intStream = stream.mapToInt(mapper);
+        RollingOfIntSpliterator ofIntSpliterator = RollingOfIntSpliterator.of(intStream.spliterator(), rollingFactor);
+
+        return StreamSupport.stream(ofIntSpliterator, false).map(
+                str -> str.collect(
+                                IntSummaryStatistics::new,
+                                IntSummaryStatistics::accept,
+                                IntSummaryStatistics::combine
+                )
+        );
     }
 
-    public static <E> Stream<Double> shiftingWindowAveragingLong(Stream<E> stream, int rollingFactor, ToLongFunction<E> mapper) {
-        Objects.requireNonNull(stream);
-        Objects.requireNonNull(mapper);
-
-        return shiftingWindowCollect(stream, rollingFactor, averagingLong(mapper));
-    }
-
+    /**
+     * <p>Generates a stream that is computed from a provided stream following two steps.</p>
+     * <p>The first steps maps this stream to an <code>LongStream</code> that is then rolled following
+     * the same principle as the <code>roll()</code> method. This steps builds a <code>Stream&lt;LongStream&gt;</code>.
+     * </p>
+     * <p>Then long summary statistics are computed on each <code>LongStream</code> using a <code>collect()</code> call,
+     * and a <code>Stream&lt;LongSummaryStatistics&gt;</code> is returned.</p>
+     * <p>The resulting stream has the same number of elements as the provided stream,
+     * minus the size of the window width, to preserve consistency of each collection. </p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the collector is null.</p>
+     * @param stream the processed stream
+     * @param rollingFactor the size of the window to apply the collector on
+     * @param mapper the mapper applied
+     * @param <E> the type of the provided stream
+     * @return a stream in which each value is the collection of the provided stream
+     */
     public static <E> Stream<LongSummaryStatistics> shiftingWindowSummarizingLong(Stream<E> stream, int rollingFactor, ToLongFunction<E> mapper) {
         Objects.requireNonNull(stream);
         Objects.requireNonNull(mapper);
 
-        return shiftingWindowCollect(stream, rollingFactor, summarizingLong(mapper));
+        LongStream longStream = stream.mapToLong(mapper);
+        RollingOfLongSpliterator ofLongSpliterator = RollingOfLongSpliterator.of(longStream.spliterator(), rollingFactor);
+
+        return StreamSupport.stream(ofLongSpliterator, false).map(
+                str -> str.collect(
+                        LongSummaryStatistics::new,
+                        LongSummaryStatistics::accept,
+                        LongSummaryStatistics::combine
+                )
+        );
     }
 
-    public static <E> Stream<Double> shiftingWindowAveragingDouble(Stream<E> stream, int rollingFactor, ToDoubleFunction<E> mapper) {
-        Objects.requireNonNull(stream);
-        Objects.requireNonNull(mapper);
-
-        return shiftingWindowCollect(stream, rollingFactor, averagingDouble(mapper));
-    }
-
+    /**
+     * <p>Generates a stream that is computed from a provided stream following two steps.</p>
+     * <p>The first steps maps this stream to a <code>DoubleStream</code> that is then rolled following
+     * the same principle as the <code>roll()</code> method. This steps builds a <code>Stream&lt;DoubleStream&gt;</code>.
+     * </p>
+     * <p>Then double summary statistics are computed on each <code>DoubleStream</code> using a <code>collect()</code> call,
+     * and a <code>Stream&lt;DoubleSummaryStatistics&gt;</code> is returned.</p>
+     * <p>The resulting stream has the same number of elements as the provided stream,
+     * minus the size of the window width, to preserve consistency of each collection. </p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the collector is null.</p>
+     * @param stream the processed stream
+     * @param rollingFactor the size of the window to apply the collector on
+     * @param mapper the mapper applied
+     * @param <E> the type of the provided stream
+     * @return a stream in which each value is the collection of the provided stream
+     */
     public static <E> Stream<DoubleSummaryStatistics> shiftingWindowSummarizingLong(Stream<E> stream, int rollingFactor, ToDoubleFunction<E> mapper) {
         Objects.requireNonNull(stream);
         Objects.requireNonNull(mapper);
 
-        return shiftingWindowCollect(stream, rollingFactor, summarizingDouble(mapper));
+        DoubleStream doubleStream = stream.mapToDouble(mapper);
+        RollingOfDoubleSpliterator ofDoubleSpliterator = RollingOfDoubleSpliterator.of(doubleStream.spliterator(), rollingFactor);
+
+        return StreamSupport.stream(ofDoubleSpliterator, false).map(
+                str -> str.collect(
+                        DoubleSummaryStatistics::new,
+                        DoubleSummaryStatistics::accept,
+                        DoubleSummaryStatistics::combine
+                )
+        );
     }
 }
