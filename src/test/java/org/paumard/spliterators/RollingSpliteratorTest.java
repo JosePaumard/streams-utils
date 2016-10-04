@@ -16,6 +16,8 @@
 
 package org.paumard.spliterators;
 
+import com.sun.xml.internal.ws.util.StreamUtils;
+import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
@@ -53,8 +55,7 @@ public class RollingSpliteratorTest {
         int groupingFactor = 3;
 
         // When
-        RollingSpliterator<String> rollingSpliterator = RollingSpliterator.of(strings.spliterator(), groupingFactor);
-        Stream<Stream<String>> stream = StreamSupport.stream(rollingSpliterator, false);
+        Stream<Stream<String>> stream = StreamsUtils.roll(strings, groupingFactor);
         List<List<String>> collect = stream.map(st -> st.collect(Collectors.toList())).collect(Collectors.toList());
 
         // When
