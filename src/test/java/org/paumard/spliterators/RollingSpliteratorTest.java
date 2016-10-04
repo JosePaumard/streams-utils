@@ -41,8 +41,8 @@ public class RollingSpliteratorTest {
         int groupingFactor = 2;
 
         // When
-        RollingSpliterator<String> rollingSpliterator = RollingSpliterator.of(strings.spliterator(), groupingFactor);
-        long numberOfRolledStreams = StreamSupport.stream(rollingSpliterator, false).count();
+        Stream<Stream<String>> stream = StreamsUtils.roll(strings, groupingFactor);
+        long numberOfRolledStreams = stream.count();
 
         // Then
         assertThat(numberOfRolledStreams).isEqualTo(1);
