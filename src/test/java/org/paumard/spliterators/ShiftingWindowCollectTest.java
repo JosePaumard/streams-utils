@@ -40,7 +40,7 @@ public class ShiftingWindowCollectTest {
         int groupingFactor = 3;
 
         // When
-        Stream<Stream<String>> stream = StreamsUtils.roll(strings, groupingFactor);
+        Stream<String> stream = StreamsUtils.shiftingWindowCollect(strings, groupingFactor, joining());
         long numberOfRolledStreams = stream.count();
 
         // Then
