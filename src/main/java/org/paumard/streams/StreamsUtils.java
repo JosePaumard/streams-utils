@@ -454,7 +454,10 @@ public class StreamsUtils {
         Objects.requireNonNull(stream);
         Objects.requireNonNull(mapper);
 
-        return roll(stream, rollingFactor).mapToDouble(subStream -> subStream.mapToDouble(mapper).average().getAsDouble());
+        DoubleStream doubleStream = stream.mapToDouble(mapper);
+        RollingOfDoubleSpliterator ofDoubleSpliterator = RollingOfDoubleSpliterator.of(doubleStream.spliterator(), rollingFactor);
+
+        return StreamSupport.stream(ofDoubleSpliterator, false).mapToDouble(subStream -> subStream.average().getAsDouble());
     }
 
     /**
