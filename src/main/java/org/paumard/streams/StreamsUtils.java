@@ -375,7 +375,7 @@ public class StreamsUtils {
      * @param <T>the type of the returned stream
      * @return a stream in which each value is the collection of the provided stream
      */
-    public static <E, T> Stream<T> shiftingWindowCollect(Stream<E> stream, int rollingFactor, Collector<E, ?, T> collector) {
+    public static <E, T> Stream<T> shiftingWindowCollect(Stream<E> stream, int rollingFactor, Collector<? super E, ?, ? extends T> collector) {
         Objects.requireNonNull(stream);
         Objects.requireNonNull(collector);
 
