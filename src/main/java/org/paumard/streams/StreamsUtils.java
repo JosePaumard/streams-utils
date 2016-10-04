@@ -396,15 +396,29 @@ public class StreamsUtils {
      * @param rollingFactor the size of the window to apply the collector on
      * @param mapper the mapper applied
      * @param <E> the type of the provided stream
-     * @return a stream in which each value is the collection of the provided stream
+     * @return a stream in which each value is the average of the provided stream
      */
     public static <E> DoubleStream shiftingWindowAveragingInt(Stream<E> stream, int rollingFactor, ToIntFunction<E> mapper) {
         Objects.requireNonNull(stream);
         Objects.requireNonNull(mapper);
 
         IntStream intStream = stream.mapToInt(mapper);
-        RollingOfIntSpliterator ofIntSpliterator = RollingOfIntSpliterator.of(intStream.spliterator(), rollingFactor);
+        return shiftingWindowAveragingInt(intStream, rollingFactor);
+    }
 
+    /**
+     * <p>Generates a stream that is computed from a provided int stream by first rolling it in the same
+     * way as the <code>roll()</code> method does. The average is then computed on each substream, to
+     * form the final double stream. No boxing / unboxing is conducted in the process.
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the collector is null.</p>
+     * @param intStream the processed stream
+     * @param rollingFactor the size of the window to apply the collector on
+     * @return a stream in which each value is the collection of the provided stream
+     */
+    public static DoubleStream shiftingWindowAveragingInt(IntStream intStream, int rollingFactor) {
+        Objects.requireNonNull(intStream);
+
+        RollingOfIntSpliterator ofIntSpliterator = RollingOfIntSpliterator.of(intStream.spliterator(), rollingFactor);
         return StreamSupport.stream(ofIntSpliterator, false).mapToDouble(subStream -> subStream.average().getAsDouble());
     }
 
@@ -429,8 +443,22 @@ public class StreamsUtils {
         Objects.requireNonNull(mapper);
 
         LongStream longStream = stream.mapToLong(mapper);
-        RollingOfLongSpliterator ofLongSpliterator = RollingOfLongSpliterator.of(longStream.spliterator(), rollingFactor);
+        return shiftingWindowAveragingLong(longStream, rollingFactor);
+    }
 
+    /**
+     * <p>Generates a stream that is computed from a provided long stream by first rolling it in the same
+     * way as the <code>roll()</code> method does. The average is then computed on each substream, to
+     * form the final double stream. No boxing / unboxing is conducted in the process.
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the collector is null.</p>
+     * @param longStream the processed stream
+     * @param rollingFactor the size of the window to apply the collector on
+     * @return a stream in which each value is the collection of the provided stream
+     */
+    public static DoubleStream shiftingWindowAveragingLong(LongStream longStream, int rollingFactor) {
+        Objects.requireNonNull(longStream);
+
+        RollingOfLongSpliterator ofLongSpliterator = RollingOfLongSpliterator.of(longStream.spliterator(), rollingFactor);
         return StreamSupport.stream(ofLongSpliterator, false).mapToDouble(subStream -> subStream.average().getAsDouble());
     }
 
@@ -455,8 +483,22 @@ public class StreamsUtils {
         Objects.requireNonNull(mapper);
 
         DoubleStream doubleStream = stream.mapToDouble(mapper);
-        RollingOfDoubleSpliterator ofDoubleSpliterator = RollingOfDoubleSpliterator.of(doubleStream.spliterator(), rollingFactor);
+        return shiftingWindowAveragingDouble(doubleStream, rollingFactor);
+    }
 
+    /**
+     * <p>Generates a stream that is computed from a provided double stream by first rolling it in the same
+     * way as the <code>roll()</code> method does. The average is then computed on each substream, to
+     * form the final double stream. No boxing / unboxing is conducted in the process.
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the collector is null.</p>
+     * @param doubleStream the processed stream
+     * @param rollingFactor the size of the window to apply the collector on
+     * @return a stream in which each value is the collection of the provided stream
+     */
+    public static DoubleStream shiftingWindowAveragingDouble(DoubleStream doubleStream, int rollingFactor) {
+        Objects.requireNonNull(doubleStream);
+
+        RollingOfDoubleSpliterator ofDoubleSpliterator = RollingOfDoubleSpliterator.of(doubleStream.spliterator(), rollingFactor);
         return StreamSupport.stream(ofDoubleSpliterator, false).mapToDouble(subStream -> subStream.average().getAsDouble());
     }
 
