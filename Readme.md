@@ -1,5 +1,7 @@
 # Streams Utils
 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.paumard/streams-utils/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.paumard/streams-utils) [![Build Status](https://travis-ci.org/JosePaumard/streams-utils.png?branch=master)](https://travis-ci.org/JosePaumard/streams-utils) [![Coverage Status](https://coveralls.io/repos/JosePaumard/streams-utils/badge.svg?branch=master&service=github)](https://coveralls.io/github/JosePaumard/streams-utils?branch=master)
+
 In the Java 8 Stream API, a classical stream operation can only work on the current element of the given stream, but cannot take into account the previous elements.
 
 The right solution is to change the stream itself. Suppose we have a stream `{a, b, c, d, ...}` and that we need to remember the value of `a` when we process `b`. The problem can be solved by changing this stream to the following : `{[a, b], [b, c], [c, d], ...}`. We go from a stream of objects to a stream of pairs of objects, or maybe a stream of streams of objects.
