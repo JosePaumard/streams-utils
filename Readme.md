@@ -16,7 +16,7 @@ You can use this API directly with Maven, by adding the following dependency.
 <dependency>
     <groupId>org.paumard</groupId>
     <artifactId>streams-utils</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
 </dependency>
 ```
 
@@ -106,6 +106,27 @@ The resulting stream is the following:
 ## Zipping
 
 The zipping operator takes two streams and a bifunction. The resulting stream is the application of the bifunction on two elements of the streams, one at a time. 
+
+## Collection on a shifting window
+
+This method takes a `Stream<E>` as a parameter, the size of the window and a collector. This collector is applied on each shifting window, computes values
+that are returned in a stream. 
+
+## Computation of averages on a shifting window
+ 
+A set of methods computes such an average on a stream of objects, returning a `DoubleStream` with each value being the average on a given window. This
+average can be computed on `int`, `long` and `double` using the corresponding standard methods. 
+
+A first version of these methods takes a `Stream<E>` as a parameter, and a mapper to the corresponding primitive type. The computation first maps the stream before 
+computing the average of the shifting window. 
+
+A second version takes a stream of primitive types as a parameter (`IntStream`, `LongStream` or `DoubleStream`) and does the computation directly on it. 
+The implementation is built in such a way as no boxing / unboxing is done. 
+
+## Computation of a summary statistics on a shifting window
+ 
+This set of methods works the same as for the computation of averages. The difference is that a summary statistics is computed (for `int`, `long` or `double`)
+on each window. There are two versions of these methods: the first takes a `Stream<E>` and a mapper, the second directly a stream of primitive types. 
 
 ## Acknowledgements
 
