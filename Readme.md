@@ -77,7 +77,7 @@ String<Class<?>> streamOfClasses = Stream.iterate(myClass, c -> c == null ? null
 The problem is that, once the `Object.class` has been met, this stream is null. We wanted to stop it. This is exactly what the interrupting spliterator does.
 
 ```
-Stream<Class<?>> interruptedStreamOfClasses = MoreSpliterator.interrupting(streamOfClasses, Objects::isNull);
+Stream<Class<?>> interruptedStreamOfClasses = StreamsUtils.interrupting(streamOfClasses, Objects::isNull);
 ```
 
 The returned stream in this case will generate elements up to `Object.class` and will stop.
