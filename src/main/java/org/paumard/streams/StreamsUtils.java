@@ -617,7 +617,7 @@ public class StreamsUtils {
      * @param <E> the type of the provided stream
      * @return a stream in which each value is the collection of the provided stream
      */
-    public static <E> Stream<DoubleSummaryStatistics> shiftingWindowSummarizingLong(Stream<E> stream, int rollingFactor, ToDoubleFunction<E> mapper) {
+    public static <E> Stream<DoubleSummaryStatistics> shiftingWindowSummarizingDouble(Stream<E> stream, int rollingFactor, ToDoubleFunction<E> mapper) {
         Objects.requireNonNull(stream);
         Objects.requireNonNull(mapper);
 
