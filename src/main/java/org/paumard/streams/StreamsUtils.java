@@ -542,7 +542,7 @@ public class StreamsUtils {
      * @param rollingFactor the size of the window to apply the collector on
      * @return a stream in which each value is the collection of the provided stream
      */
-    private static Stream<IntSummaryStatistics> shiftingWindowSummarizingInt(IntStream intStream, int rollingFactor) {
+    public static Stream<IntSummaryStatistics> shiftingWindowSummarizingInt(IntStream intStream, int rollingFactor) {
         RollingOfIntSpliterator ofIntSpliterator = RollingOfIntSpliterator.of(intStream.spliterator(), rollingFactor);
 
         return StreamSupport.stream(ofIntSpliterator, false).map(
@@ -589,13 +589,13 @@ public class StreamsUtils {
      * @param rollingFactor the size of the window to apply the collector on
      * @return a stream in which each value is the collection of the provided stream
      */
-    private static Stream<LongSummaryStatistics> shiftingWindowSummarizingLong(LongStream longStream, int rollingFactor) {
+    public static Stream<LongSummaryStatistics> shiftingWindowSummarizingLong(LongStream longStream, int rollingFactor) {
         RollingOfLongSpliterator ofLongSpliterator = RollingOfLongSpliterator.of(longStream.spliterator(), rollingFactor);
 
         return StreamSupport.stream(ofLongSpliterator, false).map(
                 str -> str.collect(
                         LongSummaryStatistics::new,
-                        LongSummaryStatistics::accept,
+                        (longSummaryStatistics, value) -> longSummaryStatistics.accept(value),
                         LongSummaryStatistics::combine
                 )
         );
@@ -636,7 +636,7 @@ public class StreamsUtils {
      * @param rollingFactor the size of the window to apply the collector on
      * @return a stream in which each value is the collection of the provided stream
      */
-    private static Stream<DoubleSummaryStatistics> shiftingWindowSummarizingLong(DoubleStream doubleStream, int rollingFactor) {
+    public static Stream<DoubleSummaryStatistics> shiftingWindowSummarizingLong(DoubleStream doubleStream, int rollingFactor) {
         RollingOfDoubleSpliterator ofDoubleSpliterator = RollingOfDoubleSpliterator.of(doubleStream.spliterator(), rollingFactor);
 
         return StreamSupport.stream(ofDoubleSpliterator, false).map(
