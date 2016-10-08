@@ -32,14 +32,14 @@ import java.util.function.Predicate;
 public class ValidatingSpliterator<E, R> implements Spliterator<R> {
 
     private final Spliterator<E> spliterator;
-    private final Function<E, R> transformIfValid, transformIfNotValid;
-    private final Predicate<E> validator;
+    private final Function<? super E, ? extends R> transformIfValid, transformIfNotValid;
+    private final Predicate<? super E> validator;
 
     public static class Builder<E, R> {
 
         private Spliterator<E> spliterator;
-        private Function<E, R> transformIfValid, transformIfNotValid;
-        private Predicate<E> validator;
+        private Function<? super E, ? extends R> transformIfValid, transformIfNotValid;
+        private Predicate<? super E> validator;
 
         public Builder() {
         }
@@ -49,17 +49,17 @@ public class ValidatingSpliterator<E, R> implements Spliterator<R> {
             return this;
         }
 
-        public Builder<E, R> validatedBy(Predicate<E> validator) {
+        public Builder<E, R> validatedBy(Predicate<? super E> validator) {
             this.validator = Objects.requireNonNull(validator);
             return this;
         }
 
-        public Builder<E, R> withValidFunction(Function<E, R> validFunction) {
+        public Builder<E, R> withValidFunction(Function<? super E, ? extends R> validFunction) {
             this.transformIfValid = Objects.requireNonNull(validFunction);
             return this;
         }
 
-        public Builder<E, R> withNotValidFunction(Function<E, R> notValidFunction) {
+        public Builder<E, R> withNotValidFunction(Function<? super E, ? extends R> notValidFunction) {
             this.transformIfNotValid = Objects.requireNonNull(notValidFunction);
             return this;
         }
@@ -69,9 +69,9 @@ public class ValidatingSpliterator<E, R> implements Spliterator<R> {
         }
     }
 
-    private ValidatingSpliterator(
-            Spliterator<E> spliterator, Predicate<E> validator,
-            Function<E, R> transformIfValid, Function<E, R> transformIfNotValid) {
+    ValidatingSpliterator(
+            Spliterator<E> spliterator, Predicate<? super E> validator,
+            Function<? super E, ? extends R> transformIfValid, Function<? super E, ? extends R> transformIfNotValid) {
         this.spliterator = spliterator;
         this.validator = validator;
         this.transformIfValid = transformIfValid;

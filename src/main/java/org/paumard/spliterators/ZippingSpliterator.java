@@ -63,12 +63,12 @@ public class ZippingSpliterator<E1, E2, R> implements Spliterator<R> {
         }
     }
 
-    private ZippingSpliterator(
+    ZippingSpliterator(
             Spliterator<E1> spliterator1, Spliterator<E2> spliterator2,
             BiFunction<? super E1, ? super E2, ? extends R> zipper) {
-        this.spliterator1 = spliterator1;
-        this.spliterator2 = spliterator2;
-        this.zipper = zipper;
+        this.spliterator1 = Objects.requireNonNull(spliterator1);
+        this.spliterator2 = Objects.requireNonNull(spliterator2);
+        this.zipper = Objects.requireNonNull(zipper);
     }
 
     @Override

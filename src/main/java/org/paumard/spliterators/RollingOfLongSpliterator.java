@@ -22,7 +22,6 @@ import java.util.Objects;
 import java.util.Spliterator;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
-import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 
 /**
@@ -34,9 +33,9 @@ public class RollingOfLongSpliterator implements Spliterator<LongStream> {
 
 	private final int grouping ;
 	private final OfLong spliterator ;
-	private long [] buffer ;
-	private AtomicInteger bufferWriteIndex = new AtomicInteger(0) ;
-	private AtomicInteger bufferReadIndex = new AtomicInteger(0) ;
+	private final long [] buffer ;
+	private final AtomicInteger bufferWriteIndex = new AtomicInteger(0) ;
+	private final AtomicInteger bufferReadIndex = new AtomicInteger(0) ;
 
 	public static RollingOfLongSpliterator of(OfLong spliterator, int grouping) {
 		Objects.requireNonNull(spliterator);

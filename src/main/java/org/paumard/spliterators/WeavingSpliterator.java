@@ -35,12 +35,12 @@ import static org.paumard.streams.StreamsUtils.roll;
  */
 public class WeavingSpliterator<E> implements Spliterator<E> {
 
-    private Spliterator<E>[] spliterators;
-    private boolean[] spliteratorsFinished;
-    private Deque<E> elements = new ArrayDeque<>();
+    private final Spliterator<E>[] spliterators;
+    private final ArrayDeque<E> elements = new ArrayDeque<>();
     private boolean firstGroup = true;
     private boolean moreElements;
 
+    @SafeVarargs
     public static <E> WeavingSpliterator<E> of(Spliterator<E>... spliterators) {
         Objects.requireNonNull(spliterators);
         if (spliterators.length < 2) {
@@ -56,7 +56,6 @@ public class WeavingSpliterator<E> implements Spliterator<E> {
     @SafeVarargs
     private WeavingSpliterator(Spliterator<E>... spliterators) {
         this.spliterators = spliterators;
-        this.spliteratorsFinished = new boolean[spliterators.length];
     }
 
     private void consumeOneElementOnEachSpliterator() {
@@ -93,7 +92,7 @@ public class WeavingSpliterator<E> implements Spliterator<E> {
     @SuppressWarnings("unchecked")
     @Override
     public Spliterator<E> trySplit() {
-        WeavingSpliterator[] splitSpliterators = Stream.of(spliterators).map(Spliterator::trySplit).toArray(WeavingSpliterator[]::new);
+        WeavingSpliterator<E>[] splitSpliterators = Stream.of(spliterators).map(Spliterator::trySplit).toArray(WeavingSpliterator[]::new);
         return Stream.of(splitSpliterators).noneMatch(Objects::isNull) ? new WeavingSpliterator<>(splitSpliterators) : null;
     }
 

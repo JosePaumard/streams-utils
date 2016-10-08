@@ -31,9 +31,10 @@ import java.util.stream.Stream;
  */
 public class TraversingSpliterator<E> implements Spliterator<Stream<E>> {
 
-    private Spliterator<E>[] spliterators;
-    private AtomicBoolean firstGroup = new AtomicBoolean(true);
+    private final Spliterator<E>[] spliterators;
+    private final AtomicBoolean firstGroup = new AtomicBoolean(true);
 
+    @SafeVarargs
     public static <E> TraversingSpliterator<E> of(Spliterator<E>... spliterators) {
         Objects.requireNonNull(spliterators);
         if (spliterators.length < 2) {
@@ -70,6 +71,7 @@ public class TraversingSpliterator<E> implements Spliterator<Stream<E>> {
 
     @Override
     public Spliterator<Stream<E>> trySplit() {
+        @SuppressWarnings("unchecked")
         TraversingSpliterator<E>[] spliterators =
                 Stream.of(this.spliterators).map(Spliterator::trySplit).toArray(TraversingSpliterator[]::new);
         return new TraversingSpliterator<>((Spliterator<E>[]) spliterators);

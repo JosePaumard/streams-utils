@@ -33,9 +33,9 @@ public class RollingOfDoubleSpliterator implements Spliterator<DoubleStream> {
 
 	private final int grouping ;
 	private final OfDouble spliterator ;
-	private double [] buffer ;
-	private AtomicInteger bufferWriteIndex = new AtomicInteger(0) ;
-	private AtomicInteger bufferReadIndex = new AtomicInteger(0) ;
+	private final double [] buffer ;
+	private final AtomicInteger bufferWriteIndex = new AtomicInteger(0) ;
+	private final AtomicInteger bufferReadIndex = new AtomicInteger(0) ;
 
 	public static RollingOfDoubleSpliterator of(OfDouble spliterator, int grouping) {
 		Objects.requireNonNull(spliterator);
