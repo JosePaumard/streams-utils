@@ -32,17 +32,17 @@ import java.util.function.Predicate;
 public class InterruptingSpliterator<E> implements Spliterator<E> {
 
     private final Spliterator<E> spliterator;
-    private final Predicate<E> interruptor;
+    private final Predicate<? super E> interruptor;
     private final AtomicBoolean hasMore = new AtomicBoolean(true);
 
-    public static <E> InterruptingSpliterator<E> of(Spliterator<E> spliterator, Predicate<E> interruptor) {
+    public static <E> InterruptingSpliterator<E> of(Spliterator<E> spliterator, Predicate<? super E> interruptor) {
         Objects.requireNonNull(spliterator);
         Objects.requireNonNull(interruptor);
 
         return new InterruptingSpliterator<E>(spliterator, interruptor);
     }
 
-    private InterruptingSpliterator(Spliterator<E> spliterator, Predicate<E> interruptor) {
+    private InterruptingSpliterator(Spliterator<E> spliterator, Predicate<? super E> interruptor) {
         this.spliterator = spliterator;
         this.interruptor = interruptor;
     }

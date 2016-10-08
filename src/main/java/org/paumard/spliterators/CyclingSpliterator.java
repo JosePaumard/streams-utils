@@ -30,7 +30,7 @@ import static java.util.stream.Collectors.toList;
  */
 public class CyclingSpliterator<E> implements Spliterator<Stream<E>> {
 
-    private List<E> list;
+    private final List<E> list;
 
     public static <E> CyclingSpliterator<E> of(Spliterator<E> spliterator) {
         Objects.requireNonNull(spliterator);

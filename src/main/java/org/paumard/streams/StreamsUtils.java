@@ -61,7 +61,7 @@ public class StreamsUtils {
         Objects.requireNonNull(stream);
 
         CyclingSpliterator<E> spliterator = CyclingSpliterator.of(stream.spliterator());
-        return StreamSupport.stream(spliterator, false).flatMap(identity());
+        return StreamSupport.stream(spliterator, stream.isParallel()).flatMap(identity());
     }
 
     /**
@@ -91,7 +91,7 @@ public class StreamsUtils {
         Objects.requireNonNull(stream);
 
         GroupingSpliterator<E> spliterator = GroupingSpliterator.of(stream.spliterator(), groupingFactor);
-        return StreamSupport.stream(spliterator, false);
+        return StreamSupport.stream(spliterator, stream.isParallel());
     }
 
     /**
@@ -123,7 +123,7 @@ public class StreamsUtils {
         Objects.requireNonNull(stream);
 
         RepeatingSpliterator<E> spliterator = RepeatingSpliterator.of(stream.spliterator(), repeatingFactor);
-        return StreamSupport.stream(spliterator, false);
+        return StreamSupport.stream(spliterator, stream.isParallel());
     }
 
     /**
@@ -162,7 +162,7 @@ public class StreamsUtils {
         Objects.requireNonNull(stream);
 
         RollingSpliterator<E> spliterator = RollingSpliterator.of(stream.spliterator(), rollingFactor);
-        return StreamSupport.stream(spliterator, false);
+        return StreamSupport.stream(spliterator, stream.isParallel());
     }
 
     /**
@@ -191,12 +191,14 @@ public class StreamsUtils {
      * @param <E> The type of the elements of the provided stream.
      * @return A traversing stream of streams.
      */
+    @SafeVarargs
     public static <E> Stream<Stream<E>> traverse(Stream<E>... streams) {
         Arrays.stream(streams).forEach(Objects::requireNonNull);
 
-        Spliterator[] spliterators = Stream.of(streams).map(Stream::spliterator).toArray(Spliterator[]::new);
+        @SuppressWarnings("unchecked")
+        Spliterator<E>[] spliterators = Stream.of(streams).map(Stream::spliterator).toArray(Spliterator[]::new);
         TraversingSpliterator<E> spliterator = TraversingSpliterator.of(spliterators);
-        return StreamSupport.stream(spliterator, false);
+        return StreamSupport.stream(spliterator, Arrays.stream(streams).allMatch(Stream::isParallel));
     }
 
     /**
@@ -224,12 +226,14 @@ public class StreamsUtils {
      * @param <E> The type of the elements of the provided stream.
      * @return A weaved stream.
      */
+    @SafeVarargs
     public static <E> Stream<E> weave(Stream<E>... streams) {
         Arrays.stream(streams).forEach(Objects::requireNonNull);
 
-        Spliterator[] spliterators = Stream.of(streams).map(Stream::spliterator).toArray(Spliterator[]::new);
+        @SuppressWarnings("unchecked")
+        Spliterator<E>[] spliterators = Stream.of(streams).map(Stream::spliterator).toArray(Spliterator[]::new);
         WeavingSpliterator<E> spliterator = WeavingSpliterator.of(spliterators);
-        return StreamSupport.stream(spliterator, false);
+        return StreamSupport.stream(spliterator, Arrays.stream(streams).allMatch(Stream::isParallel));
     }
 
     /**
@@ -264,16 +268,16 @@ public class StreamsUtils {
      * @param <R> The type of the elements of the returned stream.
      * @return A zipped stream.
      */
-    public static <E1, E2, R> Stream<R> zip(Stream<E1> stream1, Stream<E2> stream2, BiFunction<E1, E2, R> zipper) {
+    public static <E1, E2, R> Stream<R> zip(Stream<E1> stream1, Stream<E2> stream2, BiFunction<? super E1, ? super E2, ? extends R> zipper) {
         Objects.requireNonNull(stream1);
         Objects.requireNonNull(stream2);
-        ZippingSpliterator.Builder builder = new ZippingSpliterator.Builder();
+        ZippingSpliterator.Builder<E1, E2, R> builder = new ZippingSpliterator.Builder<>();
         ZippingSpliterator<E1, E2, R> spliterator =
-        builder.with(stream1.spliterator())
-                .and(stream2.spliterator())
-                .mergedBy(zipper)
-                .build();
-        return StreamSupport.stream(spliterator, false);
+            builder.with(stream1.spliterator())
+                   .and(stream2.spliterator())
+                   .mergedBy(zipper)
+                   .build();
+        return StreamSupport.stream(spliterator, stream1.isParallel() && stream2.isParallel());
     }
 
     /**
@@ -293,8 +297,8 @@ public class StreamsUtils {
      * @param <R> the type of the elements of the returned stream.
      * @return the validated and transformed stream.
      */
-    public static <E, R> Stream<R> validate(Stream<E> stream, Predicate<E> validator,
-                                            Function<E, R> transformingIfValid, Function<E, R> transformingIfNotValid) {
+    public static <E, R> Stream<R> validate(Stream<E> stream, Predicate<? super E> validator,
+                                            Function<? super E, ? extends R> transformingIfValid, Function<? super E, ? extends R> transformingIfNotValid) {
         Objects.requireNonNull(stream);
         ValidatingSpliterator.Builder<E, R> builder = new ValidatingSpliterator.Builder<>();
         ValidatingSpliterator<E, R> spliterator = builder.with(stream.spliterator())
@@ -302,7 +306,7 @@ public class StreamsUtils {
                 .withValidFunction(transformingIfValid)
                 .withNotValidFunction(transformingIfNotValid)
                 .build();
-        return StreamSupport.stream(spliterator, false);
+        return StreamSupport.stream(spliterator, stream.isParallel());
     }
 
     /**
@@ -320,7 +324,7 @@ public class StreamsUtils {
      * @param <E> the type of the stream and the returned stream.
      * @return the validated and transformed stream.
      */
-    public static <E> Stream<E> validate(Stream<E> stream, Predicate<E> validator, UnaryOperator<E> transformingIfNotValid) {
+    public static <E> Stream<E> validate(Stream<E> stream, Predicate<? super E> validator, UnaryOperator<E> transformingIfNotValid) {
         return validate(stream, validator, Function.identity(), transformingIfNotValid);
     }
 
@@ -335,10 +339,10 @@ public class StreamsUtils {
      * @param <E> the type of the stream and the returned stream.
      * @return a stream that is a copy of the input stream, until the interruptor becomes false.
      */
-    public static <E> Stream<E> interrupt(Stream<E> stream, Predicate<E> interruptor) {
+    public static <E> Stream<E> interrupt(Stream<E> stream, Predicate<? super E> interruptor) {
         Objects.requireNonNull(stream);
         InterruptingSpliterator<E> spliterator = InterruptingSpliterator.of(stream.spliterator(), interruptor);
-        return StreamSupport.stream(spliterator, false);
+        return StreamSupport.stream(spliterator, stream.isParallel());
     }
 
     /**
@@ -352,10 +356,10 @@ public class StreamsUtils {
      * @param <E> the type of the stream and the returned stream.
      * @return a stream that starts when the validator becomes true.
      */
-    public static <E> Stream<E> gate(Stream<E> stream, Predicate<E> validator) {
+    public static <E> Stream<E> gate(Stream<E> stream, Predicate<? super E> validator) {
         Objects.requireNonNull(stream);
         GatingSpliterator<E> spliterator = GatingSpliterator.of(stream.spliterator(), validator);
-        return StreamSupport.stream(spliterator, false);
+        return StreamSupport.stream(spliterator, stream.isParallel());
     }
 
     /**
@@ -397,7 +401,7 @@ public class StreamsUtils {
      * @param <E> the type of the provided stream
      * @return a stream in which each value is the average of the provided stream
      */
-    public static <E> DoubleStream shiftingWindowAveragingInt(Stream<E> stream, int rollingFactor, ToIntFunction<E> mapper) {
+    public static <E> DoubleStream shiftingWindowAveragingInt(Stream<E> stream, int rollingFactor, ToIntFunction<? super E> mapper) {
         Objects.requireNonNull(stream);
         Objects.requireNonNull(mapper);
 
@@ -420,7 +424,7 @@ public class StreamsUtils {
         Objects.requireNonNull(intStream);
 
         RollingOfIntSpliterator ofIntSpliterator = RollingOfIntSpliterator.of(intStream.spliterator(), rollingFactor);
-        return StreamSupport.stream(ofIntSpliterator, false).mapToDouble(subStream -> subStream.average().getAsDouble());
+        return StreamSupport.stream(ofIntSpliterator, intStream.isParallel()).mapToDouble(subStream -> subStream.average().getAsDouble());
     }
 
     /**
@@ -439,7 +443,7 @@ public class StreamsUtils {
      * @param <E> the type of the provided stream
      * @return a stream in which each value is the collection of the provided stream
      */
-    public static <E> DoubleStream shiftingWindowAveragingLong(Stream<E> stream, int rollingFactor, ToLongFunction<E> mapper) {
+    public static <E> DoubleStream shiftingWindowAveragingLong(Stream<E> stream, int rollingFactor, ToLongFunction<? super E> mapper) {
         Objects.requireNonNull(stream);
         Objects.requireNonNull(mapper);
 
@@ -462,7 +466,7 @@ public class StreamsUtils {
         Objects.requireNonNull(longStream);
 
         RollingOfLongSpliterator ofLongSpliterator = RollingOfLongSpliterator.of(longStream.spliterator(), rollingFactor);
-        return StreamSupport.stream(ofLongSpliterator, false).mapToDouble(subStream -> subStream.average().getAsDouble());
+        return StreamSupport.stream(ofLongSpliterator, longStream.isParallel()).mapToDouble(subStream -> subStream.average().getAsDouble());
     }
 
     /**
@@ -481,7 +485,7 @@ public class StreamsUtils {
      * @param <E> the type of the provided stream
      * @return a stream in which each value is the collection of the provided stream
      */
-    public static <E> DoubleStream shiftingWindowAveragingDouble(Stream<E> stream, int rollingFactor, ToDoubleFunction<E> mapper) {
+    public static <E> DoubleStream shiftingWindowAveragingDouble(Stream<E> stream, int rollingFactor, ToDoubleFunction<? super E> mapper) {
         Objects.requireNonNull(stream);
         Objects.requireNonNull(mapper);
 
@@ -504,7 +508,7 @@ public class StreamsUtils {
         Objects.requireNonNull(doubleStream);
 
         RollingOfDoubleSpliterator ofDoubleSpliterator = RollingOfDoubleSpliterator.of(doubleStream.spliterator(), rollingFactor);
-        return StreamSupport.stream(ofDoubleSpliterator, false).mapToDouble(subStream -> subStream.average().getAsDouble());
+        return StreamSupport.stream(ofDoubleSpliterator, doubleStream.isParallel()).mapToDouble(subStream -> subStream.average().getAsDouble());
     }
 
     /**
@@ -523,7 +527,7 @@ public class StreamsUtils {
      * @param <E> the type of the provided stream
      * @return a stream in which each value is the collection of the provided stream
      */
-    public static <E> Stream<IntSummaryStatistics> shiftingWindowSummarizingInt(Stream<E> stream, int rollingFactor, ToIntFunction<E> mapper) {
+    public static <E> Stream<IntSummaryStatistics> shiftingWindowSummarizingInt(Stream<E> stream, int rollingFactor, ToIntFunction<? super E> mapper) {
         Objects.requireNonNull(stream);
         Objects.requireNonNull(mapper);
 
@@ -545,7 +549,7 @@ public class StreamsUtils {
     public static Stream<IntSummaryStatistics> shiftingWindowSummarizingInt(IntStream intStream, int rollingFactor) {
         RollingOfIntSpliterator ofIntSpliterator = RollingOfIntSpliterator.of(intStream.spliterator(), rollingFactor);
 
-        return StreamSupport.stream(ofIntSpliterator, false).map(
+        return StreamSupport.stream(ofIntSpliterator, intStream.isParallel()).map(
                 str -> str.collect(
                                 IntSummaryStatistics::new,
                                 IntSummaryStatistics::accept,
@@ -570,7 +574,7 @@ public class StreamsUtils {
      * @param <E> the type of the provided stream
      * @return a stream in which each value is the collection of the provided stream
      */
-    public static <E> Stream<LongSummaryStatistics> shiftingWindowSummarizingLong(Stream<E> stream, int rollingFactor, ToLongFunction<E> mapper) {
+    public static <E> Stream<LongSummaryStatistics> shiftingWindowSummarizingLong(Stream<E> stream, int rollingFactor, ToLongFunction<? super E> mapper) {
         Objects.requireNonNull(stream);
         Objects.requireNonNull(mapper);
 
@@ -592,7 +596,7 @@ public class StreamsUtils {
     public static Stream<LongSummaryStatistics> shiftingWindowSummarizingLong(LongStream longStream, int rollingFactor) {
         RollingOfLongSpliterator ofLongSpliterator = RollingOfLongSpliterator.of(longStream.spliterator(), rollingFactor);
 
-        return StreamSupport.stream(ofLongSpliterator, false).map(
+        return StreamSupport.stream(ofLongSpliterator, longStream.isParallel()).map(
                 str -> str.collect(
                         LongSummaryStatistics::new,
                         (longSummaryStatistics, value) -> longSummaryStatistics.accept(value),
@@ -617,7 +621,7 @@ public class StreamsUtils {
      * @param <E> the type of the provided stream
      * @return a stream in which each value is the collection of the provided stream
      */
-    public static <E> Stream<DoubleSummaryStatistics> shiftingWindowSummarizingDouble(Stream<E> stream, int rollingFactor, ToDoubleFunction<E> mapper) {
+    public static <E> Stream<DoubleSummaryStatistics> shiftingWindowSummarizingDouble(Stream<E> stream, int rollingFactor, ToDoubleFunction<? super E> mapper) {
         Objects.requireNonNull(stream);
         Objects.requireNonNull(mapper);
 
@@ -639,7 +643,7 @@ public class StreamsUtils {
     public static Stream<DoubleSummaryStatistics> shiftingWindowSummarizingLong(DoubleStream doubleStream, int rollingFactor) {
         RollingOfDoubleSpliterator ofDoubleSpliterator = RollingOfDoubleSpliterator.of(doubleStream.spliterator(), rollingFactor);
 
-        return StreamSupport.stream(ofDoubleSpliterator, false).map(
+        return StreamSupport.stream(ofDoubleSpliterator, doubleStream.isParallel()).map(
                 str -> str.collect(
                         DoubleSummaryStatistics::new,
                         DoubleSummaryStatistics::accept,

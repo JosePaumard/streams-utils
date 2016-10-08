@@ -33,9 +33,9 @@ public class RollingSpliterator<E> implements Spliterator<Stream<E>> {
 
 	private final int grouping ;
 	private final Spliterator<E> spliterator ;
-	private Object [] buffer ; // we cant create arrays of E
-	private AtomicInteger bufferWriteIndex = new AtomicInteger(0) ;
-	private AtomicInteger bufferReadIndex = new AtomicInteger(0) ;
+	private final Object [] buffer ; // we cant create arrays of E
+	private final AtomicInteger bufferWriteIndex = new AtomicInteger(0) ;
+	private final AtomicInteger bufferReadIndex = new AtomicInteger(0) ;
 
 	public static <E> RollingSpliterator<E> of(Spliterator<E> spliterator, int grouping) {
 		Objects.requireNonNull(spliterator);

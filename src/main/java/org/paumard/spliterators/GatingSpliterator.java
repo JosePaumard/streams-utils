@@ -32,17 +32,17 @@ import java.util.function.Predicate;
 public class GatingSpliterator<E> implements Spliterator<E> {
 
     private final Spliterator<E> spliterator;
-    private final Predicate<E> gate;
+    private final Predicate<? super E> gate;
     private final AtomicBoolean hasMore = new AtomicBoolean(false);
 
-    public static <E> GatingSpliterator<E> of(Spliterator<E> spliterator, Predicate<E> gate) {
+    public static <E> GatingSpliterator<E> of(Spliterator<E> spliterator, Predicate<? super E> gate) {
         Objects.requireNonNull(spliterator);
         Objects.requireNonNull(gate);
 
         return new GatingSpliterator<>(spliterator, gate);
     }
 
-    private GatingSpliterator(Spliterator<E> spliterator, Predicate<E> gate) {
+    private GatingSpliterator(Spliterator<E> spliterator, Predicate<? super E> gate) {
         this.spliterator = spliterator;
         this.gate = gate;
     }

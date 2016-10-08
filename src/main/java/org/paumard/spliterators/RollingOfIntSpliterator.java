@@ -33,9 +33,9 @@ public class RollingOfIntSpliterator implements Spliterator<IntStream> {
 
 	private final int grouping ;
 	private final Spliterator.OfInt spliterator ;
-	private int [] buffer ;
-	private AtomicInteger bufferWriteIndex = new AtomicInteger(0) ;
-	private AtomicInteger bufferReadIndex = new AtomicInteger(0) ;
+	private final int [] buffer ;
+	private final AtomicInteger bufferWriteIndex = new AtomicInteger(0) ;
+	private final AtomicInteger bufferReadIndex = new AtomicInteger(0) ;
 
 	public static RollingOfIntSpliterator of(Spliterator.OfInt spliterator, int grouping) {
 		Objects.requireNonNull(spliterator);
