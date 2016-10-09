@@ -61,7 +61,7 @@ public class StreamsUtils {
         Objects.requireNonNull(stream);
 
         CyclingSpliterator<E> spliterator = CyclingSpliterator.of(stream.spliterator());
-        return StreamSupport.stream(spliterator, stream.isParallel()).flatMap(identity());
+        return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close).flatMap(identity());
     }
 
     /**
@@ -91,7 +91,7 @@ public class StreamsUtils {
         Objects.requireNonNull(stream);
 
         GroupingSpliterator<E> spliterator = GroupingSpliterator.of(stream.spliterator(), groupingFactor);
-        return StreamSupport.stream(spliterator, stream.isParallel());
+        return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
     }
 
     /**
@@ -123,7 +123,7 @@ public class StreamsUtils {
         Objects.requireNonNull(stream);
 
         RepeatingSpliterator<E> spliterator = RepeatingSpliterator.of(stream.spliterator(), repeatingFactor);
-        return StreamSupport.stream(spliterator, stream.isParallel());
+        return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
     }
 
     /**
@@ -162,7 +162,7 @@ public class StreamsUtils {
         Objects.requireNonNull(stream);
 
         RollingSpliterator<E> spliterator = RollingSpliterator.of(stream.spliterator(), rollingFactor);
-        return StreamSupport.stream(spliterator, stream.isParallel());
+        return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
     }
 
     /**
@@ -198,7 +198,8 @@ public class StreamsUtils {
         @SuppressWarnings("unchecked")
         Spliterator<E>[] spliterators = Stream.of(streams).map(Stream::spliterator).toArray(Spliterator[]::new);
         TraversingSpliterator<E> spliterator = TraversingSpliterator.of(spliterators);
-        return StreamSupport.stream(spliterator, Arrays.stream(streams).allMatch(Stream::isParallel));
+        return StreamSupport.stream(spliterator, Arrays.stream(streams).allMatch(Stream::isParallel))
+                            .onClose(() -> Arrays.stream(streams).forEach(Stream::close));
     }
 
     /**
@@ -233,7 +234,8 @@ public class StreamsUtils {
         @SuppressWarnings("unchecked")
         Spliterator<E>[] spliterators = Stream.of(streams).map(Stream::spliterator).toArray(Spliterator[]::new);
         WeavingSpliterator<E> spliterator = WeavingSpliterator.of(spliterators);
-        return StreamSupport.stream(spliterator, Arrays.stream(streams).allMatch(Stream::isParallel));
+        return StreamSupport.stream(spliterator, Arrays.stream(streams).allMatch(Stream::isParallel))
+                            .onClose(() -> Arrays.stream(streams).forEach(Stream::close));
     }
 
     /**
@@ -277,7 +279,8 @@ public class StreamsUtils {
                    .and(stream2.spliterator())
                    .mergedBy(zipper)
                    .build();
-        return StreamSupport.stream(spliterator, stream1.isParallel() && stream2.isParallel());
+        return StreamSupport.stream(spliterator, stream1.isParallel() && stream2.isParallel())
+                            .onClose(() -> { stream1.close(); stream2.close(); });
     }
 
     /**
@@ -306,7 +309,7 @@ public class StreamsUtils {
                 .withValidFunction(transformingIfValid)
                 .withNotValidFunction(transformingIfNotValid)
                 .build();
-        return StreamSupport.stream(spliterator, stream.isParallel());
+        return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
     }
 
     /**
@@ -342,7 +345,7 @@ public class StreamsUtils {
     public static <E> Stream<E> interrupt(Stream<E> stream, Predicate<? super E> interruptor) {
         Objects.requireNonNull(stream);
         InterruptingSpliterator<E> spliterator = InterruptingSpliterator.of(stream.spliterator(), interruptor);
-        return StreamSupport.stream(spliterator, stream.isParallel());
+        return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
     }
 
     /**
@@ -359,7 +362,7 @@ public class StreamsUtils {
     public static <E> Stream<E> gate(Stream<E> stream, Predicate<? super E> validator) {
         Objects.requireNonNull(stream);
         GatingSpliterator<E> spliterator = GatingSpliterator.of(stream.spliterator(), validator);
-        return StreamSupport.stream(spliterator, stream.isParallel());
+        return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
     }
 
     /**
@@ -424,7 +427,9 @@ public class StreamsUtils {
         Objects.requireNonNull(intStream);
 
         RollingOfIntSpliterator ofIntSpliterator = RollingOfIntSpliterator.of(intStream.spliterator(), rollingFactor);
-        return StreamSupport.stream(ofIntSpliterator, intStream.isParallel()).mapToDouble(subStream -> subStream.average().getAsDouble());
+        return StreamSupport.stream(ofIntSpliterator, intStream.isParallel())
+                            .onClose(intStream::close)
+                            .mapToDouble(subStream -> subStream.average().getAsDouble());
     }
 
     /**
@@ -466,7 +471,9 @@ public class StreamsUtils {
         Objects.requireNonNull(longStream);
 
         RollingOfLongSpliterator ofLongSpliterator = RollingOfLongSpliterator.of(longStream.spliterator(), rollingFactor);
-        return StreamSupport.stream(ofLongSpliterator, longStream.isParallel()).mapToDouble(subStream -> subStream.average().getAsDouble());
+        return StreamSupport.stream(ofLongSpliterator, longStream.isParallel())
+                            .onClose(longStream::close)
+                            .mapToDouble(subStream -> subStream.average().getAsDouble());
     }
 
     /**
@@ -508,7 +515,9 @@ public class StreamsUtils {
         Objects.requireNonNull(doubleStream);
 
         RollingOfDoubleSpliterator ofDoubleSpliterator = RollingOfDoubleSpliterator.of(doubleStream.spliterator(), rollingFactor);
-        return StreamSupport.stream(ofDoubleSpliterator, doubleStream.isParallel()).mapToDouble(subStream -> subStream.average().getAsDouble());
+        return StreamSupport.stream(ofDoubleSpliterator, doubleStream.isParallel())
+                            .onClose(doubleStream::close)
+                            .mapToDouble(subStream -> subStream.average().getAsDouble());
     }
 
     /**
@@ -549,12 +558,14 @@ public class StreamsUtils {
     public static Stream<IntSummaryStatistics> shiftingWindowSummarizingInt(IntStream intStream, int rollingFactor) {
         RollingOfIntSpliterator ofIntSpliterator = RollingOfIntSpliterator.of(intStream.spliterator(), rollingFactor);
 
-        return StreamSupport.stream(ofIntSpliterator, intStream.isParallel()).map(
-                str -> str.collect(
-                                IntSummaryStatistics::new,
-                                IntSummaryStatistics::accept,
-                                IntSummaryStatistics::combine
-                )
+        return StreamSupport.stream(ofIntSpliterator, intStream.isParallel())
+                            .onClose(intStream::close)
+                            .map(
+                                str -> str.collect(
+                                    IntSummaryStatistics::new,
+                                    IntSummaryStatistics::accept,
+                                    IntSummaryStatistics::combine
+                                )
         );
     }
 
@@ -596,12 +607,14 @@ public class StreamsUtils {
     public static Stream<LongSummaryStatistics> shiftingWindowSummarizingLong(LongStream longStream, int rollingFactor) {
         RollingOfLongSpliterator ofLongSpliterator = RollingOfLongSpliterator.of(longStream.spliterator(), rollingFactor);
 
-        return StreamSupport.stream(ofLongSpliterator, longStream.isParallel()).map(
-                str -> str.collect(
-                        LongSummaryStatistics::new,
-                        (longSummaryStatistics, value) -> longSummaryStatistics.accept(value),
-                        LongSummaryStatistics::combine
-                )
+        return StreamSupport.stream(ofLongSpliterator, longStream.isParallel())
+                            .onClose(longStream::close)
+                            .map(
+                                str -> str.collect(
+                                    LongSummaryStatistics::new,
+                                    (longSummaryStatistics, value) -> longSummaryStatistics.accept(value),
+                                    LongSummaryStatistics::combine
+                                )
         );
     }
 
@@ -643,12 +656,14 @@ public class StreamsUtils {
     public static Stream<DoubleSummaryStatistics> shiftingWindowSummarizingLong(DoubleStream doubleStream, int rollingFactor) {
         RollingOfDoubleSpliterator ofDoubleSpliterator = RollingOfDoubleSpliterator.of(doubleStream.spliterator(), rollingFactor);
 
-        return StreamSupport.stream(ofDoubleSpliterator, doubleStream.isParallel()).map(
-                str -> str.collect(
-                        DoubleSummaryStatistics::new,
-                        DoubleSummaryStatistics::accept,
-                        DoubleSummaryStatistics::combine
-                )
+        return StreamSupport.stream(ofDoubleSpliterator, doubleStream.isParallel())
+                            .onClose(doubleStream::close)
+                            .map(
+                                str -> str.collect(
+                                    DoubleSummaryStatistics::new,
+                                    DoubleSummaryStatistics::accept,
+                                    DoubleSummaryStatistics::combine
+                                )
         );
     }
 }

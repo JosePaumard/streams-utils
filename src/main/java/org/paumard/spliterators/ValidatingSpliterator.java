@@ -72,10 +72,10 @@ public class ValidatingSpliterator<E, R> implements Spliterator<R> {
     ValidatingSpliterator(
             Spliterator<E> spliterator, Predicate<? super E> validator,
             Function<? super E, ? extends R> transformIfValid, Function<? super E, ? extends R> transformIfNotValid) {
-        this.spliterator = spliterator;
-        this.validator = validator;
-        this.transformIfValid = transformIfValid;
-        this.transformIfNotValid = transformIfNotValid;
+        this.spliterator = Objects.requireNonNull(spliterator, "spliterator");
+        this.validator = Objects.requireNonNull(validator, "validator");
+        this.transformIfValid = Objects.requireNonNull(transformIfValid, "validFunction");
+        this.transformIfNotValid = Objects.requireNonNull(transformIfNotValid, "notValidFunction");
     }
 
     @Override
