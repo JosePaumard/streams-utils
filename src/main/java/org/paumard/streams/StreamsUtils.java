@@ -666,4 +666,23 @@ public class StreamsUtils {
                                 )
         );
     }
+
+    public static <T> Stream<Map.Entry<T, T>> crossProductOrdered(Stream<T> stream, Comparator<T> comparator) {
+        Objects.requireNonNull(stream);
+        Objects.requireNonNull(comparator);
+
+        CrossProductOrderedSpliterator<T> spliterator =
+                new CrossProductOrderedSpliterator<>(stream.spliterator(), comparator);
+
+        return StreamSupport.stream(spliterator, false);
+    }
+
+    public static <T extends Comparable<? super T>> Stream<Map.Entry<T, T>> crossProductNaturallyOrdered(Stream<T> stream) {
+        Objects.requireNonNull(stream);
+
+        CrossProductOrderedSpliterator<T> spliterator =
+                new CrossProductOrderedSpliterator<>(stream.spliterator(), Comparator.naturalOrder());
+
+        return StreamSupport.stream(spliterator, false);
+    }
 }
