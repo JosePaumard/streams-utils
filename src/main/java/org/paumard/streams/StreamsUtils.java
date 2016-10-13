@@ -273,6 +273,8 @@ public class StreamsUtils {
     public static <E1, E2, R> Stream<R> zip(Stream<E1> stream1, Stream<E2> stream2, BiFunction<? super E1, ? super E2, ? extends R> zipper) {
         Objects.requireNonNull(stream1);
         Objects.requireNonNull(stream2);
+        Objects.requireNonNull(zipper);
+
         ZippingSpliterator.Builder<E1, E2, R> builder = new ZippingSpliterator.Builder<>();
         ZippingSpliterator<E1, E2, R> spliterator =
             builder.with(stream1.spliterator())
@@ -303,6 +305,10 @@ public class StreamsUtils {
     public static <E, R> Stream<R> validate(Stream<E> stream, Predicate<? super E> validator,
                                             Function<? super E, ? extends R> transformingIfValid, Function<? super E, ? extends R> transformingIfNotValid) {
         Objects.requireNonNull(stream);
+        Objects.requireNonNull(validator);
+        Objects.requireNonNull(transformingIfValid);
+        Objects.requireNonNull(transformingIfNotValid);
+
         ValidatingSpliterator.Builder<E, R> builder = new ValidatingSpliterator.Builder<>();
         ValidatingSpliterator<E, R> spliterator = builder.with(stream.spliterator())
                 .validatedBy(validator)
@@ -344,6 +350,8 @@ public class StreamsUtils {
      */
     public static <E> Stream<E> interrupt(Stream<E> stream, Predicate<? super E> interruptor) {
         Objects.requireNonNull(stream);
+        Objects.requireNonNull(interruptor);
+
         InterruptingSpliterator<E> spliterator = InterruptingSpliterator.of(stream.spliterator(), interruptor);
         return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
     }
@@ -361,6 +369,8 @@ public class StreamsUtils {
      */
     public static <E> Stream<E> gate(Stream<E> stream, Predicate<? super E> validator) {
         Objects.requireNonNull(stream);
+        Objects.requireNonNull(validator);
+
         GatingSpliterator<E> spliterator = GatingSpliterator.of(stream.spliterator(), validator);
         return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
     }
@@ -556,6 +566,8 @@ public class StreamsUtils {
      * @return a stream in which each value is the collection of the provided stream
      */
     public static Stream<IntSummaryStatistics> shiftingWindowSummarizingInt(IntStream intStream, int rollingFactor) {
+        Objects.requireNonNull(intStream);
+
         RollingOfIntSpliterator ofIntSpliterator = RollingOfIntSpliterator.of(intStream.spliterator(), rollingFactor);
 
         return StreamSupport.stream(ofIntSpliterator, intStream.isParallel())
@@ -605,6 +617,8 @@ public class StreamsUtils {
      * @return a stream in which each value is the collection of the provided stream
      */
     public static Stream<LongSummaryStatistics> shiftingWindowSummarizingLong(LongStream longStream, int rollingFactor) {
+        Objects.requireNonNull(longStream);
+
         RollingOfLongSpliterator ofLongSpliterator = RollingOfLongSpliterator.of(longStream.spliterator(), rollingFactor);
 
         return StreamSupport.stream(ofLongSpliterator, longStream.isParallel())
@@ -654,6 +668,8 @@ public class StreamsUtils {
      * @return a stream in which each value is the collection of the provided stream
      */
     public static Stream<DoubleSummaryStatistics> shiftingWindowSummarizingLong(DoubleStream doubleStream, int rollingFactor) {
+        Objects.requireNonNull(doubleStream);
+
         RollingOfDoubleSpliterator ofDoubleSpliterator = RollingOfDoubleSpliterator.of(doubleStream.spliterator(), rollingFactor);
 
         return StreamSupport.stream(ofDoubleSpliterator, doubleStream.isParallel())
