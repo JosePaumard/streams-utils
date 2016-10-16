@@ -422,7 +422,7 @@ public class StreamsUtils {
      * <code>DoubleStream</code> of averages is returned.</p>
      * <p>The resulting stream has the same number of elements as the provided stream,
      * minus the size of the window width, to preserve consistency of each collection. </p>
-     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the collector is null.</p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the mapper is null.</p>
      *
      * @param stream        the processed stream
      * @param rollingFactor the size of the window to apply the collector on
@@ -444,7 +444,7 @@ public class StreamsUtils {
      * form the final double stream. No boxing / unboxing is conducted in the process.
      * <p>The resulting stream has the same number of elements as the provided stream,
      * minus the size of the window width, to preserve consistency of each collection. </p>
-     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the collector is null.</p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream is null.</p>
      *
      * @param intStream     the processed stream
      * @param rollingFactor the size of the window to apply the collector on
@@ -468,7 +468,7 @@ public class StreamsUtils {
      * <code>DoubleStream</code> of averages is returned.</p>
      * <p>The resulting stream has the same number of elements as the provided stream,
      * minus the size of the window width, to preserve consistency of each collection. </p>
-     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the collector is null.</p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the mapper is null.</p>
      *
      * @param stream        the processed stream
      * @param rollingFactor the size of the window to apply the collector on
@@ -490,7 +490,7 @@ public class StreamsUtils {
      * form the final double stream. No boxing / unboxing is conducted in the process.
      * <p>The resulting stream has the same number of elements as the provided stream,
      * minus the size of the window width, to preserve consistency of each collection. </p>
-     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the collector is null.</p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream is null.</p>
      *
      * @param longStream    the processed stream
      * @param rollingFactor the size of the window to apply the collector on
@@ -514,7 +514,7 @@ public class StreamsUtils {
      * <code>DoubleStream</code> of averages is returned.</p>
      * <p>The resulting stream has the same number of elements as the provided stream,
      * minus the size of the window width, to preserve consistency of each collection. </p>
-     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the collector is null.</p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the mapper is null.</p>
      *
      * @param stream        the processed stream
      * @param rollingFactor the size of the window to apply the collector on
@@ -536,7 +536,7 @@ public class StreamsUtils {
      * form the final double stream. No boxing / unboxing is conducted in the process.
      * <p>The resulting stream has the same number of elements as the provided stream,
      * minus the size of the window width, to preserve consistency of each collection. </p>
-     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the collector is null.</p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream is null.</p>
      *
      * @param doubleStream  the processed stream
      * @param rollingFactor the size of the window to apply the collector on
@@ -560,7 +560,7 @@ public class StreamsUtils {
      * and a <code>Stream&lt;IntSummaryStatistics&gt;</code> is returned.</p>
      * <p>The resulting stream has the same number of elements as the provided stream,
      * minus the size of the window width, to preserve consistency of each collection. </p>
-     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the collector is null.</p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the mapper is null.</p>
      *
      * @param stream        the processed stream
      * @param rollingFactor the size of the window to apply the collector on
@@ -582,7 +582,7 @@ public class StreamsUtils {
      * substream to form the final int summary stream. No boxing / unboxing is conducted in the process.
      * <p>The resulting stream has the same number of elements as the provided stream,
      * minus the size of the window width, to preserve consistency of each collection. </p>
-     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the collector is null.</p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream is null.</p>
      *
      * @param intStream     the processed stream
      * @param rollingFactor the size of the window to apply the collector on
@@ -613,7 +613,7 @@ public class StreamsUtils {
      * and a <code>Stream&lt;LongSummaryStatistics&gt;</code> is returned.</p>
      * <p>The resulting stream has the same number of elements as the provided stream,
      * minus the size of the window width, to preserve consistency of each collection. </p>
-     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the collector is null.</p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the mapper is null.</p>
      *
      * @param stream        the processed stream
      * @param rollingFactor the size of the window to apply the collector on
@@ -635,7 +635,7 @@ public class StreamsUtils {
      * substream to form the final long summary stream. No boxing / unboxing is conducted in the process.
      * <p>The resulting stream has the same number of elements as the provided stream,
      * minus the size of the window width, to preserve consistency of each collection. </p>
-     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the collector is null.</p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream is null.</p>
      *
      * @param longStream    the processed stream
      * @param rollingFactor the size of the window to apply the collector on
@@ -666,7 +666,7 @@ public class StreamsUtils {
      * and a <code>Stream&lt;DoubleSummaryStatistics&gt;</code> is returned.</p>
      * <p>The resulting stream has the same number of elements as the provided stream,
      * minus the size of the window width, to preserve consistency of each collection. </p>
-     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the collector is null.</p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream is null.</p>
      *
      * @param stream        the processed stream
      * @param rollingFactor the size of the window to apply the collector on
@@ -688,7 +688,7 @@ public class StreamsUtils {
      * substream to form the final double summary stream. No boxing / unboxing is conducted in the process.
      * <p>The resulting stream has the same number of elements as the provided stream,
      * minus the size of the window width, to preserve consistency of each collection. </p>
-     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the collector is null.</p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream is null.</p>
      *
      * @param doubleStream  the processed stream
      * @param rollingFactor the size of the window to apply the collector on
@@ -710,24 +710,59 @@ public class StreamsUtils {
                 );
     }
 
+    /**
+     * <p>Generates a stream of <code>Map.Entry<E, E></E,></code> elements with all the cartesian product of the
+     * elements of the provided stream with itself. </p>
+     * <p>For a stream <code>{a, b, c}</code>, a stream with the following elements is created:
+     * <code>{(a, a), (a, b), (a, c), (b, a), (b, b), (b, c), (c, a), (c, b), (c, c)}</code>, where
+     * <code>(a, b)</code> is the <code>Map.Entry</code> with key <code>a</code> and value<code>b</code>.</p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream is null.</p>
+     *
+     * @param stream  the processed stream
+     * @return a stream of the cartesian product
+     */
     public static <T> Stream<Map.Entry<T, T>> crossProduct(Stream<T> stream) {
         Objects.requireNonNull(stream);
 
         CrossProductOrderedSpliterator<T> spliterator =
                 CrossProductOrderedSpliterator.of(stream.spliterator());
 
-        return StreamSupport.stream(spliterator, false);
+        return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
     }
 
+    /**
+     * <p>Generates a stream of <code>Map.Entry<E, E></E,></code> elements with all the cartesian product of the
+     * elements of the provided stream with itself, without the entries in which the key and the
+     * value is equal.</p>
+     * <p>For a stream <code>{a, b, c}</code>, a stream with the following elements is created:
+     * <code>{(a, b), (a, c), (b, a), (b, c), (c, a), (c, b)}</code>, where
+     * <code>(a, b)</code> is the <code>Map.Entry</code> with key <code>a</code> and value<code>b</code>.</p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream is null.</p>
+     *
+     * @param stream  the processed stream
+     * @return a stream of the cartesian product
+     */
     public static <T> Stream<Map.Entry<T, T>> crossProductNoDoubles(Stream<T> stream) {
         Objects.requireNonNull(stream);
 
         CrossProductOrderedSpliterator<T> spliterator =
                 CrossProductOrderedSpliterator.noDoubles(stream.spliterator());
 
-        return StreamSupport.stream(spliterator, false);
+        return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
     }
 
+    /**
+     * <p>Generates a stream of <code>Map.Entry<E, E></E,></code> elements with all the cartesian product of the
+     * elements of the provided stream with itself, in which the entries are such that the key is
+     * strictly lesser than the value, using the provided comparator.</p>
+     * <p>For a stream <code>{a, b, c}</code>, a stream with the following elements is created:
+     * <code>{(a, b), (a, c), (b, c)}</code>, where
+     * <code>(a, b)</code> is the <code>Map.Entry</code> with key <code>a</code> and value<code>b</code>.</p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or comparator is null.</p>
+     *
+     * @param stream  the processed stream
+     * @return a stream of the cartesian product
+     */
     public static <T> Stream<Map.Entry<T, T>> crossProductOrdered(Stream<T> stream, Comparator<T> comparator) {
         Objects.requireNonNull(stream);
         Objects.requireNonNull(comparator);
@@ -735,15 +770,27 @@ public class StreamsUtils {
         CrossProductOrderedSpliterator<T> spliterator =
                 CrossProductOrderedSpliterator.ordered(stream.spliterator(), comparator);
 
-        return StreamSupport.stream(spliterator, false);
+        return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
     }
 
+    /**
+     * <p>Generates a stream of <code>Map.Entry<E, E></E,></code> elements with all the cartesian product of the
+     * elements of the provided stream with itself, in which the entries are such that the key is
+     * strictly lesser than the value, using the natural order of <code>E</code>.</p>
+     * <p>For a stream <code>{a, b, c}</code>, a stream with the following elements is created:
+     * <code>{(a, b), (a, c), (b, c)}</code>, where
+     * <code>(a, b)</code> is the <code>Map.Entry</code> with key <code>a</code> and value<code>b</code>.</p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or comparator is null.</p>
+     *
+     * @param stream  the processed stream
+     * @return a stream of the cartesian product
+     */
     public static <T extends Comparable<? super T>> Stream<Map.Entry<T, T>> crossProductNaturallyOrdered(Stream<T> stream) {
         Objects.requireNonNull(stream);
 
         CrossProductOrderedSpliterator<T> spliterator =
                 CrossProductOrderedSpliterator.ordered(stream.spliterator(), Comparator.naturalOrder());
 
-        return StreamSupport.stream(spliterator, false);
+        return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
     }
 }
