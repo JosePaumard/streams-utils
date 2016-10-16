@@ -27,7 +27,6 @@ import static java.util.function.Function.identity;
 /**
  * <p>A factory class used to create streams from other streams. There are currently seven ways of rearranging streams.
  * </p>
- * <p>
  * <p>Here is a first example of what can be done:</p>
  * <pre>{@code
  *     // Create an example Stream
@@ -36,7 +35,6 @@ import static java.util.function.Function.identity;
  *     List<List<String>> collect = groupingStream.map(st -> st.collect(Collectors.toList())).collect(Collectors.toList());
  *     // The collect list is [["a0", "a1"]["a2", "a3"]]
  * }</pre>
- * <p>
  * <p>See the documentation of each factory method for more information. </p>
  *
  * @author José Paumard
@@ -711,84 +709,89 @@ public class StreamsUtils {
     }
 
     /**
-     * <p>Generates a stream of <code>Map.Entry<E, E></E,></code> elements with all the cartesian product of the
+     * <p>Generates a stream of <code>Map.Entry&lt;E, E&gt;</code> elements with all the cartesian product of the
      * elements of the provided stream with itself. </p>
      * <p>For a stream <code>{a, b, c}</code>, a stream with the following elements is created:
      * <code>{(a, a), (a, b), (a, c), (b, a), (b, b), (b, c), (c, a), (c, b), (c, c)}</code>, where
-     * <code>(a, b)</code> is the <code>Map.Entry</code> with key <code>a</code> and value<code>b</code>.</p>
+     * <code>(a, b)</code> is the <code>Map.Entry</code> with key <code>a</code> and value <code>b</code>.</p>
      * <p>A <code>NullPointerException</code> will be thrown if the provided stream is null.</p>
      *
-     * @param stream  the processed stream
+     * @param stream the processed stream
+     * @param <E>    the type of the provided stream
      * @return a stream of the cartesian product
      */
-    public static <T> Stream<Map.Entry<T, T>> crossProduct(Stream<T> stream) {
+    public static <E> Stream<Map.Entry<E, E>> crossProduct(Stream<E> stream) {
         Objects.requireNonNull(stream);
 
-        CrossProductOrderedSpliterator<T> spliterator =
+        CrossProductOrderedSpliterator<E> spliterator =
                 CrossProductOrderedSpliterator.of(stream.spliterator());
 
         return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
     }
 
     /**
-     * <p>Generates a stream of <code>Map.Entry<E, E></E,></code> elements with all the cartesian product of the
+     * <p>Generates a stream of <code>Map.Entry&lt;E, E&gt;</code> elements with all the cartesian product of the
      * elements of the provided stream with itself, without the entries in which the key and the
      * value is equal.</p>
      * <p>For a stream <code>{a, b, c}</code>, a stream with the following elements is created:
      * <code>{(a, b), (a, c), (b, a), (b, c), (c, a), (c, b)}</code>, where
-     * <code>(a, b)</code> is the <code>Map.Entry</code> with key <code>a</code> and value<code>b</code>.</p>
+     * <code>(a, b)</code> is the <code>Map.Entry</code> with key <code>a</code> and value <code>b</code>.</p>
      * <p>A <code>NullPointerException</code> will be thrown if the provided stream is null.</p>
      *
-     * @param stream  the processed stream
+     * @param stream the processed stream
+     * @param <E>    the type of the provided stream
      * @return a stream of the cartesian product
      */
-    public static <T> Stream<Map.Entry<T, T>> crossProductNoDoubles(Stream<T> stream) {
+    public static <E> Stream<Map.Entry<E, E>> crossProductNoDoubles(Stream<E> stream) {
         Objects.requireNonNull(stream);
 
-        CrossProductOrderedSpliterator<T> spliterator =
+        CrossProductOrderedSpliterator<E> spliterator =
                 CrossProductOrderedSpliterator.noDoubles(stream.spliterator());
 
         return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
     }
 
     /**
-     * <p>Generates a stream of <code>Map.Entry<E, E></E,></code> elements with all the cartesian product of the
+     * <p>Generates a stream of <code>Map.Entry&lt;E, E&gt;</code> elements with all the cartesian product of the
      * elements of the provided stream with itself, in which the entries are such that the key is
      * strictly lesser than the value, using the provided comparator.</p>
      * <p>For a stream <code>{a, b, c}</code>, a stream with the following elements is created:
      * <code>{(a, b), (a, c), (b, c)}</code>, where
-     * <code>(a, b)</code> is the <code>Map.Entry</code> with key <code>a</code> and value<code>b</code>.</p>
+     * <code>(a, b)</code> is the <code>Map.Entry</code> with key <code>a</code> and value <code>b</code>.</p>
      * <p>A <code>NullPointerException</code> will be thrown if the provided stream or comparator is null.</p>
      *
-     * @param stream  the processed stream
+     * @param stream     the processed stream
+     * @param comparator the comparator or the elements of the provided stream
+     * @param <E>        the type of the provided stream
      * @return a stream of the cartesian product
      */
-    public static <T> Stream<Map.Entry<T, T>> crossProductOrdered(Stream<T> stream, Comparator<T> comparator) {
+    public static <E> Stream<Map.Entry<E, E>> crossProductOrdered(Stream<E> stream, Comparator<E> comparator) {
         Objects.requireNonNull(stream);
         Objects.requireNonNull(comparator);
 
-        CrossProductOrderedSpliterator<T> spliterator =
+        CrossProductOrderedSpliterator<E> spliterator =
                 CrossProductOrderedSpliterator.ordered(stream.spliterator(), comparator);
 
         return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
     }
 
     /**
-     * <p>Generates a stream of <code>Map.Entry<E, E></E,></code> elements with all the cartesian product of the
+     * <p>Generates a stream of <code>Map.Entry&lt;E, E&gt;</code> elements with all the cartesian product of the
      * elements of the provided stream with itself, in which the entries are such that the key is
      * strictly lesser than the value, using the natural order of <code>E</code>.</p>
      * <p>For a stream <code>{a, b, c}</code>, a stream with the following elements is created:
      * <code>{(a, b), (a, c), (b, c)}</code>, where
-     * <code>(a, b)</code> is the <code>Map.Entry</code> with key <code>a</code> and value<code>b</code>.</p>
+     * <code>(a, b)</code> is the <code>Map.Entry</code> with key <code>a</code> and value <code>b</code>.</p>
      * <p>A <code>NullPointerException</code> will be thrown if the provided stream or comparator is null.</p>
      *
-     * @param stream  the processed stream
+     * @param stream the processed stream
+     * @param <E>    the type of the provided stream
      * @return a stream of the cartesian product
      */
-    public static <T extends Comparable<? super T>> Stream<Map.Entry<T, T>> crossProductNaturallyOrdered(Stream<T> stream) {
+    public static <E extends Comparable<? super E>> Stream<Map.Entry<E, E>> crossProductNaturallyOrdered(Stream<E> stream) {
         Objects.requireNonNull(stream);
 
-        CrossProductOrderedSpliterator<T> spliterator =
+        CrossProductOrderedSpliterator<E> spliterator =
                 CrossProductOrderedSpliterator.ordered(stream.spliterator(), Comparator.naturalOrder());
 
         return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
