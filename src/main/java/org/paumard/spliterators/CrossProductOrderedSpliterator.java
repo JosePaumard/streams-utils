@@ -35,7 +35,7 @@ public class CrossProductOrderedSpliterator<E> implements Spliterator<Map.Entry<
         return new CrossProductOrderedSpliterator<>(
                 spliterator,
                 a -> (e1, e2) -> {
-                    int compare = comparator.compare(e1, e2);
+                    int compare = comparator.compare(e2, e1);
                     if (compare > 0) {
                         a.accept(new AbstractMap.SimpleImmutableEntry<>(e1, e2));
                     } else if (compare < 0) {
@@ -50,6 +50,7 @@ public class CrossProductOrderedSpliterator<E> implements Spliterator<Map.Entry<
                 a -> (e1, e2) -> {
                     if (!e1.equals(e2)) {
                         a.accept(new AbstractMap.SimpleImmutableEntry<>(e1, e2));
+                        a.accept(new AbstractMap.SimpleImmutableEntry<>(e2, e1));
                     }
                 });
     }
@@ -57,7 +58,14 @@ public class CrossProductOrderedSpliterator<E> implements Spliterator<Map.Entry<
     public static <E> CrossProductOrderedSpliterator<E> of(Spliterator<E> spliterator) {
         return new CrossProductOrderedSpliterator<>(
                 spliterator,
-                a -> (e1, e2) -> a.accept(new AbstractMap.SimpleImmutableEntry<>(e1, e2))
+                a -> (e1, e2) -> {
+                    if (e1.equals(e2)) {
+                        a.accept(new AbstractMap.SimpleImmutableEntry<>(e1, e2));
+                    } else {
+                        a.accept(new AbstractMap.SimpleImmutableEntry<>(e1, e2));
+                        a.accept(new AbstractMap.SimpleImmutableEntry<>(e2, e1));
+                    }
+                }
         );
     }
 
