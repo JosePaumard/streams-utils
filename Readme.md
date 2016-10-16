@@ -1,6 +1,7 @@
 # Streams Utils
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.paumard/streams-utils/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.paumard/streams-utils) [![Build Status](https://travis-ci.org/JosePaumard/streams-utils.png?branch=master)](https://travis-ci.org/JosePaumard/streams-utils) [![Coverage Status](https://coveralls.io/repos/JosePaumard/streams-utils/badge.svg?branch=master&service=github)](https://coveralls.io/github/JosePaumard/streams-utils?branch=master)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.paumard/streams-utils/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.paumard/streams-utils) [![Build Status](https://travis-ci.org/JosePaumard/streams-utils.png?branch=master)](https://travis-ci.org/JosePaumard/streams-utils) [![Coverage Status](https://coveralls.io/repos/JosePaumard/streams-utils/badge.svg?branch=master&service=github)](https://coveralls.io/github/JosePaumard/streams-utils?branch=master) [![Javadocs](http://javadoc.io/badge/org.paumard/streams-utils.svg)](http://javadoc.io/doc/org.paumard/streams-utils)
+
 
 In the Java 8 Stream API, a classical stream operation can only work on the current element of the given stream, but cannot take into account the previous elements.
 
