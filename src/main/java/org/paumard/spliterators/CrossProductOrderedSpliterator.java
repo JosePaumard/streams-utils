@@ -17,7 +17,9 @@
 package org.paumard.spliterators;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Created by José
@@ -26,31 +28,58 @@ public class CrossProductOrderedSpliterator<E> implements Spliterator<Map.Entry<
 
     private Spliterator<E> spliterator;
     private List<E> buffer = new ArrayList<>();
-    private Comparator<E> comparator;
 
-    public CrossProductOrderedSpliterator(Spliterator<E> spliterator, Comparator<E> comparator) {
+    private final Function<Consumer<? super Map.Entry<E, E>>, BiConsumer<E, E>> function;
+
+    public static <E> CrossProductOrderedSpliterator<E> ordered(Spliterator<E> spliterator, Comparator<E> comparator) {
+        return new CrossProductOrderedSpliterator<>(
+                spliterator,
+                a -> (e1, e2) -> {
+                    int compare = comparator.compare(e1, e2);
+                    if (compare > 0) {
+                        a.accept(new AbstractMap.SimpleImmutableEntry<>(e1, e2));
+                    } else if (compare < 0) {
+                        a.accept(new AbstractMap.SimpleImmutableEntry<>(e2, e1));
+                    }
+                });
+    }
+
+    public static <E> CrossProductOrderedSpliterator<E> noDoubles(Spliterator<E> spliterator) {
+        return new CrossProductOrderedSpliterator<>(
+                spliterator,
+                a -> (e1, e2) -> {
+                    if (!e1.equals(e2)) {
+                        a.accept(new AbstractMap.SimpleImmutableEntry<>(e1, e2));
+                    }
+                });
+    }
+
+    public static <E> CrossProductOrderedSpliterator<E> of(Spliterator<E> spliterator) {
+        return new CrossProductOrderedSpliterator<>(
+                spliterator,
+                a -> (e1, e2) -> a.accept(new AbstractMap.SimpleImmutableEntry<>(e1, e2))
+        );
+    }
+
+    private CrossProductOrderedSpliterator(
+            Spliterator<E> spliterator,
+            Function<Consumer<? super Map.Entry<E, E>>, BiConsumer<E, E>> function) {
+
         this.spliterator = spliterator;
-        this.comparator = comparator;
+        this.function = function;
     }
 
     @Override
     public boolean tryAdvance(Consumer<? super Map.Entry<E, E>> action) {
-        boolean hasMore = spliterator.tryAdvance(
-                e1 ->  {
+
+        BiConsumer<E, E> biConsumer = function.apply(action);
+
+        return spliterator.tryAdvance(
+                e1 -> {
                     buffer.add(e1);
-                    buffer.forEach(
-                            e2 -> {
-                                int compare = comparator.compare(e1, e2);
-                                if (compare > 0) {
-                                    action.accept(new AbstractMap.SimpleImmutableEntry<>(e1, e2));
-                                } else if (compare < 0) {
-                                    action.accept(new AbstractMap.SimpleImmutableEntry<>(e2, e1));
-                                }
-                            }
-                    );
+                    buffer.forEach(e2 -> biConsumer.accept(e1, e2));
                 }
         );
-        return hasMore;
     }
 
     @Override
@@ -61,8 +90,8 @@ public class CrossProductOrderedSpliterator<E> implements Spliterator<Map.Entry<
     @Override
     public long estimateSize() {
         long estimateSize = this.spliterator.estimateSize();
-        return (estimateSize == Long.MAX_VALUE) || (estimateSize*estimateSize/2 < estimateSize) ?
-                Long.MAX_VALUE : estimateSize*estimateSize/2;
+        return (estimateSize == Long.MAX_VALUE) || (estimateSize * estimateSize / 2 < estimateSize) ?
+                Long.MAX_VALUE : estimateSize * estimateSize / 2;
     }
 
     @Override
