@@ -16,7 +16,7 @@ You can use this API directly with Maven, by adding the following dependency.
 <dependency>
     <groupId>org.paumard</groupId>
     <artifactId>streams-utils</artifactId>
-    <version>1.1.3</version>
+    <version>1.2</version>
 </dependency>
 ```
 
@@ -127,6 +127,21 @@ The implementation is built in such a way as no boxing / unboxing is done.
  
 This set of methods works the same as for the computation of averages. The difference is that a summary statistics is computed (for `int`, `long` or `double`)
 on each window. There are two versions of these methods: the first takes a `Stream<E>` and a mapper, the second directly a stream of primitive types. 
+
+## Cross product operations
+
+Three cross product operations have been provided. They all take a `Stream<E>` and return a `Stream<Map.Entry<E, E>>`. The
+ resulting stream is the result of the Cartesian product of the provided stream with itself. 
+
+This operation is available with three flavors. 
+
+Vanilla: `StreamsUtils.crossProduct(stream)`. For `{a, b, c}`, it returns `{(a, a), (a, b), (a, c), (b, a), (b, b), (b, c), (c, a), (c, b), (c, c)}` where `(a, b)` is a `Map.Entry` of key `a` and value `b`.
+ 
+With no doubles: `StreamsUtils.crossProductNoDoubles(stream)`. For `{a, b, c}`, it returns `{(a, b), (a, c), (b, a), (b, c), (c, a), (c, b)}`. No couples for wich `key.equals(value)` is true is produced. 
+  
+With no doubles and ordered couples: `StreamsUtils.crossProductOrdered(stream, comparator)`. For `{a, b, c}`, it returns `{(a, b), (a, c), (b, c)}`. In this stream, all the key / value pairs are such that `comparator.compare(a, b)` is lesser than 0. There is also a `StreamsUtils.crossProductNaturallyOrdered(stream)` that takes the `Comparator.naturalOrder()` comparator to compare `a` and `b`. 
+
+Do not try on a non-finite stream...
 
 ## Acknowledgements
 
