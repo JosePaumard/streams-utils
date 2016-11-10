@@ -367,6 +367,15 @@ public class StreamsUtils {
         return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
     }
 
+    public static <E> Stream<E> limitAtMost(Stream<E> stream, long limit) {
+        Objects.requireNonNull(stream);
+        if (limit < 0L)
+            throw new IllegalArgumentException("The limit should be greater than 0.");
+
+        LimitingAtMostSpliterator<E> spliterator = LimitingAtMostSpliterator.of(stream.spliterator(), limit);
+        return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
+    }
+
     /**
      * <p>Generates a stream that does not generate any element, until the validator becomes true for an element of
      * the provided stream. From this point, the returns stream is identical to the provided stream. </p>
