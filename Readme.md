@@ -81,18 +81,7 @@ The problem is that, once the `Object.class` has been met, this stream is null. 
 Stream<Class<?>> interruptedStreamOfClasses = StreamsUtils.interrupting(streamOfClasses, Objects::isNull);
 ```
 
-The returned stream in this case will generate elements up to `Object.class` and will stop.
-
-
-## Limiting with at most elements
-
-The limiting at most spliterator takes a limit as a parameter. The problem with the `stream.limit(n)` method is
-that it never returns in case the stream does not provide at least `n` elements. 
-
-This spliterator has been created to handle this case. It closes the stream on two conditions: the stream closes
-or `n` elements have been consumed. 
-
-It handles the case of empty streams or 0 limit as expected.  
+The returned stream in this case will generate elements up to `Object.class` and will stop. 
 
 
 ## Gating

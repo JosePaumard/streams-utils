@@ -348,35 +348,6 @@ public class StreamsUtils {
     }
 
     /**
-     * <p>Generates a stream identical to the provided stream until the interruptor predicate is false for one element.
-     * At that time, the returned stream stops. </p>
-     * <p>A <code>NullPointerException</code> will be thrown if the provided stream of the interruptor predicate is null.</p>
-     * <p>If you are using Java 9, then yo should use <code>Stream.takeWhile(Predicate)</code>. </p>
-     *
-     * @param stream      the input stream. Will throw a <code>NullPointerException</code> if <code>null</code>.
-     * @param interruptor the predicate applied to the elements of the input stream.
-     *                    Will throw a <code>NullPointerException</code> if <code>null</code>.
-     * @param <E>         the type of the stream and the returned stream.
-     * @return a stream that is a copy of the input stream, until the interruptor becomes false.
-     */
-    public static <E> Stream<E> interrupt(Stream<E> stream, Predicate<? super E> interruptor) {
-        Objects.requireNonNull(stream);
-        Objects.requireNonNull(interruptor);
-
-        InterruptingSpliterator<E> spliterator = InterruptingSpliterator.of(stream.spliterator(), interruptor);
-        return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
-    }
-
-    public static <E> Stream<E> limitAtMost(Stream<E> stream, long limit) {
-        Objects.requireNonNull(stream);
-        if (limit < 0L)
-            throw new IllegalArgumentException("The limit should be greater than 0.");
-
-        LimitingAtMostSpliterator<E> spliterator = LimitingAtMostSpliterator.of(stream.spliterator(), limit);
-        return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
-    }
-
-    /**
      * <p>Generates a stream that does not generate any element, until the validator becomes true for an element of
      * the provided stream. From this point, the returns stream is identical to the provided stream. </p>
      * <p>If you are using Java 9, then yo should use <code>Stream.dropWhile(Predicate)</code>. </p>
