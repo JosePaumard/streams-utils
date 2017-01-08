@@ -144,10 +144,12 @@ public class StreamsUtils {
      * <p>An <code>IllegalArgumentException</code> will also be thrown if the provided stream is not <code>ORDERED</code></p>
      * <p>The returned stream has the same characteristics as the provided stream, and is thus <code>ORDERED</code>.</p>
      *
-     * @param stream The stream to be grouped. Will throw a <code>NullPointerException</code> if <code>null</code>.
-     * @param open   The predicate used to check for an opening element.
-     * @param close  The predicate used to check for an closing element.
-     * @param <E>    The type of the elements of the provided stream.
+     * @param stream                 The stream to be grouped. Will throw a <code>NullPointerException</code> if <code>null</code>.
+     * @param open                   The predicate used to check for an opening element.
+     * @param openingElementIncluded if true : includes the opening element in each substream
+     * @param close                  The predicate used to check for an closing element.
+     * @param closingElementIncluded if true : includes the closing element in each substream
+     * @param <E>                    The type of the elements of the provided stream.
      * @return A grouped stream of streams.
      */
     public static <E> Stream<Stream<E>> group(
