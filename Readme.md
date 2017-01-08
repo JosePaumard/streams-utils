@@ -33,6 +33,10 @@ Takes a stream and repeats it forever, as long as this stream has a finite size.
 
 Takes a stream `[a, b, c, d]` and returns `[[a, b], [c, d]]`. The grouping factor is parametrized.
 
+## Grouping on gating
+
+Takes a stream `[X, a, b, Y, c, X, d, Y]` and returns `[[X, a, b, Y], [X, d, Y]]`. The grouping takes place when a certain predicate is met, both for the opening and the closing operation. This grouping operation is controlled by two provided predicates. The opening and closing elements can be added to the substreams or not.    
+
 ## Repeating
 
 Takes a stream `[a, b, c, d]` and returns `[a, a, b, b, c, c, d, d]`. The repeating factor is parametrized.
