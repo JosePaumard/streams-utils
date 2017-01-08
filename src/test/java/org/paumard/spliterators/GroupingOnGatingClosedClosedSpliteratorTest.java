@@ -57,8 +57,6 @@ public class GroupingOnGatingClosedClosedSpliteratorTest {
         Stream<Stream<String>> groupingStream = StreamsUtils.group(strings, open, false, close, false);
         List<List<String>> collect = groupingStream.map(st -> st.collect(Collectors.toList())).collect(Collectors.toList());
 
-        System.out.println("collect = " + collect);
-
         // When
         assertThat(collect.size()).isEqualTo(2);
         assertThat(collect.get(0)).isEqualTo(Arrays.asList("2", "3"));
