@@ -126,6 +126,21 @@ public class StreamsUtils {
         return group(stream, open, true, close, true);
     }
 
+    public static <E> Stream<Stream<E>> group(Stream<E> stream, Predicate<? super E> splitter, boolean included) {
+        Objects.requireNonNull(stream);
+        Objects.requireNonNull(splitter);
+
+        GroupingOnSplittingSpliterator<E> spliterator = GroupingOnSplittingSpliterator.of(stream.spliterator(), splitter, included);
+        return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
+    }
+
+    public static <E> Stream<Stream<E>> group(Stream<E> stream, Predicate<? super E> splitter) {
+        Objects.requireNonNull(stream);
+        Objects.requireNonNull(splitter);
+
+        return group(stream, splitter, true);
+    }
+
     /**
      * <p>Generates a stream by regrouping the elements of the provided stream and putting them in a substream.
      * This grouping operation scans the elements of the stream using the <code>open</code> predicate. If this
