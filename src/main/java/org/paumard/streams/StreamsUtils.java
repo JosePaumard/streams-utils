@@ -95,6 +95,92 @@ public class StreamsUtils {
     }
 
     /**
+     * <p>Generates a stream by regrouping the elements of the provided stream and putting them in a substream.
+     * This grouping operation scans the elements of the stream using the <code>open</code> predicate. If this
+     * predicate is true, then it begins to add the elements of the stream in a substream. It will continue to add
+     * them until an element that matches the <code>close</code> predicate is met. </p>
+     * <p>The basic group operation includes the opening and the closing elements in the substreams. You can also
+     * provide two booleans if you need to customize this behavior. </p>
+     * <p>Example:</p>
+     * <pre>{@code
+     *     Stream<String> stream = Stream.of("o", "a0", "a1", "a2", "c", "a3", "a4, "o", "a5", "c");
+     *     Stream<Stream<String>> groupingStream = StreamsUtils.group(stream, "o"::equals, "c"::equals);
+     *     List<List<String>> collect = groupingStream.map(st -> st.collect(Collectors.toList())).collect(Collectors.toList());
+     *     // The collect list is [["o", "a0", "a1", "a2", "c"]["o", "a5", "c"]]
+     * }</pre>
+     * <p>If the provided stream is empty, then the returned stream contains an empty stream.</p>
+     * <p>An <code>IllegalArgumentException</code> will also be thrown if the provided stream is not <code>ORDERED</code></p>
+     * <p>The returned stream has the same characteristics as the provided stream, and is thus <code>ORDERED</code>.</p>
+     *
+     * @param stream The stream to be grouped. Will throw a <code>NullPointerException</code> if <code>null</code>.
+     * @param open   The predicate used to check for an opening element.
+     * @param close  The predicate used to check for an closing element.
+     * @param <E>    The type of the elements of the provided stream.
+     * @return A grouped stream of streams.
+     */
+    public static <E> Stream<Stream<E>> group(Stream<E> stream, Predicate<? super E> open, Predicate<? super E> close) {
+        Objects.requireNonNull(stream);
+        Objects.requireNonNull(open);
+        Objects.requireNonNull(close);
+
+        return group(stream, open, true, close, true);
+    }
+
+    public static <E> Stream<Stream<E>> group(Stream<E> stream, Predicate<? super E> splitter, boolean included) {
+        Objects.requireNonNull(stream);
+        Objects.requireNonNull(splitter);
+
+        GroupingOnSplittingSpliterator<E> spliterator = GroupingOnSplittingSpliterator.of(stream.spliterator(), splitter, included);
+        return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
+    }
+
+    public static <E> Stream<Stream<E>> group(Stream<E> stream, Predicate<? super E> splitter) {
+        Objects.requireNonNull(stream);
+        Objects.requireNonNull(splitter);
+
+        return group(stream, splitter, true);
+    }
+
+    /**
+     * <p>Generates a stream by regrouping the elements of the provided stream and putting them in a substream.
+     * This grouping operation scans the elements of the stream using the <code>open</code> predicate. If this
+     * predicate is true, then it begins to add the elements of the stream in a substream. It will continue to add
+     * them until an element that matches the <code>close</code> predicate is met. </p>
+     * <p>Adding the opening and the closing elements is controlled by the two boolean parameters
+     * <code>openingElementIncluded</code> and <code>closingElementIncluded</code>.</p>
+     * <p>Example:</p>
+     * <pre>{@code
+     *     Stream<String> stream = Stream.of("o", "a0", "a1", "a2", "c", "a3", "a4, "o", "a5", "c");
+     *     Stream<Stream<String>> groupingStream = StreamsUtils.group(stream, "o"::equals, false, "c"::equals, false);
+     *     List<List<String>> collect = groupingStream.map(st -> st.collect(Collectors.toList())).collect(Collectors.toList());
+     *     // The collect list is [["a0", "a1", "a2"]["a5"]]
+     * }</pre>
+     * <p>If the provided stream is empty, then the returned stream contains an empty stream.</p>
+     * <p>An <code>IllegalArgumentException</code> will also be thrown if the provided stream is not <code>ORDERED</code></p>
+     * <p>The returned stream has the same characteristics as the provided stream, and is thus <code>ORDERED</code>.</p>
+     *
+     * @param stream                 The stream to be grouped. Will throw a <code>NullPointerException</code> if <code>null</code>.
+     * @param open                   The predicate used to check for an opening element.
+     * @param openingElementIncluded if true : includes the opening element in each substream
+     * @param close                  The predicate used to check for an closing element.
+     * @param closingElementIncluded if true : includes the closing element in each substream
+     * @param <E>                    The type of the elements of the provided stream.
+     * @return A grouped stream of streams.
+     */
+    public static <E> Stream<Stream<E>> group(
+            Stream<E> stream,
+            Predicate<? super E> open, boolean openingElementIncluded,
+            Predicate<? super E> close, boolean closingElementIncluded) {
+        Objects.requireNonNull(stream);
+        Objects.requireNonNull(open);
+        Objects.requireNonNull(close);
+
+        GroupingOnGatingSpliterator<E> spliterator = GroupingOnGatingSpliterator.of(stream.spliterator(), open, openingElementIncluded, close, closingElementIncluded);
+        return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
+    }
+
+
+    /**
      * <p>Generates a stream by repeating the elements of the provided stream. The number of times an element is
      * repeated is given by the repeating factor.
      * <p>Example:</p>
@@ -366,6 +452,7 @@ public class StreamsUtils {
         GatingSpliterator<E> spliterator = GatingSpliterator.of(stream.spliterator(), validator);
         return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
     }
+
 
     /**
      * <p>Generates a stream that is computed from a provided stream following two steps.</p>

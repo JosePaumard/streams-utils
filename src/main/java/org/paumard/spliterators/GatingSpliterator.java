@@ -33,7 +33,7 @@ public class GatingSpliterator<E> implements Spliterator<E> {
 
     private final Spliterator<E> spliterator;
     private final Predicate<? super E> gate;
-    private final AtomicBoolean hasMore = new AtomicBoolean(false);
+    private boolean hasMore = false;
 
     public static <E> GatingSpliterator<E> of(Spliterator<E> spliterator, Predicate<? super E> gate) {
         Objects.requireNonNull(spliterator);
@@ -51,10 +51,10 @@ public class GatingSpliterator<E> implements Spliterator<E> {
     public boolean tryAdvance(Consumer<? super E> action) {
 
         return spliterator.tryAdvance(e -> {
-            if (!hasMore.get() && gate.test(e)) {
-                hasMore.set(true);
+            if (!hasMore && gate.test(e)) {
+                hasMore = true;
             }
-            if (hasMore.get()) {
+            if (hasMore) {
                 action.accept(e);
             }
         });
@@ -68,7 +68,7 @@ public class GatingSpliterator<E> implements Spliterator<E> {
 
     @Override
     public long estimateSize() {
-        if (hasMore.get()) {
+        if (hasMore) {
             return this.spliterator.estimateSize();
         } else {
             return 0;

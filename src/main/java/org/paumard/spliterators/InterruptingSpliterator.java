@@ -33,7 +33,7 @@ public class InterruptingSpliterator<E> implements Spliterator<E> {
 
     private final Spliterator<E> spliterator;
     private final Predicate<? super E> interruptor;
-    private final AtomicBoolean hasMore = new AtomicBoolean(true);
+    private boolean hasMore = true;
 
     public static <E> InterruptingSpliterator<E> of(Spliterator<E> spliterator, Predicate<? super E> interruptor) {
         Objects.requireNonNull(spliterator);
@@ -50,12 +50,12 @@ public class InterruptingSpliterator<E> implements Spliterator<E> {
     @Override
     public boolean tryAdvance(Consumer<? super E> action) {
 
-        if (hasMore.get()) {
+        if (hasMore) {
             return spliterator.tryAdvance(e -> {
-                if (hasMore.get() && !interruptor.test(e)) {
+                if (hasMore && !interruptor.test(e)) {
                     action.accept(e);
                 } else {
-                    hasMore.set(false);
+                    hasMore = false;
                 }
             });
         } else {
