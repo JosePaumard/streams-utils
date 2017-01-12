@@ -111,6 +111,7 @@ public class StreamsUtils {
      * <p>If the provided stream is empty, then the returned stream contains an empty stream.</p>
      * <p>An <code>IllegalArgumentException</code> will also be thrown if the provided stream is not <code>ORDERED</code></p>
      * <p>The returned stream has the same characteristics as the provided stream, and is thus <code>ORDERED</code>.</p>
+     * <p>A {@code {@link NullPointerException}} is thrown if the stream to be grouped or one of the predicate is null. </p>
      *
      * @param stream The stream to be grouped. Will throw a <code>NullPointerException</code> if <code>null</code>.
      * @param open   The predicate used to check for an opening element.
@@ -126,6 +127,15 @@ public class StreamsUtils {
         return group(stream, open, true, close, true);
     }
 
+    /**
+     * <p>A {@code {@link NullPointerException}} is thrown if the stream to be grouped or the splitter is null. </p>
+     *
+     * @param stream   The stream to be grouped. Will throw a <code>NullPointerException</code> if <code>null</code>.
+     * @param splitter The predicate used to check for an splitting element.
+     * @param included if true: includes the splitting element at the beginning of each substream
+     * @param <E>      The type of the elements of the provided stream.
+     * @return
+     */
     public static <E> Stream<Stream<E>> group(Stream<E> stream, Predicate<? super E> splitter, boolean included) {
         Objects.requireNonNull(stream);
         Objects.requireNonNull(splitter);
@@ -134,6 +144,14 @@ public class StreamsUtils {
         return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
     }
 
+    /**
+     * <p>A {@code {@link NullPointerException}} is thrown if the stream to be grouped or the splitter is null. </p>
+     *
+     * @param stream   The stream to be grouped. Will throw a <code>NullPointerException</code> if <code>null</code>.
+     * @param splitter The predicate used to check for an splitting element.
+     * @param <E>      The type of the elements of the provided stream.
+     * @return
+     */
     public static <E> Stream<Stream<E>> group(Stream<E> stream, Predicate<? super E> splitter) {
         Objects.requireNonNull(stream);
         Objects.requireNonNull(splitter);
@@ -158,6 +176,7 @@ public class StreamsUtils {
      * <p>If the provided stream is empty, then the returned stream contains an empty stream.</p>
      * <p>An <code>IllegalArgumentException</code> will also be thrown if the provided stream is not <code>ORDERED</code></p>
      * <p>The returned stream has the same characteristics as the provided stream, and is thus <code>ORDERED</code>.</p>
+     * <p>A {@code {@link NullPointerException}} is thrown if the stream to be grouped or one of the predicate is null. </p>
      *
      * @param stream                 The stream to be grouped. Will throw a <code>NullPointerException</code> if <code>null</code>.
      * @param open                   The predicate used to check for an opening element.
