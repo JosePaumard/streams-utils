@@ -889,7 +889,7 @@ public class StreamsUtils {
      * <p>For a stream <code>{a, b, c}</code>, a stream with the following elements is created:
      * <code>{(a, b), (a, c), (b, c)}</code>, where
      * <code>(a, b)</code> is the <code>Map.Entry</code> with key <code>a</code> and value <code>b</code>.</p>
-     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or comparator is null.</p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream is null.</p>
      *
      * @param stream the processed stream
      * @param <E>    the type of the provided stream
@@ -904,6 +904,16 @@ public class StreamsUtils {
         return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
     }
 
+    /**
+     * <p>Generates a stream only composed of the greatest elements of the provided stream, compared using the provided
+     * comparator. </p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the comparator is null. </p>
+     *
+     * @param stream the processed stream
+     * @param comparator the comparator used to compare the elements of the stream
+     * @param <E> the type of the provided stream
+     * @return a filtered stream
+     */
     public static <E> Stream<E> filteringAllMax(Stream<E> stream, Comparator<? super E> comparator) {
 
         Objects.requireNonNull(stream);
@@ -913,6 +923,15 @@ public class StreamsUtils {
         return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
     }
 
+    /**
+     * <p>Generates a stream only composed of the greatest elements of the provided stream, compared using their
+     * natural order. </p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream is null. </p>
+     *
+     * @param stream the processed stream
+     * @param <E> the type of the provided stream
+     * @return a filtered stream
+     */
     public static <E extends Comparable<? super E>> Stream<E> filteringAllMax(Stream<E> stream) {
 
         Objects.requireNonNull(stream);

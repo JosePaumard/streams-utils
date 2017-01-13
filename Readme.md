@@ -148,6 +148,20 @@ With no doubles and ordered couples: `StreamsUtils.crossProductOrdered(stream, c
 
 Do not try on a non-finite stream...
 
+## Grouping on splitting
+
+This operator comes in two flavors. It builds a stream of streams using two predicates. 
+
+The first one takes two predicates. If the first predicate matched a given element, then a gate is opened, and the elements of the input stream are accumulated in a first stream. Then the second predicate is used. If it matches a subsequent element, then the gate is closed and the substream is returned. The process then starts again until the elements of the input stream are exhausted. It is possible to choose whether to add the opening and closing elements to the substreams or not. 
+
+The second one takes only one predicate, that is used both for opening and closing. 
+
+## Filtering all maxes
+
+This operator returns a filtered stream with only the greatest elements in it. It comes in two flavor: the first one uses the natural order comparator, and works with streams of comparable elements. The second one takes a comparator as a parameter. 
+
+For the following stream: `"1", "2", "4", "1", "2", "3", "3", "4"` the filtered stream is `"4", "4"`. 
+
 ## Acknowledgements
 
 Many thanks to Rémi Forax for his valuable advice during the development of this API. 
