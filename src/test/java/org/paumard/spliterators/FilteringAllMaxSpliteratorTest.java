@@ -50,7 +50,7 @@ public class FilteringAllMaxSpliteratorTest {
     }
 
     @Test
-    public void should_filter_a_non_empty_stream_into_a_the_right_stream() {
+    public void should_filter_a_non_empty_stream_into_a_the_right_stream_when_several_maxes() {
         // Given
         Stream<String> strings = Stream.of("1", "1", "2", "2", "3", "3");
         Comparator<String> comparator = Comparator.naturalOrder();
@@ -60,6 +60,19 @@ public class FilteringAllMaxSpliteratorTest {
 
         // Then
         assertThat(list).asList().containsExactly("3", "3");
+    }
+
+    @Test
+    public void should_filter_a_non_empty_stream_into_a_the_right_stream_when_one_max() {
+        // Given
+        Stream<String> strings = Stream.of("4", "1", "1", "2", "2", "3", "3");
+        Comparator<String> comparator = Comparator.naturalOrder();
+
+        // When
+        List<String> list = StreamsUtils.filteringAllMax(strings, comparator).collect(toList());
+
+        // Then
+        assertThat(list).asList().containsExactly("4");
     }
 
     @Test(expectedExceptions = NullPointerException.class)

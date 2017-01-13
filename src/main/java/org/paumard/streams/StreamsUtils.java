@@ -912,4 +912,11 @@ public class StreamsUtils {
         FilteringAllMaxSpliterator<E> spliterator = FilteringAllMaxSpliterator.of(stream.spliterator(), comparator);
         return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
     }
+
+    public static <E extends Comparable<? super E>> Stream<E> filteringAllMax(Stream<E> stream) {
+
+        Objects.requireNonNull(stream);
+
+        return filteringAllMax(stream, Comparator.naturalOrder());
+    }
 }

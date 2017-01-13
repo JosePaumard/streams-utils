@@ -59,13 +59,15 @@ public class FilteringAllMaxSpliterator<E> implements Spliterator<E> {
         boolean hasMore = true;
         while (hasMore) {
             hasMore = spliterator.tryAdvance(e -> {
-
-                if (comparator.compare(currentMax, e) == 0) {
+                if (currentMax == null) {
+                    currentMax = e;
                     builder.add(e);
-                }
-                if (comparator.compare(currentMax, e) < 0) {
+                } else if (comparator.compare(currentMax, e) == 0) {
+                    builder.add(e);
+                } else if (comparator.compare(currentMax, e) < 0) {
                     currentMax = e;
                     builder = Stream.builder();
+                    builder.add(e);
                 }
             });
         }
