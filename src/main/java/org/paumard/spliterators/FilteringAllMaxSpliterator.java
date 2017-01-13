@@ -29,7 +29,7 @@ import java.util.stream.Stream;
  *
  * @author José
  */
-public class GroupingAllMaxSpliterator<E> implements Spliterator<E> {
+public class FilteringAllMaxSpliterator<E> implements Spliterator<E> {
 
     private final Spliterator<E> spliterator;
     private final Comparator<? super E> comparator;
@@ -37,16 +37,16 @@ public class GroupingAllMaxSpliterator<E> implements Spliterator<E> {
     private Stream.Builder<E> builder = Stream.builder();
     private E currentMax;
 
-    public static <E> GroupingAllMaxSpliterator<E> of(
+    public static <E> FilteringAllMaxSpliterator<E> of(
             Spliterator<E> spliterator,
             Comparator<? super E> comparator) {
         Objects.requireNonNull(spliterator);
         Objects.requireNonNull(comparator);
 
-        return new GroupingAllMaxSpliterator<>(spliterator, comparator);
+        return new FilteringAllMaxSpliterator<>(spliterator, comparator);
     }
 
-    private GroupingAllMaxSpliterator(
+    private FilteringAllMaxSpliterator(
             Spliterator<E> spliterator,
             Comparator<? super E> comparator) {
         this.spliterator = spliterator;
@@ -77,7 +77,7 @@ public class GroupingAllMaxSpliterator<E> implements Spliterator<E> {
     @Override
     public Spliterator<E> trySplit() {
         Spliterator<E> splitSpliterator = this.spliterator.trySplit();
-        return splitSpliterator == null ? null : new GroupingAllMaxSpliterator<>(splitSpliterator, comparator);
+        return splitSpliterator == null ? null : new FilteringAllMaxSpliterator<>(splitSpliterator, comparator);
     }
 
     @Override

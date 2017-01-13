@@ -20,6 +20,7 @@ import org.paumard.spliterators.*;
 
 import java.util.*;
 import java.util.function.*;
+import java.util.logging.Filter;
 import java.util.stream.*;
 
 import static java.util.function.Function.identity;
@@ -880,6 +881,15 @@ public class StreamsUtils {
         CrossProductOrderedSpliterator<E> spliterator =
                 CrossProductOrderedSpliterator.ordered(stream.spliterator(), Comparator.naturalOrder());
 
+        return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
+    }
+
+    public static <E> Stream<E> filteringAllMax(Stream<E> stream, Comparator<? super E> comparator) {
+
+        Objects.requireNonNull(stream);
+        Objects.requireNonNull(comparator);
+
+        FilteringAllMaxSpliterator<E> spliterator = FilteringAllMaxSpliterator.of(stream.spliterator(), comparator);
         return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
     }
 }
