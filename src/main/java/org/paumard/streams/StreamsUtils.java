@@ -20,7 +20,6 @@ import org.paumard.spliterators.*;
 
 import java.util.*;
 import java.util.function.*;
-import java.util.logging.Filter;
 import java.util.stream.*;
 
 import static java.util.function.Function.identity;
@@ -909,9 +908,9 @@ public class StreamsUtils {
      * comparator. </p>
      * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the comparator is null. </p>
      *
-     * @param stream the processed stream
+     * @param stream     the processed stream
      * @param comparator the comparator used to compare the elements of the stream
-     * @param <E> the type of the provided stream
+     * @param <E>        the type of the provided stream
      * @return a filtered stream
      */
     public static <E> Stream<E> filteringAllMax(Stream<E> stream, Comparator<? super E> comparator) {
@@ -929,7 +928,7 @@ public class StreamsUtils {
      * <p>A <code>NullPointerException</code> will be thrown if the provided stream is null. </p>
      *
      * @param stream the processed stream
-     * @param <E> the type of the provided stream
+     * @param <E>    the type of the provided stream
      * @return a filtered stream
      */
     public static <E extends Comparable<? super E>> Stream<E> filteringAllMax(Stream<E> stream) {
