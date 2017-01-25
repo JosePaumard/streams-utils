@@ -78,8 +78,7 @@ public class FilteringAllMaxSpliterator<E> implements Spliterator<E> {
 
     @Override
     public Spliterator<E> trySplit() {
-        Spliterator<E> splitSpliterator = this.spliterator.trySplit();
-        return splitSpliterator == null ? null : new FilteringAllMaxSpliterator<>(splitSpliterator, comparator);
+        return null;
     }
 
     @Override
