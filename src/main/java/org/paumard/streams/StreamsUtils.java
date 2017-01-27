@@ -937,4 +937,54 @@ public class StreamsUtils {
 
         return filteringAllMax(stream, Comparator.naturalOrder());
     }
+
+    /**
+     * <p>Generates a stream composed of the N greatest different values of the provided stream, compared using the
+     * provided comparator. If there are no duplicates in the provided stream, then the returned stream will have
+     * N values, assuming that the input stream has more than N values. All the duplicates are copied in the returned
+     * stream, so in this case the number of elements in the returned stream may be greater than N. </p>
+     * <p>The provided implementation uses and insertion buffer of size N to keep the N maxes, as well as a hash
+     * map to keep the duplicates. This implementation becomes less and less efficient as N grows. </p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the comparator is null. </p>
+     * <p>An <code>IllegalArgumentException</code> is thrown if N is lesser than 1. </p>
+     *
+     * @param stream        the processed stream
+     * @param numberOfMaxes the number of different max values that should be returned. Note that the total number of
+     *                      values returned may be larger if there are duplicates in the stream
+     * @param comparator    the comparator used to compare the elements of the stream
+     * @param <E>           the type of the provided stream
+     * @return the filtered stream
+     */
+    public static <E> Stream<E> filteringMaxesKeys(Stream<E> stream, int numberOfMaxes, Comparator<? super E> comparator) {
+
+        Objects.requireNonNull(stream);
+        Objects.requireNonNull(comparator);
+
+        FilteringMaxesKeySpliterator<E> spliterator = FilteringMaxesKeySpliterator.of(stream.spliterator(), numberOfMaxes, comparator);
+        return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
+    }
+
+    /**
+     * <p>Generates a stream composed of the N greatest different values of the provided stream, compared using the
+     * natural order. If there are no duplicates in the provided stream, then the returned stream will have
+     * N values, assuming that the input stream has more than N values. All the duplicates are copied in the returned
+     * stream, so in this case the number of elements in the returned stream may be greater than N. </p>
+     * <p>The provided implementation uses and insertion buffer of size N to keep the N maxes, as well as a hash
+     * map to keep the duplicates. This implementation becomes less and less efficient as N grows. </p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream. </p>
+     * <p>An <code>IllegalArgumentException</code> is thrown if N is lesser than 1. </p>
+     *
+     * @param stream        the processed stream
+     * @param numberOfMaxes the number of different max values that should be returned. Note that the total number of
+     *                      values returned may be larger if there are duplicates in the stream
+     * @param <E>           the type of the provided stream
+     * @return the filtered stream
+     */
+    public static <E extends Comparable<? super E>> Stream<E> filteringMaxesKeys(Stream<E> stream, int numberOfMaxes) {
+
+        Objects.requireNonNull(stream);
+
+        FilteringMaxesKeySpliterator<E> spliterator = FilteringMaxesKeySpliterator.of(stream.spliterator(), numberOfMaxes, Comparator.naturalOrder());
+        return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
+    }
 }
