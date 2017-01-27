@@ -29,7 +29,7 @@ import static org.assertj.core.api.StrictAssertions.assertThat;
 /**
  * Created by José
  */
-public class FilteringMaxesKeySpliteratorTest {
+public class FilteringMaxValuesSpliteratorTest {
 
     @Test
     public void should_filter_an_empty_stream_into_an_empty_stream() {
@@ -38,7 +38,7 @@ public class FilteringMaxesKeySpliteratorTest {
         Comparator<String> comparator = Comparator.naturalOrder();
 
         // When
-        long n = StreamsUtils.filteringMaxesKeys(strings, 2, comparator).count();
+        long n = StreamsUtils.filteringMaxValues(strings, 2, comparator).count();
         // Then
         assertThat(n).isEqualTo(0L);
     }
@@ -50,7 +50,7 @@ public class FilteringMaxesKeySpliteratorTest {
         Comparator<String> comparator = Comparator.naturalOrder();
 
         // When
-        List<String> list = StreamsUtils.filteringMaxesKeys(strings, 2, comparator).collect(toList());
+        List<String> list = StreamsUtils.filteringMaxValues(strings, 2, comparator).collect(toList());
 
         // Then
         assertThat(list).asList().containsExactly("3", "4");
@@ -63,7 +63,7 @@ public class FilteringMaxesKeySpliteratorTest {
         Comparator<String> comparator = Comparator.naturalOrder();
 
         // When
-        List<String> list = StreamsUtils.filteringMaxesKeys(strings, 2, comparator).collect(toList());
+        List<String> list = StreamsUtils.filteringMaxValues(strings, 2, comparator).collect(toList());
 
         // Then
         assertThat(list).asList().containsExactly("3", "4");
@@ -76,7 +76,7 @@ public class FilteringMaxesKeySpliteratorTest {
         Comparator<String> comparator = Comparator.naturalOrder();
 
         // When
-        List<String> list = StreamsUtils.filteringMaxesKeys(strings, 10, comparator).collect(toList());
+        List<String> list = StreamsUtils.filteringMaxValues(strings, 10, comparator).collect(toList());
 
         // Then
         assertThat(list).asList().containsExactly("1", "2", "3");
@@ -89,7 +89,7 @@ public class FilteringMaxesKeySpliteratorTest {
         Comparator<String> comparator = Comparator.naturalOrder();
 
         // When
-        List<String> list = StreamsUtils.filteringMaxesKeys(strings, 10, comparator).collect(toList());
+        List<String> list = StreamsUtils.filteringMaxValues(strings, 10, comparator).collect(toList());
 
         // Then
         assertThat(list).asList().containsExactly("1", "2", "3");
@@ -102,7 +102,7 @@ public class FilteringMaxesKeySpliteratorTest {
         Comparator<String> comparator = Comparator.naturalOrder();
 
         // When
-        List<String> list = StreamsUtils.filteringMaxesKeys(strings, 2, comparator).collect(toList());
+        List<String> list = StreamsUtils.filteringMaxValues(strings, 2, comparator).collect(toList());
 
         // Then
         assertThat(list).asList().containsExactly("4", "4", "4");
@@ -115,7 +115,7 @@ public class FilteringMaxesKeySpliteratorTest {
         Comparator<String> comparator = Comparator.naturalOrder();
 
         // When
-        List<String> list = StreamsUtils.filteringMaxesKeys(strings, 4, comparator).collect(toList());
+        List<String> list = StreamsUtils.filteringMaxValues(strings, 4, comparator).collect(toList());
 
         // Then
         assertThat(list).asList().containsExactly("3", "3", "4", "4", "4");
@@ -128,7 +128,7 @@ public class FilteringMaxesKeySpliteratorTest {
         Comparator<String> comparator = Comparator.naturalOrder();
 
         // When
-        List<String> list = StreamsUtils.filteringMaxesKeys(strings, 7, comparator).collect(toList());
+        List<String> list = StreamsUtils.filteringMaxValues(strings, 7, comparator).collect(toList());
 
         // Then
         assertThat(list).asList().containsExactly("2", "2", "2", "3", "3", "4", "4", "4");
@@ -141,7 +141,7 @@ public class FilteringMaxesKeySpliteratorTest {
         Comparator<String> comparator = Comparator.naturalOrder();
 
         // When
-        List<String> list = StreamsUtils.filteringMaxesKeys(strings, 2, comparator).collect(toList());
+        List<String> list = StreamsUtils.filteringMaxValues(strings, 2, comparator).collect(toList());
 
         // Then
         assertThat(list).asList().containsExactly("4", "4", "4");
@@ -154,7 +154,7 @@ public class FilteringMaxesKeySpliteratorTest {
         Comparator<String> comparator = Comparator.naturalOrder();
 
         // When
-        List<String> list = StreamsUtils.filteringMaxesKeys(null, 10, comparator).collect(toList());
+        List<String> list = StreamsUtils.filteringMaxValues(null, 10, comparator).collect(toList());
     }
 
     @Test(expectedExceptions = NullPointerException.class)
@@ -164,6 +164,6 @@ public class FilteringMaxesKeySpliteratorTest {
         Stream<String> strings = Stream.of("1", "1", "2", "2", "3", "3");
 
         // When
-        List<String> list = StreamsUtils.filteringMaxesKeys(strings, 10, null).collect(toList());
+        List<String> list = StreamsUtils.filteringMaxValues(strings, 10, null).collect(toList());
     }
 }

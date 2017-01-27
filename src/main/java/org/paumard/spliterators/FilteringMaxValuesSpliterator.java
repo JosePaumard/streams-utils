@@ -28,13 +28,13 @@ import java.util.stream.Stream;
  *
  * @author José
  */
-public class FilteringMaxesKeySpliterator<E> implements Spliterator<E> {
+public class FilteringMaxValuesSpliterator<E> implements Spliterator<E> {
 
     private final Spliterator<E> spliterator;
     private final Comparator<? super E> comparator;
     private final int numberOfMaxes;
 
-    public static <E> FilteringMaxesKeySpliterator<E> of(
+    public static <E> FilteringMaxValuesSpliterator<E> of(
             Spliterator<E> spliterator,
             int numberOfMaxes,
             Comparator<? super E> comparator) {
@@ -44,10 +44,10 @@ public class FilteringMaxesKeySpliterator<E> implements Spliterator<E> {
             throw new IllegalArgumentException("numberOfMaxes should not be less than 2?");
         }
 
-        return new FilteringMaxesKeySpliterator<>(spliterator, numberOfMaxes, comparator);
+        return new FilteringMaxValuesSpliterator<>(spliterator, numberOfMaxes, comparator);
     }
 
-    private FilteringMaxesKeySpliterator(
+    private FilteringMaxValuesSpliterator(
             Spliterator<E> spliterator,
             int numberOfMaxes,
             Comparator<? super E> comparator) {

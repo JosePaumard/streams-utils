@@ -955,12 +955,12 @@ public class StreamsUtils {
      * @param <E>           the type of the provided stream
      * @return the filtered stream
      */
-    public static <E> Stream<E> filteringMaxesKeys(Stream<E> stream, int numberOfMaxes, Comparator<? super E> comparator) {
+    public static <E> Stream<E> filteringMaxValues(Stream<E> stream, int numberOfMaxes, Comparator<? super E> comparator) {
 
         Objects.requireNonNull(stream);
         Objects.requireNonNull(comparator);
 
-        FilteringMaxesKeySpliterator<E> spliterator = FilteringMaxesKeySpliterator.of(stream.spliterator(), numberOfMaxes, comparator);
+        FilteringMaxValuesSpliterator<E> spliterator = FilteringMaxValuesSpliterator.of(stream.spliterator(), numberOfMaxes, comparator);
         return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
     }
 
@@ -980,11 +980,11 @@ public class StreamsUtils {
      * @param <E>           the type of the provided stream
      * @return the filtered stream
      */
-    public static <E extends Comparable<? super E>> Stream<E> filteringMaxesKeys(Stream<E> stream, int numberOfMaxes) {
+    public static <E extends Comparable<? super E>> Stream<E> filteringMaxValues(Stream<E> stream, int numberOfMaxes) {
 
         Objects.requireNonNull(stream);
 
-        FilteringMaxesKeySpliterator<E> spliterator = FilteringMaxesKeySpliterator.of(stream.spliterator(), numberOfMaxes, Comparator.naturalOrder());
+        FilteringMaxValuesSpliterator<E> spliterator = FilteringMaxValuesSpliterator.of(stream.spliterator(), numberOfMaxes, Comparator.naturalOrder());
         return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
     }
 }
