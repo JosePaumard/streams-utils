@@ -111,6 +111,7 @@ public class StreamsUtils {
      * <p>If the provided stream is empty, then the returned stream contains an empty stream.</p>
      * <p>An <code>IllegalArgumentException</code> will also be thrown if the provided stream is not <code>ORDERED</code></p>
      * <p>The returned stream has the same characteristics as the provided stream, and is thus <code>ORDERED</code>.</p>
+     * <p>A {@code {@link NullPointerException}} is thrown if the stream to be grouped or one of the predicate is null. </p>
      *
      * @param stream The stream to be grouped. Will throw a <code>NullPointerException</code> if <code>null</code>.
      * @param open   The predicate used to check for an opening element.
@@ -124,6 +125,53 @@ public class StreamsUtils {
         Objects.requireNonNull(close);
 
         return group(stream, open, true, close, true);
+    }
+
+    /**
+     * <p>Generates a stream by regrouping the elements of the provided stream and putting them in a substream.
+     * This grouping operation scans the elements of the stream using the splitter predicate. When this predicate
+     * returns true, then the elements of the stream are accumulated in a subtream, until the splitter predicate
+     * is true again. In this case, a new substream is created, until the elements of the provided stream are
+     * exhausted. </p>
+     * <p>In the case where several consecutive splitting elements are met, no empty stream is generated.
+     * The splitting element is added only once to the next substream if needed. </p>
+     * <p>The boolean <code>included</code> controls whether the splitting element is added to the substreams or not.</p>
+     * <p>A {@code {@link NullPointerException}} is thrown if the stream to be grouped or the splitter is null. </p>
+     *
+     * @param stream   The stream to be grouped. Will throw a <code>NullPointerException</code> if <code>null</code>.
+     * @param splitter The predicate used to check for an splitting element.
+     * @param included if true: includes the splitting element at the beginning of each substream
+     * @param <E>      The type of the elements of the provided stream.
+     * @return A grouped stream of streams.
+     */
+    public static <E> Stream<Stream<E>> group(Stream<E> stream, Predicate<? super E> splitter, boolean included) {
+        Objects.requireNonNull(stream);
+        Objects.requireNonNull(splitter);
+
+        GroupingOnSplittingSpliterator<E> spliterator = GroupingOnSplittingSpliterator.of(stream.spliterator(), splitter, included);
+        return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
+    }
+
+    /**
+     * <p>Generates a stream by regrouping the elements of the provided stream and putting them in a substream.
+     * This grouping operation scans the elements of the stream using the splitter predicate. When this predicate
+     * returns true, then the elements of the stream are accumulated in a subtream, until the splitter predicate
+     * is true again. In this case, a new substream is created, until the elements of the provided stream are
+     * exhausted. </p>
+     * <p>In this case, the splitting element is not added to the substream.</p>
+     * <p>In the case where several consecutive splitting elements are met, no empty stream is generated.</p>
+     * <p>A {@code {@link NullPointerException}} is thrown if the stream to be grouped or the splitter is null. </p>
+     *
+     * @param stream   The stream to be grouped. Will throw a <code>NullPointerException</code> if <code>null</code>.
+     * @param splitter The predicate used to check for an splitting element.
+     * @param <E>      The type of the elements of the provided stream.
+     * @return A grouped stream of streams.
+     */
+    public static <E> Stream<Stream<E>> group(Stream<E> stream, Predicate<? super E> splitter) {
+        Objects.requireNonNull(stream);
+        Objects.requireNonNull(splitter);
+
+        return group(stream, splitter, true);
     }
 
     /**
@@ -143,6 +191,7 @@ public class StreamsUtils {
      * <p>If the provided stream is empty, then the returned stream contains an empty stream.</p>
      * <p>An <code>IllegalArgumentException</code> will also be thrown if the provided stream is not <code>ORDERED</code></p>
      * <p>The returned stream has the same characteristics as the provided stream, and is thus <code>ORDERED</code>.</p>
+     * <p>A {@code {@link NullPointerException}} is thrown if the stream to be grouped or one of the predicate is null. </p>
      *
      * @param stream                 The stream to be grouped. Will throw a <code>NullPointerException</code> if <code>null</code>.
      * @param open                   The predicate used to check for an opening element.
@@ -854,7 +903,7 @@ public class StreamsUtils {
      * <p>For a stream <code>{a, b, c}</code>, a stream with the following elements is created:
      * <code>{(a, b), (a, c), (b, c)}</code>, where
      * <code>(a, b)</code> is the <code>Map.Entry</code> with key <code>a</code> and value <code>b</code>.</p>
-     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or comparator is null.</p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream is null.</p>
      *
      * @param stream the processed stream
      * @param <E>    the type of the provided stream
@@ -867,5 +916,141 @@ public class StreamsUtils {
                 CrossProductOrderedSpliterator.ordered(stream.spliterator(), Comparator.naturalOrder());
 
         return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
+    }
+
+    /**
+     * <p>Generates a stream only composed of the greatest elements of the provided stream, compared using the provided
+     * comparator. </p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the comparator is null. </p>
+     *
+     * @param stream     the processed stream
+     * @param comparator the comparator used to compare the elements of the stream
+     * @param <E>        the type of the provided stream
+     * @return a filtered stream
+     */
+    public static <E> Stream<E> filteringAllMax(Stream<E> stream, Comparator<? super E> comparator) {
+
+        Objects.requireNonNull(stream);
+        Objects.requireNonNull(comparator);
+
+        FilteringAllMaxSpliterator<E> spliterator = FilteringAllMaxSpliterator.of(stream.spliterator(), comparator);
+        return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
+    }
+
+    /**
+     * <p>Generates a stream only composed of the greatest elements of the provided stream, compared using their
+     * natural order. </p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream is null. </p>
+     *
+     * @param stream the processed stream
+     * @param <E>    the type of the provided stream
+     * @return a filtered stream
+     */
+    public static <E extends Comparable<? super E>> Stream<E> filteringAllMax(Stream<E> stream) {
+
+        Objects.requireNonNull(stream);
+
+        return filteringAllMax(stream, Comparator.naturalOrder());
+    }
+
+    /**
+     * <p>Generates a stream composed of the N greatest values of the provided stream, compared using the
+     * provided comparator. If there are no duplicates in the provided stream, then the returned stream will have
+     * N values, assuming that the input stream has more than N values. </p>
+     * <p>All the duplicates are copied in the returned stream, so in this case the number of elements in the
+     * returned stream may be greater than N. In this case, the number of different values is not guaranteed, and
+     * may be lesser than N.</p>
+     * <p>Since this operator extract maxes according to the provided comparator, the result is sorted from the
+     * greatest element to the smallest, thus in the decreasing order, according to the provided comparator. </p>
+     * <p>The provided implementation uses and insertion buffer of size N to keep the N maxes, as well as a hash
+     * map to keep the duplicates. This implementation becomes less and less efficient as N grows. </p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the comparator is null. </p>
+     * <p>An <code>IllegalArgumentException</code> is thrown if N is lesser than 1. </p>
+     *
+     * @param stream        the processed stream
+     * @param numberOfMaxes the number of different max values that should be returned. Note that the total number of
+     *                      values returned may be larger if there are duplicates in the stream
+     * @param comparator    the comparator used to compare the elements of the stream
+     * @param <E>           the type of the provided stream
+     * @return the filtered stream
+     */
+    public static <E> Stream<E> filteringMaxValues(Stream<E> stream, int numberOfMaxes, Comparator<? super E> comparator) {
+
+        Objects.requireNonNull(stream);
+        Objects.requireNonNull(comparator);
+
+        FilteringMaxValuesSpliterator<E> spliterator = FilteringMaxValuesSpliterator.of(stream.spliterator(), numberOfMaxes, comparator);
+        return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
+    }
+
+    /**
+     * <p>Generates a stream composed of the N greatest values of the provided stream, compared using the
+     * natural order. This method calls the <code>filteringMaxValues()</code> with the natural order comparator,
+     * please refer to this javadoc for details. . </p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream. </p>
+     * <p>An <code>IllegalArgumentException</code> is thrown if N is lesser than 1. </p>
+     *
+     * @param stream        the processed stream
+     * @param numberOfMaxes the number of different max values that should be returned. Note that the total number of
+     *                      values returned may be larger if there are duplicates in the stream
+     * @param <E>           the type of the provided stream
+     * @return the filtered stream
+     */
+    public static <E extends Comparable<? super E>> Stream<E> filteringMaxValues(Stream<E> stream, int numberOfMaxes) {
+
+        Objects.requireNonNull(stream);
+
+        return filteringMaxValues(stream, numberOfMaxes, Comparator.naturalOrder());
+    }
+
+
+    /**
+     * <p>Generates a stream composed of the N greatest different values of the provided stream, compared using the
+     * provided comparator. If there are no duplicates in the provided stream, then the returned stream will have
+     * N values, assuming that the input stream has more than N values. </p>
+     * <p>All the duplicates are removed in the returned stream, so in this case the number of elements in the
+     * returned stream may be lesser than N. In this case, the total number of values is not guaranteed, and
+     * may be lesser than N.</p>
+     * <p>Since this operator extract maxes according to the provided comparator, the result is sorted from the
+     * greatest element to the smallest, thus in the decreasing order, according to the provided comparator. </p>
+     * <p>The provided implementation uses and insertion buffer of size N to keep the N maxes.
+     * This implementation becomes less and less efficient as N grows. </p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the comparator is null. </p>
+     * <p>An <code>IllegalArgumentException</code> is thrown if N is lesser than 1. </p>
+     *
+     * @param stream        the processed stream
+     * @param numberOfMaxes the number of different max values that should be returned. Note that the total number of
+     *                      values returned may be larger if there are duplicates in the stream
+     * @param comparator    the comparator used to compare the elements of the stream
+     * @param <E>           the type of the provided stream
+     * @return the filtered stream
+     */
+    public static <E> Stream<E> filteringMaxKeys(Stream<E> stream, int numberOfMaxes, Comparator<? super E> comparator) {
+
+        Objects.requireNonNull(stream);
+        Objects.requireNonNull(comparator);
+
+        FilteringMaxKeysSpliterator<E> spliterator = FilteringMaxKeysSpliterator.of(stream.spliterator(), numberOfMaxes, comparator);
+        return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
+    }
+
+    /**
+     * <p>Generates a stream composed of the N greatest different values of the provided stream, compared using the
+     * natural order. This method calls the <code>filteringMaxKeys()</code> with the natural order comparator,
+     * please refer to this javadoc for details. . </p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream. </p>
+     * <p>An <code>IllegalArgumentException</code> is thrown if N is lesser than 1. </p>
+     *
+     * @param stream        the processed stream
+     * @param numberOfMaxes the number of different max values that should be returned. Note that the total number of
+     *                      values returned may be larger if there are duplicates in the stream
+     * @param <E>           the type of the provided stream
+     * @return the filtered stream
+     */
+    public static <E extends Comparable<? super E>> Stream<E> filteringMaxKeys(Stream<E> stream, int numberOfMaxes) {
+
+        Objects.requireNonNull(stream);
+
+        return filteringMaxKeys(stream, numberOfMaxes, Comparator.naturalOrder());
     }
 }

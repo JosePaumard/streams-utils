@@ -85,7 +85,7 @@ The problem is that, once the `Object.class` has been met, this stream is null. 
 Stream<Class<?>> interruptedStreamOfClasses = StreamsUtils.interrupting(streamOfClasses, Objects::isNull);
 ```
 
-The returned stream in this case will generate elements up to `Object.class` and will stop.
+The returned stream in this case will generate elements up to `Object.class` and will stop. 
 
 
 ## Gating
@@ -147,6 +147,39 @@ With no doubles: `StreamsUtils.crossProductNoDoubles(stream)`. For `{a, b, c}`, 
 With no doubles and ordered couples: `StreamsUtils.crossProductOrdered(stream, comparator)`. For `{a, b, c}`, it returns `{(a, b), (a, c), (b, c)}`. In this stream, all the key / value pairs are such that `comparator.compare(a, b)` is lesser than 0. There is also a `StreamsUtils.crossProductNaturallyOrdered(stream)` that takes the `Comparator.naturalOrder()` comparator to compare `a` and `b`. 
 
 Do not try on a non-finite stream...
+
+## Grouping on splitting
+
+This operator comes in two flavors. It builds a stream of streams using two predicates. 
+
+The first one takes two predicates. If the first predicate matched a given element, then a gate is opened, and the elements of the input stream are accumulated in a first stream. Then the second predicate is used. If it matches a subsequent element, then the gate is closed and the substream is returned. The process then starts again until the elements of the input stream are exhausted. It is possible to choose whether to add the opening and closing elements to the substreams or not. 
+
+The second one takes only one predicate, that is used both for opening and closing. 
+
+## Filtering all maxes
+
+This operator returns a filtered stream with only the greatest elements in it. It comes in two flavor: the first one uses the natural order comparator, and works with streams of comparable elements. The second one takes a comparator as a parameter. 
+
+For the following stream: `"1", "2", "4", "1", "2", "3", "3", "4"` the filtered stream is `"4", "4"`. 
+
+## Filtering N maxes
+
+This operator takes a comparator and a number as parameters. This comparator can be the natural order comparator. It then comes in two flavors. 
+
+The first one returns a least N elements with duplicates, ordered in the decreasing order, starting from the max. If there are duplicates in the input stream, then those duplicates are kept. It guarantees that all the elements of the same value are returned. 
+
+Suppose we have the following stream: `"1", "2", "4", "1", "2", "3", "3", "4"` 
+- If we ask for 2 max values, then we get `"4", "4"`. 
+- If we ask for 3 max values, then we get `"4", "4", "3", "3"`, because the operator returns all the `"3"`. 
+
+This first operator is called _max values_ because in the case the elements of the stream are entries, and the comparison is made by keys, we want to be sure to have all the values associated with a given key. 
+
+The second flavor is called _max_keys_ because it removes the duplicates, and count the number of keys instead of values. Thus, in our previous example :
+- If we ask for 2 max keys, then we get `"4", "3"`. 
+- If we ask for 3 max keys, then we get `"4", "3", "2"`.
+ 
+In this second case, we do not have duplicated elements (in the sense of the provided comparator) in the returned stream. If the number of different elements in the input stream is not enough, we may have less than N elements.  
+
 
 ## Acknowledgements
 
