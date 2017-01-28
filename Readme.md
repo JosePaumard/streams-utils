@@ -162,6 +162,25 @@ This operator returns a filtered stream with only the greatest elements in it. I
 
 For the following stream: `"1", "2", "4", "1", "2", "3", "3", "4"` the filtered stream is `"4", "4"`. 
 
+## Filtering N maxes
+
+This operator takes a comparator and a number as parameters. This comparator can be the natural order comparator. It then comes in two flavors. 
+
+The first one returns a least N elements with duplicates, ordered in the decreasing order, starting from the max. If there are duplicates in the input stream, then those duplicates are kept. It guarantees that all the elements of the same value are returned. 
+
+Suppose we have the following stream: `"1", "2", "4", "1", "2", "3", "3", "4"` 
+- If we ask for 2 max values, then we get `"4", "4"`. 
+- If we ask for 3 max values, then we get `"4", "4", "3", "3"`, because the operator returns all the `"3"`. 
+
+This first operator is called _max values_ because in the case the elements of the stream are entries, and the comparison is made by keys, we want to be sure to have all the values associated with a given key. 
+
+The second flavor is called _max_keys_ because it removes the duplicates, and count the number of keys instead of values. Thus, in our previous example :
+- If we ask for 2 max keys, then we get `"4", "3"`. 
+- If we ask for 3 max keys, then we get `"4", "3", "2"`.
+ 
+In this second case, we do not have duplicated elements (in the sense of the provided comparator) in the returned stream. If the number of different elements in the input stream is not enough, we may have less than N elements.  
+
+
 ## Acknowledgements
 
 Many thanks to Rémi Forax for his valuable advice during the development of this API. 

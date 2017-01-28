@@ -128,6 +128,14 @@ public class StreamsUtils {
     }
 
     /**
+     * <p>Generates a stream by regrouping the elements of the provided stream and putting them in a substream.
+     * This grouping operation scans the elements of the stream using the splitter predicate. When this predicate
+     * returns true, then the elements of the stream are accumulated in a subtream, until the splitter predicate
+     * is true again. In this case, a new substream is created, until the elements of the provided stream are
+     * exhausted. </p>
+     * <p>In the case where several consecutive splitting elements are met, no empty stream is generated.
+     * The splitting element is added only once to the next substream if needed. </p>
+     * <p>The boolean <code>included</code> controls whether the splitting element is added to the substreams or not.</p>
      * <p>A {@code {@link NullPointerException}} is thrown if the stream to be grouped or the splitter is null. </p>
      *
      * @param stream   The stream to be grouped. Will throw a <code>NullPointerException</code> if <code>null</code>.
@@ -145,6 +153,13 @@ public class StreamsUtils {
     }
 
     /**
+     * <p>Generates a stream by regrouping the elements of the provided stream and putting them in a substream.
+     * This grouping operation scans the elements of the stream using the splitter predicate. When this predicate
+     * returns true, then the elements of the stream are accumulated in a subtream, until the splitter predicate
+     * is true again. In this case, a new substream is created, until the elements of the provided stream are
+     * exhausted. </p>
+     * <p>In this case, the splitting element is not added to the substream.</p>
+     * <p>In the case where several consecutive splitting elements are met, no empty stream is generated.</p>
      * <p>A {@code {@link NullPointerException}} is thrown if the stream to be grouped or the splitter is null. </p>
      *
      * @param stream   The stream to be grouped. Will throw a <code>NullPointerException</code> if <code>null</code>.
