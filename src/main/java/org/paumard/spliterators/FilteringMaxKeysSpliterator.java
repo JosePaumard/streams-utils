@@ -28,13 +28,13 @@ import java.util.stream.Stream;
  *
  * @author José
  */
-public class FilteringMaxValuesSpliterator<E> implements Spliterator<E> {
+public class FilteringMaxKeysSpliterator<E> implements Spliterator<E> {
 
     private final Spliterator<E> spliterator;
     private final Comparator<? super E> comparator;
     private final int numberOfMaxes;
 
-    public static <E> FilteringMaxValuesSpliterator<E> of(
+    public static <E> FilteringMaxKeysSpliterator<E> of(
             Spliterator<E> spliterator,
             int numberOfMaxes,
             Comparator<? super E> comparator) {
@@ -44,10 +44,10 @@ public class FilteringMaxValuesSpliterator<E> implements Spliterator<E> {
             throw new IllegalArgumentException("numberOfMaxes should not be less than 2?");
         }
 
-        return new FilteringMaxValuesSpliterator<>(spliterator, numberOfMaxes, comparator);
+        return new FilteringMaxKeysSpliterator<>(spliterator, numberOfMaxes, comparator);
     }
 
-    private FilteringMaxValuesSpliterator(
+    private FilteringMaxKeysSpliterator(
             Spliterator<E> spliterator,
             int numberOfMaxes,
             Comparator<? super E> comparator) {
@@ -89,14 +89,12 @@ public class FilteringMaxValuesSpliterator<E> implements Spliterator<E> {
     private static class InsertionTab<T> implements Consumer<T> {
 
         private final T[] tab;
-        private final Map<T, Stream.Builder<T>> map;
         private int currentIndex;
         private final Comparator<? super T> comparator;
 
         @SuppressWarnings("unchecked")
         public InsertionTab(int maxN, Comparator<? super T> comparator) {
             this.comparator = comparator;
-            this.map = new TreeMap<>(comparator.reversed());
             this.tab = (T[]) Array.newInstance(Object.class, maxN);
             this.currentIndex = 0;
         }
@@ -104,21 +102,11 @@ public class FilteringMaxValuesSpliterator<E> implements Spliterator<E> {
         public void accept(T t) {
             if (currentIndex < tab.length) {
                 insertInDecreasingOrder(tab, t, currentIndex);
-                addToResults(map, t);
                 currentIndex++;
                 return;
             }
-            int compare = comparator.compare(tab[tab.length - 1], t);
-            if (compare < 0) {
-                addToResults(map, t);
-                if (comparator.compare(tab[tab.length - 1], tab[tab.length - 2]) != 0) {
-                    removeFromResults(map, tab[tab.length - 1]);
-                }
+            if (tab[tab.length - 1] == null || comparator.compare(tab[tab.length - 1], t) < 0) {
                 insertInDecreasingOrder(tab, t, tab.length - 1);
-            } else if (compare > 0) {
-                removeFromResults(map, t);
-            } else if (compare == 0) {
-                map.get(t).add(t);
             }
         }
 
@@ -127,26 +115,20 @@ public class FilteringMaxValuesSpliterator<E> implements Spliterator<E> {
             while(index < maxIndex) {
                 if (comparator.compare(tab[index], t) > 0) {
                     index++;
-                } else {
+                } else if (comparator.compare(tab[index], t) < 0){
                     for (int i = maxIndex ; i > index ; i--) {
                         tab[i] = tab[i - 1];
                     }
+                    break;
+                } else {
                     break;
                 }
             }
             tab[index] = t;
         }
 
-        private void removeFromResults(Map<T, Stream.Builder<T>> map, T key) {
-            map.remove(key);
-        }
-
-        private void addToResults(Map<T, Stream.Builder<T>> map, T t) {
-            map.computeIfAbsent(t, key -> Stream.builder()).add(t);
-        }
-
         private Stream<T> getResult() {
-            return map.entrySet().stream().flatMap(entry -> entry.getValue().build());
+            return StreamsUtils.interrupt(Arrays.stream(tab), Objects::isNull);
         }
     }
 }
