@@ -142,7 +142,7 @@ public class StreamsUtils {
      * @param splitter The predicate used to check for an splitting element.
      * @param included if true: includes the splitting element at the beginning of each substream
      * @param <E>      The type of the elements of the provided stream.
-     * @return
+     * @return A grouped stream of streams.
      */
     public static <E> Stream<Stream<E>> group(Stream<E> stream, Predicate<? super E> splitter, boolean included) {
         Objects.requireNonNull(stream);
@@ -165,7 +165,7 @@ public class StreamsUtils {
      * @param stream   The stream to be grouped. Will throw a <code>NullPointerException</code> if <code>null</code>.
      * @param splitter The predicate used to check for an splitting element.
      * @param <E>      The type of the elements of the provided stream.
-     * @return
+     * @return A grouped stream of streams.
      */
     public static <E> Stream<Stream<E>> group(Stream<E> stream, Predicate<? super E> splitter) {
         Objects.requireNonNull(stream);
