@@ -941,8 +941,12 @@ public class StreamsUtils {
     /**
      * <p>Generates a stream composed of the N greatest different values of the provided stream, compared using the
      * provided comparator. If there are no duplicates in the provided stream, then the returned stream will have
-     * N values, assuming that the input stream has more than N values. All the duplicates are copied in the returned
-     * stream, so in this case the number of elements in the returned stream may be greater than N. </p>
+     * N values, assuming that the input stream has more than N values. </p>
+     * <p>All the duplicates are copied in the returned stream, so in this case the number of elements in the
+     * returned stream may be greater than N. In this case, the number of different values is not guaranteed, and
+     * may be lesser than N.</p>
+     * <p>Since this operator extract maxes according to the provided comparator, the result is sorted from the
+     * greatest element to the smallest, thus in the decreasing order, according to the provided comparator. </p>
      * <p>The provided implementation uses and insertion buffer of size N to keep the N maxes, as well as a hash
      * map to keep the duplicates. This implementation becomes less and less efficient as N grows. </p>
      * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the comparator is null. </p>
@@ -966,11 +970,8 @@ public class StreamsUtils {
 
     /**
      * <p>Generates a stream composed of the N greatest different values of the provided stream, compared using the
-     * natural order. If there are no duplicates in the provided stream, then the returned stream will have
-     * N values, assuming that the input stream has more than N values. All the duplicates are copied in the returned
-     * stream, so in this case the number of elements in the returned stream may be greater than N. </p>
-     * <p>The provided implementation uses and insertion buffer of size N to keep the N maxes, as well as a hash
-     * map to keep the duplicates. This implementation becomes less and less efficient as N grows. </p>
+     * natural order. This method calles the <code>filteringMaxValues()</code> with the natural order comparator,
+     * please refer to this javadoc for details. . </p>
      * <p>A <code>NullPointerException</code> will be thrown if the provided stream. </p>
      * <p>An <code>IllegalArgumentException</code> is thrown if N is lesser than 1. </p>
      *

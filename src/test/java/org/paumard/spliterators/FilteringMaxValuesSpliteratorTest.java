@@ -53,7 +53,7 @@ public class FilteringMaxValuesSpliteratorTest {
         List<String> list = StreamsUtils.filteringMaxValues(strings, 2, comparator).collect(toList());
 
         // Then
-        assertThat(list).asList().containsExactly("3", "4");
+        assertThat(list).asList().containsExactly("4", "3");
     }
 
     @Test
@@ -66,7 +66,7 @@ public class FilteringMaxValuesSpliteratorTest {
         List<String> list = StreamsUtils.filteringMaxValues(strings, 2, comparator).collect(toList());
 
         // Then
-        assertThat(list).asList().containsExactly("3", "4");
+        assertThat(list).asList().containsExactly("4", "3");
     }
 
     @Test
@@ -79,7 +79,7 @@ public class FilteringMaxValuesSpliteratorTest {
         List<String> list = StreamsUtils.filteringMaxValues(strings, 10, comparator).collect(toList());
 
         // Then
-        assertThat(list).asList().containsExactly("1", "2", "3");
+        assertThat(list).asList().containsExactly("3", "2", "1");
     }
 
     @Test
@@ -92,7 +92,7 @@ public class FilteringMaxValuesSpliteratorTest {
         List<String> list = StreamsUtils.filteringMaxValues(strings, 10, comparator).collect(toList());
 
         // Then
-        assertThat(list).asList().containsExactly("1", "2", "3");
+        assertThat(list).asList().containsExactly("3", "2", "1");
     }
 
     @Test
@@ -118,7 +118,7 @@ public class FilteringMaxValuesSpliteratorTest {
         List<String> list = StreamsUtils.filteringMaxValues(strings, 4, comparator).collect(toList());
 
         // Then
-        assertThat(list).asList().containsExactly("3", "3", "4", "4", "4");
+        assertThat(list).asList().containsExactly("4", "4", "4", "3", "3");
     }
 
     @Test
@@ -131,7 +131,7 @@ public class FilteringMaxValuesSpliteratorTest {
         List<String> list = StreamsUtils.filteringMaxValues(strings, 7, comparator).collect(toList());
 
         // Then
-        assertThat(list).asList().containsExactly("2", "2", "2", "3", "3", "4", "4", "4");
+        assertThat(list).asList().containsExactly("4", "4", "4", "3", "3", "2", "2", "2");
     }
 
     @Test
@@ -161,7 +161,7 @@ public class FilteringMaxValuesSpliteratorTest {
     public void should_not_build_a_filtering_spliterator_on_a_null_comparator() {
 
         // Given
-        Stream<String> strings = Stream.of("1", "1", "2", "2", "3", "3");
+        Stream<String> strings = Stream.of("3", "3", "2", "2", "1", "1");
 
         // When
         List<String> list = StreamsUtils.filteringMaxValues(strings, 10, null).collect(toList());

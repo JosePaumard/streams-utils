@@ -96,7 +96,7 @@ public class FilteringMaxValuesSpliterator<E> implements Spliterator<E> {
         @SuppressWarnings("unchecked")
         public InsertionTab(int maxN, Comparator<? super T> comparator) {
             this.comparator = comparator;
-            this.map = new TreeMap<>(comparator);
+            this.map = new TreeMap<>(comparator.reversed());
             this.tab = (T[]) Array.newInstance(Object.class, maxN);
             this.currentIndex = 0;
         }
