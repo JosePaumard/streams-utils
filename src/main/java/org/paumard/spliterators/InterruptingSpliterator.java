@@ -20,7 +20,6 @@ import org.paumard.streams.StreamsUtils;
 
 import java.util.Objects;
 import java.util.Spliterator;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 

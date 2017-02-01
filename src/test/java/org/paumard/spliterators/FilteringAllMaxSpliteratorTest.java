@@ -21,16 +21,10 @@ import org.testng.annotations.Test;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
-import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.StrictAssertions.assertThat;
-import static org.paumard.streams.StreamsUtils.cycle;
-import static org.paumard.streams.StreamsUtils.zip;
 
 /**
  * Created by José
