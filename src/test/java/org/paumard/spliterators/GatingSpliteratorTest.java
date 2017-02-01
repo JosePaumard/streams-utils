@@ -22,7 +22,6 @@ import org.testng.annotations.Test;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.StrictAssertions.assertThat;
