@@ -58,11 +58,11 @@ public class RollingSpliteratorTest {
 
         // When
         assertThat(collect.size()).isEqualTo(5);
-        assertThat(collect.get(0)).isEqualTo(Arrays.asList("1", "2", "3"));
-        assertThat(collect.get(1)).isEqualTo(Arrays.asList("2", "3", "4"));
-        assertThat(collect.get(2)).isEqualTo(Arrays.asList("3", "4", "5"));
-        assertThat(collect.get(3)).isEqualTo(Arrays.asList("4", "5", "6"));
-        assertThat(collect.get(4)).isEqualTo(Arrays.asList("5", "6", "7"));
+        assertThat(collect.get(0)).containsExactly("1", "2", "3");
+        assertThat(collect.get(1)).containsExactly("2", "3", "4");
+        assertThat(collect.get(2)).containsExactly("3", "4", "5");
+        assertThat(collect.get(3)).containsExactly("4", "5", "6");
+        assertThat(collect.get(4)).containsExactly("5", "6", "7");
     }
 
     @Test(expectedExceptions = NullPointerException.class)

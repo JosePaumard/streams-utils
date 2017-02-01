@@ -16,7 +16,6 @@
 
 package org.paumard.spliterators;
 
-import org.assertj.core.api.Assertions;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -69,10 +68,8 @@ public class ZippingSpliteratorTest {
         List<String> list = StreamSupport.stream(zippingSpliterator, false).collect(toList());
 
         // Then
-        Assertions.assertThat(list.size()).isEqualTo(3);
-        Assertions.assertThat(list.get(0)).isEqualTo("one - 1");
-        Assertions.assertThat(list.get(1)).isEqualTo("two - 2");
-        Assertions.assertThat(list.get(2)).isEqualTo("three - 3");
+        assertThat(list.size()).isEqualTo(3);
+        assertThat(list).containsExactly("one - 1", "two - 2", "three - 3");
     }
 
     @Test
@@ -92,10 +89,8 @@ public class ZippingSpliteratorTest {
         List<String> list = StreamSupport.stream(zippingSpliterator, false).collect(toList());
 
         // Then
-        Assertions.assertThat(list.size()).isEqualTo(3);
-        Assertions.assertThat(list.get(0)).isEqualTo("one - 1");
-        Assertions.assertThat(list.get(1)).isEqualTo("two - 2");
-        Assertions.assertThat(list.get(2)).isEqualTo("three - 3");
+        assertThat(list.size()).isEqualTo(3);
+        assertThat(list).containsExactly("one - 1", "two - 2", "three - 3");
     }
 
     @Test
@@ -115,9 +110,7 @@ public class ZippingSpliteratorTest {
         List<String> list = StreamSupport.stream(zippingSpliterator, false).collect(toList());
 
         // Then
-        Assertions.assertThat(list.size()).isEqualTo(3);
-        Assertions.assertThat(list.get(0)).isEqualTo("one - 1");
-        Assertions.assertThat(list.get(1)).isEqualTo("two - 2");
-        Assertions.assertThat(list.get(2)).isEqualTo("three - 3");
+        assertThat(list.size()).isEqualTo(3);
+        assertThat(list).containsExactly("one - 1", "two - 2", "three - 3");
     }
 }

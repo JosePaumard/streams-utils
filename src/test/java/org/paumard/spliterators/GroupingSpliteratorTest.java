@@ -56,9 +56,9 @@ public class GroupingSpliteratorTest {
 
         // When
         assertThat(collect.size()).isEqualTo(3);
-        assertThat(collect.get(0)).isEqualTo(Arrays.asList("1", "2", "3"));
-        assertThat(collect.get(1)).isEqualTo(Arrays.asList("4", "5", "6"));
-        assertThat(collect.get(2)).isEqualTo(Arrays.asList("7", "8", "9"));
+        assertThat(collect.get(0)).containsExactly("1", "2", "3");
+        assertThat(collect.get(1)).containsExactly("4", "5", "6");
+        assertThat(collect.get(2)).containsExactly("7", "8", "9");
     }
 
     @Test
@@ -73,9 +73,9 @@ public class GroupingSpliteratorTest {
 
         // When
         assertThat(collect.size()).isEqualTo(3);
-        assertThat(collect.get(0)).isEqualTo(Arrays.asList("1", "2", "3"));
-        assertThat(collect.get(1)).isEqualTo(Arrays.asList("4", "5", "6"));
-        assertThat(collect.get(2)).isEqualTo(Arrays.asList("7"));
+        assertThat(collect.get(0)).containsExactly("1", "2", "3");
+        assertThat(collect.get(1)).containsExactly("4", "5", "6");
+        assertThat(collect.get(2)).containsExactly("7");
     }
 
     @Test(expectedExceptions = NullPointerException.class)

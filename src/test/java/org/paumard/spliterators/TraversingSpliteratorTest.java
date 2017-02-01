@@ -47,7 +47,7 @@ public class TraversingSpliteratorTest {
                         .collect(Collectors.toList());
 
         assertThat(collect.size()).isEqualTo(1);
-        assertThat(collect.get(0).isEmpty()).isTrue();
+        assertThat(collect.get(0)).isEmpty();
     }
 
     @Test
@@ -65,9 +65,9 @@ public class TraversingSpliteratorTest {
                                 .collect(Collectors.toList());
 
         assertThat(strings.size()).isEqualTo(3);
-        assertThat(strings.get(0)).asList().containsSequence("a1", "b1");
-        assertThat(strings.get(1)).asList().containsSequence("a2", "b2");
-        assertThat(strings.get(2)).asList().containsSequence("a3", "b3");
+        assertThat(strings.get(0)).containsSequence("a1", "b1");
+        assertThat(strings.get(1)).containsSequence("a2", "b2");
+        assertThat(strings.get(2)).containsSequence("a3", "b3");
     }
 
     @Test
@@ -85,8 +85,8 @@ public class TraversingSpliteratorTest {
                         .collect(Collectors.toList());
 
         assertThat(strings.size()).isEqualTo(2);
-        assertThat(strings.get(0)).asList().containsExactly("a1", "b1");
-        assertThat(strings.get(1)).asList().containsExactly("a2", "b2");
+        assertThat(strings.get(0)).containsExactly("a1", "b1");
+        assertThat(strings.get(1)).containsExactly("a2", "b2");
     }
 
     @Test(expectedExceptions = NullPointerException.class)

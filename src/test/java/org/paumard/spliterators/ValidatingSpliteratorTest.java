@@ -62,6 +62,6 @@ public class ValidatingSpliteratorTest {
 
         // Then
         assertThat(list.size()).isEqualTo(3);
-        assertThat(list).asList().containsExactly("ONE", "TWO", "-");
+        assertThat(list).containsExactly("ONE", "TWO", "-");
     }
 }

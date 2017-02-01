@@ -59,8 +59,8 @@ public class GroupingOnGatingSpliteratorTest {
 
         // When
         assertThat(collect.size()).isEqualTo(2);
-        assertThat(collect.get(0)).isEqualTo(Arrays.asList("o", "2", "3", "c"));
-        assertThat(collect.get(1)).isEqualTo(Arrays.asList("o", "7", "8", "c"));
+        assertThat(collect.get(0)).containsExactly("o", "2", "3", "c");
+        assertThat(collect.get(1)).containsExactly("o", "7", "8", "c");
     }
 
     @Test
@@ -76,9 +76,9 @@ public class GroupingOnGatingSpliteratorTest {
 
         // When
         assertThat(collect.size()).isEqualTo(3);
-        assertThat(collect.get(0)).isEqualTo(Arrays.asList("o", "2", "3", "c"));
-        assertThat(collect.get(1)).isEqualTo(Arrays.asList("o", "7", "8", "c"));
-        assertThat(collect.get(2)).isEqualTo(Arrays.asList("o"));
+        assertThat(collect.get(0)).containsExactly("o", "2", "3", "c");
+        assertThat(collect.get(1)).containsExactly("o", "7", "8", "c");
+        assertThat(collect.get(2)).containsExactly("o");
     }
 
     @Test
@@ -94,8 +94,8 @@ public class GroupingOnGatingSpliteratorTest {
 
         // When
         assertThat(collect.size()).isEqualTo(2);
-        assertThat(collect.get(0)).isEqualTo(Arrays.asList("o", "o", "2", "3", "c"));
-        assertThat(collect.get(1)).isEqualTo(Arrays.asList("o", "7", "8", "c"));
+        assertThat(collect.get(0)).containsExactly("o", "o", "2", "3", "c");
+        assertThat(collect.get(1)).containsExactly("o", "7", "8", "c");
     }
 
     @Test
@@ -111,8 +111,8 @@ public class GroupingOnGatingSpliteratorTest {
 
         // When
         assertThat(collect.size()).isEqualTo(2);
-        assertThat(collect.get(0)).isEqualTo(Arrays.asList("o", "2", "3", "c"));
-        assertThat(collect.get(1)).isEqualTo(Arrays.asList("o", "7", "8", "c"));
+        assertThat(collect.get(0)).containsExactly("o", "2", "3", "c");
+        assertThat(collect.get(1)).containsExactly("o", "7", "8", "c");
     }
 
     @Test
@@ -128,7 +128,7 @@ public class GroupingOnGatingSpliteratorTest {
 
         // When
         assertThat(collect.size()).isEqualTo(1);
-        assertThat(collect.get(0)).isEqualTo(Arrays.asList("o", "1", "2", "3", "4", "5", "6", "7", "8", "9", "c"));
+        assertThat(collect.get(0)).containsExactly("o", "1", "2", "3", "4", "5", "6", "7", "8", "9", "c");
     }
 
     @Test(expectedExceptions = NullPointerException.class)

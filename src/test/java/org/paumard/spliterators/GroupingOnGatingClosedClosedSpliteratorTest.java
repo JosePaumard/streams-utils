@@ -59,8 +59,8 @@ public class GroupingOnGatingClosedClosedSpliteratorTest {
 
         // When
         assertThat(collect.size()).isEqualTo(2);
-        assertThat(collect.get(0)).isEqualTo(Arrays.asList("2", "3"));
-        assertThat(collect.get(1)).isEqualTo(Arrays.asList("7", "8"));
+        assertThat(collect.get(0)).containsExactly("2", "3");
+        assertThat(collect.get(1)).containsExactly("7", "8");
     }
 
     @Test
@@ -76,8 +76,8 @@ public class GroupingOnGatingClosedClosedSpliteratorTest {
 
         // When
         assertThat(collect.size()).isEqualTo(2);
-        assertThat(collect.get(0)).isEqualTo(Arrays.asList("2", "3"));
-        assertThat(collect.get(1)).isEqualTo(Arrays.asList("7", "8"));
+        assertThat(collect.get(0)).containsExactly("2", "3");
+        assertThat(collect.get(1)).containsExactly("7", "8");
     }
 
     @Test
@@ -93,8 +93,8 @@ public class GroupingOnGatingClosedClosedSpliteratorTest {
 
         // When
         assertThat(collect.size()).isEqualTo(2);
-        assertThat(collect.get(0)).isEqualTo(Arrays.asList("o", "2", "3"));
-        assertThat(collect.get(1)).isEqualTo(Arrays.asList("7", "8"));
+        assertThat(collect.get(0)).containsExactly("o", "2", "3");
+        assertThat(collect.get(1)).containsExactly("7", "8");
     }
 
     @Test
@@ -110,8 +110,8 @@ public class GroupingOnGatingClosedClosedSpliteratorTest {
 
         // When
         assertThat(collect.size()).isEqualTo(2);
-        assertThat(collect.get(0)).isEqualTo(Arrays.asList("2", "3"));
-        assertThat(collect.get(1)).isEqualTo(Arrays.asList("7", "8"));
+        assertThat(collect.get(0)).containsExactly("2", "3");
+        assertThat(collect.get(1)).containsExactly("7", "8");
     }
 
     @Test
@@ -127,6 +127,6 @@ public class GroupingOnGatingClosedClosedSpliteratorTest {
 
         // When
         assertThat(collect.size()).isEqualTo(1);
-        assertThat(collect.get(0)).isEqualTo(Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9"));
+        assertThat(collect.get(0)).containsExactly("1", "2", "3", "4", "5", "6", "7", "8", "9");
     }
 }

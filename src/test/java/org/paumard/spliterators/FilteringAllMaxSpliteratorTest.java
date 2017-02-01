@@ -53,7 +53,7 @@ public class FilteringAllMaxSpliteratorTest {
         List<String> list = StreamsUtils.filteringAllMax(strings, comparator).collect(toList());
 
         // Then
-        assertThat(list).asList().containsExactly("3", "3");
+        assertThat(list).containsExactly("3", "3");
     }
 
     @Test
@@ -66,7 +66,7 @@ public class FilteringAllMaxSpliteratorTest {
         List<String> list = StreamsUtils.filteringAllMax(strings, comparator).collect(toList());
 
         // Then
-        assertThat(list).asList().containsExactly("4");
+        assertThat(list).containsExactly("4");
     }
 
     @Test(expectedExceptions = NullPointerException.class)

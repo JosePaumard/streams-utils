@@ -56,6 +56,6 @@ public class GatingSpliteratorTest {
 
         // Then
         assertThat(list.size()).isEqualTo(3);
-        assertThat(list).asList().containsExactly("one", "two", "three");
+        assertThat(list).containsExactly("one", "two", "three");
     }
 }
