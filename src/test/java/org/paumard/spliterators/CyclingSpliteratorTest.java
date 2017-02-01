@@ -25,9 +25,9 @@ import java.util.stream.StreamSupport;
 
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
-import static org.assertj.core.api.StrictAssertions.assertThat;
 import static org.paumard.streams.StreamsUtils.cycle;
 import static org.paumard.streams.StreamsUtils.zip;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Created by José
