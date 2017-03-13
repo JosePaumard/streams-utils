@@ -9,7 +9,7 @@
 
     <description>
         Streams Utils is a set of operations written on Java 8 Streams. It allows several basic operations that
-        are not available in the the Java 8, and that have proven to be very useful in some cases.
+        are not available in the Java 8 JDK, and that have proven to be very useful in some cases.
     </description>
 
     <url>http://github.com/JosePaumard/streams-utils</url>
