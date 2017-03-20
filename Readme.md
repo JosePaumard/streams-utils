@@ -180,6 +180,20 @@ The second flavor is called _max_keys_ because it removes the duplicates, and co
  
 In this second case, we do not have duplicated elements (in the sense of the provided comparator) in the returned stream. If the number of different elements in the input stream is not enough, we may have less than N elements.  
 
+## Accumulating
+
+This operator accumulates the elements of a stream using a binary operator. Suppose we have the following stream: ```a0, a1, a2, a3```
+
+The resulting stream, for an operator `op` is the following: ```a0, r1, r2, r3```
+ 
+ where: 
+ ```
+    r1 = op(a0, a1)
+    r2 = op(r1, a2)
+    r3 = op(r2, a3)
+```
+
+This stream can also operate directly on map entries, accumulating the values of the entries. 
 
 ## Acknowledgements
 
