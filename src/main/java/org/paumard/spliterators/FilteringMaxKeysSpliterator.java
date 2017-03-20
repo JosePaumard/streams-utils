@@ -19,7 +19,10 @@ package org.paumard.spliterators;
 import org.paumard.streams.StreamsUtils;
 
 import java.lang.reflect.Array;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 

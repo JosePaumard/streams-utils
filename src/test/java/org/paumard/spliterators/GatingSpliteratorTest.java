@@ -24,7 +24,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
-import static org.assertj.core.api.StrictAssertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Created by José
@@ -56,6 +56,6 @@ public class GatingSpliteratorTest {
 
         // Then
         assertThat(list.size()).isEqualTo(3);
-        assertThat(list).asList().containsExactly("one", "two", "three");
+        assertThat(list).containsExactly("one", "two", "three");
     }
 }

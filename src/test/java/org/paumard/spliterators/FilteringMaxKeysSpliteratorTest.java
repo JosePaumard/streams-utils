@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
-import static org.assertj.core.api.StrictAssertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Created by José
@@ -53,7 +53,7 @@ public class FilteringMaxKeysSpliteratorTest {
         List<String> list = StreamsUtils.filteringMaxKeys(strings, 2, comparator).collect(toList());
 
         // Then
-        assertThat(list).asList().containsExactly("4", "3");
+        assertThat(list).containsExactly("4", "3");
     }
 
     @Test
@@ -66,7 +66,7 @@ public class FilteringMaxKeysSpliteratorTest {
         List<String> list = StreamsUtils.filteringMaxKeys(strings, 2, comparator).collect(toList());
 
         // Then
-        assertThat(list).asList().containsExactly("4", "3");
+        assertThat(list).containsExactly("4", "3");
     }
 
     @Test
@@ -79,7 +79,7 @@ public class FilteringMaxKeysSpliteratorTest {
         List<String> list = StreamsUtils.filteringMaxKeys(strings, 10, comparator).collect(toList());
 
         // Then
-        assertThat(list).asList().containsExactly("3", "2", "1");
+        assertThat(list).containsExactly("3", "2", "1");
     }
 
     @Test
@@ -92,7 +92,7 @@ public class FilteringMaxKeysSpliteratorTest {
         List<String> list = StreamsUtils.filteringMaxKeys(strings, 10, comparator).collect(toList());
 
         // Then
-        assertThat(list).asList().containsExactly("3", "2", "1");
+        assertThat(list).containsExactly("3", "2", "1");
     }
 
     @Test
@@ -105,7 +105,7 @@ public class FilteringMaxKeysSpliteratorTest {
         List<String> list = StreamsUtils.filteringMaxKeys(strings, 2, comparator).collect(toList());
 
         // Then
-        assertThat(list).asList().containsExactly("4", "3");
+        assertThat(list).containsExactly("4", "3");
     }
 
     @Test
@@ -118,7 +118,7 @@ public class FilteringMaxKeysSpliteratorTest {
         List<String> list = StreamsUtils.filteringMaxKeys(strings, 4, comparator).collect(toList());
 
         // Then
-        assertThat(list).asList().containsExactly("4", "3", "2", "1");
+        assertThat(list).containsExactly("4", "3", "2", "1");
     }
 
     @Test
@@ -131,7 +131,7 @@ public class FilteringMaxKeysSpliteratorTest {
         List<String> list = StreamsUtils.filteringMaxKeys(strings, 7, comparator).collect(toList());
 
         // Then
-        assertThat(list).asList().containsExactly("4", "3", "2", "1");
+        assertThat(list).containsExactly("4", "3", "2", "1");
     }
 
     @Test
@@ -144,7 +144,7 @@ public class FilteringMaxKeysSpliteratorTest {
         List<String> list = StreamsUtils.filteringMaxKeys(strings, 2, comparator).collect(toList());
 
         // Then
-        assertThat(list).asList().containsExactly("4", "3");
+        assertThat(list).containsExactly("4", "3");
     }
 
     @Test(expectedExceptions = NullPointerException.class)

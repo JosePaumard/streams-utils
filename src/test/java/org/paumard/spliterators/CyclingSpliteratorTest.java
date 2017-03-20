@@ -25,7 +25,7 @@ import java.util.stream.StreamSupport;
 
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
-import static org.assertj.core.api.StrictAssertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.paumard.streams.StreamsUtils.cycle;
 import static org.paumard.streams.StreamsUtils.zip;
 
@@ -75,7 +75,7 @@ public class CyclingSpliteratorTest {
         // When
         List<String> list  = StreamSupport.stream(CyclingSpliterator.of(strings.spliterator()), false).limit(3).flatMap(identity()).collect(toList());
         // Then
-        assertThat(list).asList().containsSequence("one", "two", "one", "two", "one", "two");
+        assertThat(list).containsExactly("one", "two", "one", "two", "one", "two");
     }
 
     @Test(expectedExceptions = NullPointerException.class)
@@ -101,7 +101,7 @@ public class CyclingSpliteratorTest {
         List<String> fizzBuzzList = fizzBuzz.skip(1).limit(20).collect(toList());
 
         // Then
-        assertThat(fizzBuzzList).asList().containsSequence(
+        assertThat(fizzBuzzList).containsExactly(
                          "1",    "2", "fizz",  "4",     "buzz", "fizz",  "7",    "8", "fizz",
                 "buzz", "11", "fizz",   "13", "14", "fizzbuzz",   "16", "17", "fizz",   "19",
                 "buzz");

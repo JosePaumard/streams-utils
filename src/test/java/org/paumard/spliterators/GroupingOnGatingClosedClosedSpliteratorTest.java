@@ -20,13 +20,12 @@ package org.paumard.spliterators;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.StrictAssertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class GroupingOnGatingClosedClosedSpliteratorTest {
 
@@ -59,8 +58,8 @@ public class GroupingOnGatingClosedClosedSpliteratorTest {
 
         // When
         assertThat(collect.size()).isEqualTo(2);
-        assertThat(collect.get(0)).isEqualTo(Arrays.asList("2", "3"));
-        assertThat(collect.get(1)).isEqualTo(Arrays.asList("7", "8"));
+        assertThat(collect.get(0)).containsExactly("2", "3");
+        assertThat(collect.get(1)).containsExactly("7", "8");
     }
 
     @Test
@@ -76,8 +75,8 @@ public class GroupingOnGatingClosedClosedSpliteratorTest {
 
         // When
         assertThat(collect.size()).isEqualTo(2);
-        assertThat(collect.get(0)).isEqualTo(Arrays.asList("2", "3"));
-        assertThat(collect.get(1)).isEqualTo(Arrays.asList("7", "8"));
+        assertThat(collect.get(0)).containsExactly("2", "3");
+        assertThat(collect.get(1)).containsExactly("7", "8");
     }
 
     @Test
@@ -93,8 +92,8 @@ public class GroupingOnGatingClosedClosedSpliteratorTest {
 
         // When
         assertThat(collect.size()).isEqualTo(2);
-        assertThat(collect.get(0)).isEqualTo(Arrays.asList("o", "2", "3"));
-        assertThat(collect.get(1)).isEqualTo(Arrays.asList("7", "8"));
+        assertThat(collect.get(0)).containsExactly("o", "2", "3");
+        assertThat(collect.get(1)).containsExactly("7", "8");
     }
 
     @Test
@@ -110,8 +109,8 @@ public class GroupingOnGatingClosedClosedSpliteratorTest {
 
         // When
         assertThat(collect.size()).isEqualTo(2);
-        assertThat(collect.get(0)).isEqualTo(Arrays.asList("2", "3"));
-        assertThat(collect.get(1)).isEqualTo(Arrays.asList("7", "8"));
+        assertThat(collect.get(0)).containsExactly("2", "3");
+        assertThat(collect.get(1)).containsExactly("7", "8");
     }
 
     @Test
@@ -127,6 +126,6 @@ public class GroupingOnGatingClosedClosedSpliteratorTest {
 
         // When
         assertThat(collect.size()).isEqualTo(1);
-        assertThat(collect.get(0)).isEqualTo(Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9"));
+        assertThat(collect.get(0)).containsExactly("1", "2", "3", "4", "5", "6", "7", "8", "9");
     }
 }

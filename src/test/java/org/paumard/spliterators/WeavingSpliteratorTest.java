@@ -19,12 +19,11 @@ package org.paumard.spliterators;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.StrictAssertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Created by José
@@ -57,7 +56,7 @@ public class WeavingSpliteratorTest {
 
         // When
         assertThat(collect.size()).isEqualTo(8);
-        assertThat(collect).isEqualTo(Arrays.asList("1", "11", "2", "12", "3", "13", "4", "14"));
+        assertThat(collect).containsExactly("1", "11", "2", "12", "3", "13", "4", "14");
     }
 
     @Test
@@ -72,7 +71,7 @@ public class WeavingSpliteratorTest {
 
         // When
         assertThat(collect.size()).isEqualTo(8);
-        assertThat(collect).isEqualTo(Arrays.asList("1", "11", "2", "12", "3", "13", "4", "14"));
+        assertThat(collect).containsExactly("1", "11", "2", "12", "3", "13", "4", "14");
     }
 
     @Test(expectedExceptions = NullPointerException.class)

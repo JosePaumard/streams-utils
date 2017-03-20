@@ -20,12 +20,11 @@ package org.paumard.spliterators;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.StrictAssertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class GroupingSpliteratorTest {
 
@@ -56,9 +55,9 @@ public class GroupingSpliteratorTest {
 
         // When
         assertThat(collect.size()).isEqualTo(3);
-        assertThat(collect.get(0)).isEqualTo(Arrays.asList("1", "2", "3"));
-        assertThat(collect.get(1)).isEqualTo(Arrays.asList("4", "5", "6"));
-        assertThat(collect.get(2)).isEqualTo(Arrays.asList("7", "8", "9"));
+        assertThat(collect.get(0)).containsExactly("1", "2", "3");
+        assertThat(collect.get(1)).containsExactly("4", "5", "6");
+        assertThat(collect.get(2)).containsExactly("7", "8", "9");
     }
 
     @Test
@@ -73,9 +72,9 @@ public class GroupingSpliteratorTest {
 
         // When
         assertThat(collect.size()).isEqualTo(3);
-        assertThat(collect.get(0)).isEqualTo(Arrays.asList("1", "2", "3"));
-        assertThat(collect.get(1)).isEqualTo(Arrays.asList("4", "5", "6"));
-        assertThat(collect.get(2)).isEqualTo(Arrays.asList("7"));
+        assertThat(collect.get(0)).containsExactly("1", "2", "3");
+        assertThat(collect.get(1)).containsExactly("4", "5", "6");
+        assertThat(collect.get(2)).containsExactly("7");
     }
 
     @Test(expectedExceptions = NullPointerException.class)

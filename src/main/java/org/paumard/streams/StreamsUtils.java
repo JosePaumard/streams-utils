@@ -1038,7 +1038,7 @@ public class StreamsUtils {
      * <p>Generates a stream composed of the N greatest different values of the provided stream, compared using the
      * natural order. This method calls the <code>filteringMaxKeys()</code> with the natural order comparator,
      * please refer to this javadoc for details. . </p>
-     * <p>A <code>NullPointerException</code> will be thrown if the provided stream. </p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream is null. </p>
      * <p>An <code>IllegalArgumentException</code> is thrown if N is lesser than 1. </p>
      *
      * @param stream        the processed stream
@@ -1052,5 +1052,54 @@ public class StreamsUtils {
         Objects.requireNonNull(stream);
 
         return filteringMaxKeys(stream, numberOfMaxes, Comparator.naturalOrder());
+    }
+
+    /**
+     * <p>Generates a stream composed of the accumulation of its elements, through the use of the provided binary
+     * operator. </p>
+     * <p>For the stream {@code Stream.of(1, 1, 1, 1)}, and the {@code Integer::sum} operator,
+     * the following stream is returned: {@code Stream.of(1, 2, 3, 4)}</p>
+     * <p>For the stream {@code Stream.of(1, 2, 5, 3)}, and the {@code Integer::max} operator,
+     * the following stream is returned: {@code Stream.of(1, 2, 5, 5)}</p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the operator is null. </p>
+     * <p>A <code>IllegalArgumentException</code> will be thrown if the provided stream is not ordered. </p>
+     *
+     * @param stream   the processed stream
+     * @param operator the binary operator used to accumulate the elements of the stream
+     * @param <E>      the type of the provided stream
+     * @return the accumulated stream
+     */
+    public static <E> Stream<E> accumulate(Stream<E> stream, BinaryOperator<E> operator) {
+
+        Objects.requireNonNull(stream);
+        Objects.requireNonNull(operator);
+
+        AccumulatingSpliterator<E> spliterator = AccumulatingSpliterator.of(stream.spliterator(), operator);
+        return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
+    }
+
+    /**
+     * <p>Generates a stream composed of the accumulation of its elements, through the use of the provided binary
+     * operator. </p>
+     * <p>For the stream {@code Stream.of(1, 1, 1, 1)}, and the {@code Integer::sum} operator,
+     * the following stream is returned: {@code Stream.of(1, 2, 3, 4)}</p>
+     * <p>For the stream {@code Stream.of(1, 2, 5, 3)}, and the {@code Integer::max} operator,
+     * the following stream is returned: {@code Stream.of(1, 2, 5, 5)}</p>
+     * <p>A <code>NullPointerException</code> will be thrown if the provided stream or the operator is null. </p>
+     * <p>A <code>IllegalArgumentException</code> will be thrown if the provided stream is not ordered. </p>
+     *
+     * @param stream   the processed stream of entries
+     * @param operator the binary operator used to accumulate the values of the stream
+     * @param <K>      the type of the keys of the provided stream
+     * @param <V>      the type of the values provided stream
+     * @return the accumulated stream
+     */
+    public static <K, V> Stream<Map.Entry<K, V>> accumulateEntries(Stream<Map.Entry<K, V>> stream, BinaryOperator<V> operator) {
+
+        Objects.requireNonNull(stream);
+        Objects.requireNonNull(operator);
+
+        AccumulatingEntriesSpliterator<K, V> spliterator = AccumulatingEntriesSpliterator.of(stream.spliterator(), operator);
+        return StreamSupport.stream(spliterator, stream.isParallel()).onClose(stream::close);
     }
 }

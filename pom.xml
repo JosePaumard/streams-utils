@@ -9,21 +9,21 @@
 
     <description>
         Streams Utils is a set of operations written on Java 8 Streams. It allows several basic operations that
-        are not available in the the Java 8, and that have proven to be very useful in some cases.
+        are not available in the Java 8 JDK, and that have proven to be very useful in some cases.
     </description>
 
     <url>http://github.com/JosePaumard/streams-utils</url>
 
     <groupId>org.paumard</groupId>
     <artifactId>streams-utils</artifactId>
-    <version>1.4</version>
+    <version>1.5</version>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <testng.version>6.9.6</testng.version>
-        <assertj.version>3.1.0</assertj.version>
+        <assertj.version>3.6.2</assertj.version>
         <jacoco-maven-plugin.version>0.7.6.201602180812</jacoco-maven-plugin.version>
         <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
     </properties>

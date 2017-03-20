@@ -20,13 +20,12 @@ package org.paumard.spliterators;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.StrictAssertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class GroupingOnSplittingNonIncludedSpliteratorTest {
 
@@ -72,9 +71,9 @@ public class GroupingOnSplittingNonIncludedSpliteratorTest {
 
         // When
         assertThat(collect.size()).isEqualTo(3);
-        assertThat(collect.get(0)).isEqualTo(Arrays.asList("2", "3", "4", "5", "6"));
-        assertThat(collect.get(1)).isEqualTo(Arrays.asList("7", "8"));
-        assertThat(collect.get(2)).isEqualTo(Arrays.asList("9"));
+        assertThat(collect.get(0)).containsExactly("2", "3", "4", "5", "6");
+        assertThat(collect.get(1)).containsExactly("7", "8");
+        assertThat(collect.get(2)).containsExactly("9");
     }
 
     @Test
@@ -89,10 +88,10 @@ public class GroupingOnSplittingNonIncludedSpliteratorTest {
 
         // When
         assertThat(collect.size()).isEqualTo(4);
-        assertThat(collect.get(0)).isEqualTo(Arrays.asList());
-        assertThat(collect.get(1)).isEqualTo(Arrays.asList("2", "3"));
-        assertThat(collect.get(2)).isEqualTo(Arrays.asList("4", "5", "6"));
-        assertThat(collect.get(3)).isEqualTo(Arrays.asList("7", "8", "9"));
+        assertThat(collect.get(0)).isEmpty();
+        assertThat(collect.get(1)).containsExactly("2", "3");
+        assertThat(collect.get(2)).containsExactly("4", "5", "6");
+        assertThat(collect.get(3)).containsExactly("7", "8", "9");
     }
 
     @Test
@@ -107,6 +106,6 @@ public class GroupingOnSplittingNonIncludedSpliteratorTest {
 
         // When
         assertThat(collect.size()).isEqualTo(1);
-        assertThat(collect.get(0)).isEqualTo(Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9"));
+        assertThat(collect.get(0)).containsExactly("1", "2", "3", "4", "5", "6", "7", "8", "9");
     }
 }

@@ -54,7 +54,7 @@ public class RepeatingSpliteratorTest {
         List<String> result = repeatingStream.collect(Collectors.toList());
 
         // Then
-        assertThat(result).asList().containsExactly("a", "a", "b", "b", "c", "c");
+        assertThat(result).containsExactly("a", "a", "b", "b", "c", "c");
     }
 
     @Test(expectedExceptions = NullPointerException.class)
