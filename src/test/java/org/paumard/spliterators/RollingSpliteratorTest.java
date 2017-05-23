@@ -19,7 +19,9 @@ package org.paumard.spliterators;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
-import java.util.List;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -62,6 +64,24 @@ public class RollingSpliteratorTest {
         assertThat(collect.get(2)).containsExactly("3", "4", "5");
         assertThat(collect.get(3)).containsExactly("4", "5", "6");
         assertThat(collect.get(4)).containsExactly("5", "6", "7");
+    }
+
+    @Test
+    public void should_be_able_to_roll_a_sorted_stream_in_an_non_sorted_rolled_stream() throws ParseException {
+        // Given
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        SortedMap<Date, Long> sortedMap = new TreeMap<>();
+        sortedMap.put(formatter.parse("01/05/2017"), 1L);
+        sortedMap.put(formatter.parse("02/05/2017"), 2L);
+        sortedMap.put(formatter.parse("03/05/2017"), 3L);
+        sortedMap.put(formatter.parse("04/05/2017"), 2L);
+        sortedMap.put(formatter.parse("05/05/2017"), 3L);
+
+        // When
+        Stream<Stream<Map.Entry<Date, Long>>> stream = StreamsUtils.roll(sortedMap.entrySet().stream(), 2);
+
+        // Then
+        assertThat(stream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(0);
     }
 
     @Test(expectedExceptions = NullPointerException.class)
