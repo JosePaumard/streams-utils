@@ -19,6 +19,8 @@ package org.paumard.spliterators;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -67,7 +69,7 @@ public class CrossProductNaturalyOrderedSpliteratorTest {
         Stream<Map.Entry<String, String>> stream = StreamsUtils.crossProductNaturallyOrdered(strings);
         Comparator<Map.Entry<String, String>> comparator =
                 Comparator.<Map.Entry<String, String>, String>comparing(Map.Entry::getKey)
-                          .thenComparing(Map.Entry::getValue);
+                        .thenComparing(Map.Entry::getValue);
         Set<Map.Entry<String, String>> entries =
                 stream.collect(
                         Collectors.toCollection(() -> new TreeSet<>(comparator))
@@ -133,6 +135,23 @@ public class CrossProductNaturalyOrderedSpliteratorTest {
         entry = iterator.next();
         assertThat(entry.getKey()).isEqualTo("d");
         assertThat(entry.getValue()).isEqualTo("c");
+    }
+
+
+    @Test
+    public void should_be_able_to_cross_product_a_sorted_stream_in_an_non_sorted_stream() {
+        // Given
+        SortedMap<Long, String> sortedMap = new TreeMap<>();
+        sortedMap.put(1L, "ONE");
+        sortedMap.put(2L, "TWO");
+        sortedMap.put(3L, "THREE");
+
+        // When
+        Stream<Map.Entry<Map.Entry<Long, String>, Map.Entry<Long, String>>> stream =
+                StreamsUtils.crossProductOrdered(sortedMap.entrySet().stream(), Map.Entry.comparingByKey());
+
+        // Then
+        assertThat(stream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(0);
     }
 
     @Test(expectedExceptions = NullPointerException.class)
