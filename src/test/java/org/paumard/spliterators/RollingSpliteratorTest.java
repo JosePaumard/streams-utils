@@ -19,7 +19,6 @@ package org.paumard.spliterators;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
-import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -66,7 +65,7 @@ public class RollingSpliteratorTest {
     }
 
     @Test
-    public void should_be_able_to_roll_a_sorted_stream_in_an_non_sorted_rolled_stream() throws ParseException {
+    public void should_be_able_to_roll_a_sorted_stream_in_an_non_sorted_rolled_stream() {
         // Given
         SortedMap<Long, String> sortedMap = new TreeMap<>();
         sortedMap.put(1L, "ONE");
