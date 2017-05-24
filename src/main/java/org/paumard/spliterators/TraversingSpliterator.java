@@ -84,6 +84,9 @@ public class TraversingSpliterator<E> implements Spliterator<Stream<E>> {
 
     @Override
     public int characteristics() {
-        return Stream.of(spliterators).mapToInt(Spliterator::characteristics).reduce(0xFFFFFFFF, (i1, i2) -> i1 & i2);
+        return Stream.of(spliterators)
+                .mapToInt(Spliterator::characteristics)
+                .reduce(0xFFFFFFFF, (i1, i2) -> i1 & i2)
+                & ~Spliterator.SORTED;
     }
 }
