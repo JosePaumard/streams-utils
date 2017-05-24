@@ -19,8 +19,7 @@ package org.paumard.spliterators;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
-import java.util.IntSummaryStatistics;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -67,6 +66,19 @@ public class ShiftingWindowSummarizingIntTest {
         assertThat(result.get(3).toString()).isEqualTo(stats.toString());
         assertThat(result.get(4).toString()).isEqualTo(stats.toString());
         assertThat(result.get(5).toString()).isEqualTo(stats.toString());
+    }
+
+    @Test
+    public void should_process_a_sorted_stream_correctly_and_in_an_unsorted_stream() {
+        // Given
+        SortedSet<String> sortedSet = new TreeSet<>(Arrays.asList("2", "4", "2", "4", "2", "4", "2"));
+        int groupingFactor = 2;
+
+        // When
+        Stream<IntSummaryStatistics> stream = StreamsUtils.shiftingWindowSummarizingInt(sortedSet.stream(), groupingFactor, Integer::parseInt);
+
+        // Then
+        assertThat(stream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(0);
     }
 
     @Test(expectedExceptions = NullPointerException.class)

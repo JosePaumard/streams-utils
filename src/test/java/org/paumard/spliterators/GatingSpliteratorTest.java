@@ -19,7 +19,7 @@ package org.paumard.spliterators;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -57,5 +57,17 @@ public class GatingSpliteratorTest {
         // Then
         assertThat(list.size()).isEqualTo(3);
         assertThat(list).containsExactly("one", "two", "three");
+    }
+
+    @Test
+    public void should_gate_a_sorted_stream_correctly_and_in_a_sorted_stream() {
+        // Given
+        SortedSet<String> sortedSet = new TreeSet<>(Arrays.asList("", "", "", "", "one", "two", "three"));
+
+        // When
+        Stream<String> gatingStream = StreamsUtils.gate(sortedSet.stream(), s -> !s.isEmpty());
+
+        // Then
+        assertThat(gatingStream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(Spliterator.SORTED);
     }
 }

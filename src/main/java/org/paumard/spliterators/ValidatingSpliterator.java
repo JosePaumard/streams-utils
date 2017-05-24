@@ -105,6 +105,6 @@ public class ValidatingSpliterator<E, R> implements Spliterator<R> {
 
     @Override
     public int characteristics() {
-        return this.spliterator.characteristics();
+        return this.spliterator.characteristics() & ~Spliterator.SORTED;
     }
 }

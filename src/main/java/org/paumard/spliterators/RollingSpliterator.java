@@ -18,6 +18,7 @@ package org.paumard.spliterators;
 
 import org.paumard.streams.StreamsUtils;
 
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.Spliterator;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -109,6 +110,6 @@ public class RollingSpliterator<E> implements Spliterator<Stream<E>> {
 	@Override
 	public int characteristics() {
         // this spliterator is already ordered
-		return spliterator.characteristics();
+		return spliterator.characteristics() & ~Spliterator.SORTED;
 	}
 }

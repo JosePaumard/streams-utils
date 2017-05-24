@@ -19,7 +19,7 @@ package org.paumard.spliterators;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -63,5 +63,21 @@ public class ValidatingSpliteratorTest {
         // Then
         assertThat(list.size()).isEqualTo(3);
         assertThat(list).containsExactly("ONE", "TWO", "-");
+    }
+
+    @Test
+    public void should_validate_a_sorted_stream_correctly_and_in_a_sorted_stream() {
+        // Given
+        Stream<String> sortedStream = new TreeSet<>(Arrays.asList("a", "b", "c")).stream();
+        Predicate<String> validator = s -> s.length() == 3;
+        Function<String, String> transformIfValid = String::toUpperCase;
+        Function<String, String> transformIfNotValid = s -> "-";
+
+        // When
+        Stream<String> stream =
+                StreamsUtils.validate(sortedStream, validator, transformIfValid, transformIfNotValid);
+
+        // Then
+        assertThat(stream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(0);
     }
 }

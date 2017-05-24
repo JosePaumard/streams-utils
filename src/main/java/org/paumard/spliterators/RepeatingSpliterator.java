@@ -73,6 +73,6 @@ public class RepeatingSpliterator<E> implements Spliterator<E> {
 
     @Override
     public int characteristics() {
-        return this.spliterator.characteristics() | Spliterator.ORDERED;
+        return this.spliterator.characteristics() & ~Spliterator.SORTED | Spliterator.ORDERED;
     }
 }

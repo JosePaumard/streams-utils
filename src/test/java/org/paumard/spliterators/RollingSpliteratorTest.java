@@ -19,7 +19,8 @@ package org.paumard.spliterators;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
-import java.util.List;
+import java.text.ParseException;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -62,6 +63,21 @@ public class RollingSpliteratorTest {
         assertThat(collect.get(2)).containsExactly("3", "4", "5");
         assertThat(collect.get(3)).containsExactly("4", "5", "6");
         assertThat(collect.get(4)).containsExactly("5", "6", "7");
+    }
+
+    @Test
+    public void should_be_able_to_roll_a_sorted_stream_in_an_non_sorted_rolled_stream() {
+        // Given
+        SortedMap<Long, String> sortedMap = new TreeMap<>();
+        sortedMap.put(1L, "ONE");
+        sortedMap.put(2L, "TWO");
+        sortedMap.put(3L, "THREE");
+
+        // When
+        Stream<Stream<Map.Entry<Long, String>>> stream = StreamsUtils.roll(sortedMap.entrySet().stream(), 2);
+
+        // Then
+        assertThat(stream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(0);
     }
 
     @Test(expectedExceptions = NullPointerException.class)

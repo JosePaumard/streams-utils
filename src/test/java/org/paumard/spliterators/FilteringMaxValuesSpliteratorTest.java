@@ -19,8 +19,7 @@ package org.paumard.spliterators;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -145,6 +144,19 @@ public class FilteringMaxValuesSpliteratorTest {
 
         // Then
         assertThat(list).containsExactly("4", "4", "4");
+    }
+
+    @Test
+    public void should_be_able_to_filter_maxes_of_a_sorted_stream_in_a_sorted_filtered_stream() {
+        // Given
+        SortedSet<String> sortedSet = new TreeSet<>(Arrays.asList("one", "two", "three"));
+        Comparator<String> comparator = Comparator.naturalOrder();
+
+        // When
+        Stream<String> stream = StreamsUtils.filteringMaxValues(sortedSet.stream(), 2, comparator);
+
+        // Then
+        assertThat(stream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(Spliterator.SORTED);
     }
 
     @Test(expectedExceptions = NullPointerException.class)

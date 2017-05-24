@@ -129,6 +129,18 @@ public class CrossProductSpliteratorTest {
         assertThat(entry.getValue()).isEqualTo("d");
     }
 
+    @Test
+    public void should_be_able_to_cross_product_a_sorted_stream_in_an_non_sorted_cross_product_stream() {
+        // Given
+        SortedSet<String> sortedSet = new TreeSet<>(Arrays.asList("one", "two", "three"));
+
+        // When
+        Stream<Map.Entry<String, String>> stream = StreamsUtils.crossProduct(sortedSet.stream());
+
+        // Then
+        assertThat(stream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(0);
+    }
+
     @Test(expectedExceptions = NullPointerException.class)
     public void should_not_build_a_crossing_spliterator_on_a_null_spliterator() {
 

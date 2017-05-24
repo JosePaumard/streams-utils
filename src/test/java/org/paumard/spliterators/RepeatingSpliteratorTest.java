@@ -19,7 +19,8 @@ package org.paumard.spliterators;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
-import java.util.List;
+import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -55,6 +56,19 @@ public class RepeatingSpliteratorTest {
 
         // Then
         assertThat(result).containsExactly("a", "a", "b", "b", "c", "c");
+    }
+
+    @Test
+    public void should_repeat_a_sorted_stream_correctly_and_in_an_unsorted_stream() {
+        // Given
+        SortedSet<String> sortedSet = new TreeSet<>(Arrays.asList("a", "b", "c"));
+        int repeating = 2;
+
+        // When
+        Stream<String> stream = StreamsUtils.repeat(sortedSet.stream(), repeating);
+
+        // Then
+        assertThat(stream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(0);
     }
 
     @Test(expectedExceptions = NullPointerException.class)

@@ -1037,7 +1037,7 @@ public class StreamsUtils {
     /**
      * <p>Generates a stream composed of the N greatest different values of the provided stream, compared using the
      * natural order. This method calls the <code>filteringMaxKeys()</code> with the natural order comparator,
-     * please refer to this javadoc for details. . </p>
+     * please refer to this javadoc for details. </p>
      * <p>A <code>NullPointerException</code> will be thrown if the provided stream is null. </p>
      * <p>An <code>IllegalArgumentException</code> is thrown if N is lesser than 1. </p>
      *

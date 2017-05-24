@@ -67,7 +67,7 @@ public class CrossProductNaturalyOrderedSpliteratorTest {
         Stream<Map.Entry<String, String>> stream = StreamsUtils.crossProductNaturallyOrdered(strings);
         Comparator<Map.Entry<String, String>> comparator =
                 Comparator.<Map.Entry<String, String>, String>comparing(Map.Entry::getKey)
-                          .thenComparing(Map.Entry::getValue);
+                        .thenComparing(Map.Entry::getValue);
         Set<Map.Entry<String, String>> entries =
                 stream.collect(
                         Collectors.toCollection(() -> new TreeSet<>(comparator))
@@ -134,6 +134,19 @@ public class CrossProductNaturalyOrderedSpliteratorTest {
         assertThat(entry.getKey()).isEqualTo("d");
         assertThat(entry.getValue()).isEqualTo("c");
     }
+
+    @Test
+    public void should_be_able_to_cross_product_a_sorted_stream_in_an_non_sorted_cross_product_stream() {
+        // Given
+        SortedSet<String> sortedSet = new TreeSet<>(Arrays.asList("one", "two", "three"));
+
+        // When
+        Stream<Map.Entry<String, String>> stream = StreamsUtils.crossProductNaturallyOrdered(sortedSet.stream());
+
+        // Then
+        assertThat(stream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(0);
+    }
+
 
     @Test(expectedExceptions = NullPointerException.class)
     public void should_not_build_a_crossing_spliterator_on_a_null_spliterator() {

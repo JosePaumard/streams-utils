@@ -19,7 +19,7 @@ package org.paumard.spliterators;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -72,6 +72,20 @@ public class WeavingSpliteratorTest {
         // When
         assertThat(collect.size()).isEqualTo(8);
         assertThat(collect).containsExactly("1", "11", "2", "12", "3", "13", "4", "14");
+    }
+
+    @Test
+    public void should_weave_a_sorted_stream_correctly_and_in_an_unsorted_stream() {
+        // Given
+        Stream<String> sortedStream1 = new TreeSet<>(Arrays.asList("1",  "2",  "3",  "4")).stream();
+        Stream<String> sortedStream2 = new TreeSet<>(Arrays.asList("11", "12", "13", "14", "15")).stream();
+        int repeating = 2;
+
+        // When
+        Stream<String> stream = StreamsUtils.weave(sortedStream1, sortedStream2);
+
+        // Then
+        assertThat(stream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(0);
     }
 
     @Test(expectedExceptions = NullPointerException.class)

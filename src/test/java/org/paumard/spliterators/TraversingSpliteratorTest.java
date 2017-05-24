@@ -19,7 +19,7 @@ package org.paumard.spliterators;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -87,6 +87,19 @@ public class TraversingSpliteratorTest {
         assertThat(strings.size()).isEqualTo(2);
         assertThat(strings.get(0)).containsExactly("a1", "b1");
         assertThat(strings.get(1)).containsExactly("a2", "b2");
+    }
+
+    @Test
+    public void should_two_sorted_streams_correctly_and_in_an_unsorted_stream() {
+        // Given
+        Stream<String> streamA = new TreeSet<>(Arrays.asList("a", "b", "c")).stream();
+        Stream<String> streamB = new TreeSet<>(Arrays.asList("0", "1", "2")).stream();
+
+        // When
+        Stream<Stream<String>> stream = StreamsUtils.traverse(streamA, streamB);
+
+        // Then
+        assertThat(stream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(0);
     }
 
     @Test(expectedExceptions = NullPointerException.class)

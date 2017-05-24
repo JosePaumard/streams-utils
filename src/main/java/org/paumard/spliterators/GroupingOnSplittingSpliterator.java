@@ -113,6 +113,6 @@ public class GroupingOnSplittingSpliterator<E> implements Spliterator<Stream<E>>
     @Override
     public int characteristics() {
         // this spliterator is already ordered
-        return spliterator.characteristics();
+        return spliterator.characteristics() & ~Spliterator.SORTED;
     }
 }

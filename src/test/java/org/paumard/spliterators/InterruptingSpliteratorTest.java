@@ -19,7 +19,7 @@ package org.paumard.spliterators;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -58,5 +58,18 @@ public class InterruptingSpliteratorTest {
         // Then
         assertThat(list.size()).isEqualTo(3);
         assertThat(list).containsExactly("one", "two", "three");
+    }
+
+    @Test
+    public void should_interrupt_a_sorted_stream_correctly_and_in_a_sorted_stream() {
+        // Given
+        SortedSet<String> sortedSet = new TreeSet<>(Arrays.asList("one", "two", "three", "", "", "", "", ""));
+        Predicate<String> interruptor = String::isEmpty;
+
+        // When
+        Stream<String> stream = StreamsUtils.interrupt(sortedSet.stream(), interruptor);
+
+        // Then
+        assertThat(stream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(Spliterator.SORTED);
     }
 }

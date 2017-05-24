@@ -104,6 +104,6 @@ public class CrossProductOrderedSpliterator<E> implements Spliterator<Map.Entry<
 
     @Override
     public int characteristics() {
-        return this.spliterator.characteristics();
+        return this.spliterator.characteristics() & ~Spliterator.SORTED;
     }
 }

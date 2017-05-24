@@ -16,9 +16,10 @@
 
 package org.paumard.spliterators;
 
+import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -76,6 +77,18 @@ public class CyclingSpliteratorTest {
         List<String> list  = StreamSupport.stream(CyclingSpliterator.of(strings.spliterator()), false).limit(3).flatMap(identity()).collect(toList());
         // Then
         assertThat(list).containsExactly("one", "two", "one", "two", "one", "two");
+    }
+
+    @Test
+    public void should_be_able_to_cross_product_a_sorted_stream_in_an_non_sorted_cross_product_stream() {
+        // Given
+        SortedSet<String> sortedSet = new TreeSet<>(Arrays.asList("one", "two", "three"));
+
+        // When
+        Stream<String> stream = StreamsUtils.cycle(sortedSet.stream());
+
+        // Then
+        assertThat(stream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(0);
     }
 
     @Test(expectedExceptions = NullPointerException.class)

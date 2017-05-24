@@ -98,6 +98,6 @@ public class ZippingSpliterator<E1, E2, R> implements Spliterator<R> {
 
     @Override
     public int characteristics() {
-        return this.spliterator1.characteristics() & this.spliterator2.characteristics();
+        return this.spliterator1.characteristics() & this.spliterator2.characteristics() & ~Spliterator.SORTED;
     }
 }

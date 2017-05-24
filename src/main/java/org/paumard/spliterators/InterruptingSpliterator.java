@@ -18,6 +18,7 @@ package org.paumard.spliterators;
 
 import org.paumard.streams.StreamsUtils;
 
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.Spliterator;
 import java.util.function.Consumer;
@@ -76,5 +77,10 @@ public class InterruptingSpliterator<E> implements Spliterator<E> {
     @Override
     public int characteristics() {
         return this.spliterator.characteristics() & ~Spliterator.SIZED & ~Spliterator.SUBSIZED;
+    }
+
+    @Override
+    public Comparator<? super E> getComparator() {
+        return this.spliterator.getComparator();
     }
 }

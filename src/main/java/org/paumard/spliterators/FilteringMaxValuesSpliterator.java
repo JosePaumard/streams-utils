@@ -86,6 +86,11 @@ public class FilteringMaxValuesSpliterator<E> implements Spliterator<E> {
         return spliterator.characteristics();
     }
 
+    @Override
+    public Comparator<? super E> getComparator() {
+        return this.spliterator.getComparator();
+    }
+
     private static class InsertionTab<T> implements Consumer<T> {
 
         private final T[] tab;
