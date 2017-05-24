@@ -19,7 +19,7 @@ package org.paumard.spliterators;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
@@ -64,6 +64,19 @@ public class ShiftingWindowAveragingDoubleTest {
         assertThat(result.get(3)).isEqualTo(3);
         assertThat(result.get(4)).isEqualTo(3);
         assertThat(result.get(5)).isEqualTo(3);
+    }
+
+    @Test
+    public void should_process_a_sorted_stream_correctly_and_in_an_unsorted_stream() {
+        // Given
+        SortedSet<String> sortedSet = new TreeSet<>(Arrays.asList("2", "4", "2", "4", "2", "4", "2"));
+        int groupingFactor = 2;
+
+        // When
+        DoubleStream stream = StreamsUtils.shiftingWindowAveragingDouble(sortedSet.stream(), groupingFactor, Double::parseDouble);
+
+        // Then
+        assertThat(stream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(0);
     }
 
     @Test(expectedExceptions = NullPointerException.class)

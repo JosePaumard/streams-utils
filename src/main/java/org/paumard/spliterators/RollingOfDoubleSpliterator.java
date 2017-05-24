@@ -109,6 +109,6 @@ public class RollingOfDoubleSpliterator implements Spliterator<DoubleStream> {
 	@Override
 	public int characteristics() {
         // this spliterator is already ordered
-		return spliterator.characteristics();
+		return spliterator.characteristics() & ~Spliterator.SORTED;
 	}
 }
