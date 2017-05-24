@@ -44,10 +44,10 @@ public class WeavingSpliterator<E> implements Spliterator<E> {
     public static <E> WeavingSpliterator<E> of(Spliterator<E>... spliterators) {
         Objects.requireNonNull(spliterators);
         if (spliterators.length < 2) {
-            throw new IllegalArgumentException ("Why would you weave less than 2 spliterators?");
+            throw new IllegalArgumentException("Why would you weave less than 2 spliterators?");
         }
         if (Stream.of(spliterators).mapToInt(Spliterator::characteristics).reduce(Spliterator.ORDERED, (i1, i2) -> i1 & i2) == 0) {
-            throw new IllegalArgumentException ("Why would you want to traverse non ordered spliterators?");
+            throw new IllegalArgumentException("Why would you want to traverse non ordered spliterators?");
         }
 
         return new WeavingSpliterator<>(spliterators);
@@ -112,6 +112,9 @@ public class WeavingSpliterator<E> implements Spliterator<E> {
 
     @Override
     public int characteristics() {
-        return Stream.of(spliterators).mapToInt(Spliterator::characteristics).reduce(0xFFFFFFFF, (i1, i2) -> i1 & i2);
+        return Stream.of(spliterators)
+                .mapToInt(Spliterator::characteristics)
+                .reduce(0xFFFFFFFF, (i1, i2) -> i1 & i2)
+                & ~Spliterator.SORTED;
     }
 }
