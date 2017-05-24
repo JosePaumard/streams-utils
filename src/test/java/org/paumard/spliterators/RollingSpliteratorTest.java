@@ -70,15 +70,13 @@ public class RollingSpliteratorTest {
     public void should_be_able_to_roll_a_sorted_stream_in_an_non_sorted_rolled_stream() throws ParseException {
         // Given
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-        SortedMap<Date, Long> sortedMap = new TreeMap<>();
-        sortedMap.put(formatter.parse("01/05/2017"), 1L);
-        sortedMap.put(formatter.parse("02/05/2017"), 2L);
-        sortedMap.put(formatter.parse("03/05/2017"), 3L);
-        sortedMap.put(formatter.parse("04/05/2017"), 2L);
-        sortedMap.put(formatter.parse("05/05/2017"), 3L);
+        SortedMap<Long, String> sortedMap = new TreeMap<>();
+        sortedMap.put(1L, "ONE");
+        sortedMap.put(2L, "TWO");
+        sortedMap.put(3L, "THREE");
 
         // When
-        Stream<Stream<Map.Entry<Date, Long>>> stream = StreamsUtils.roll(sortedMap.entrySet().stream(), 2);
+        Stream<Stream<Map.Entry<Long, String>>> stream = StreamsUtils.roll(sortedMap.entrySet().stream(), 2);
 
         // Then
         assertThat(stream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(0);
