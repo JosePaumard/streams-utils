@@ -75,7 +75,7 @@ public class WeavingSpliteratorTest {
     }
 
     @Test
-    public void should_repeat_a_sorted_stream_correctly_and_in_an_unsorted_stream() {
+    public void should_weave_a_sorted_stream_correctly_and_in_an_unsorted_stream() {
         // Given
         Stream<String> sortedStream1 = new TreeSet<>(Arrays.asList("1",  "2",  "3",  "4")).stream();
         Stream<String> sortedStream2 = new TreeSet<>(Arrays.asList("11", "12", "13", "14", "15")).stream();
