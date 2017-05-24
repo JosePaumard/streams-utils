@@ -16,9 +16,10 @@
 
 package org.paumard.spliterators;
 
+import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
-import java.util.List;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -112,5 +113,25 @@ public class ZippingSpliteratorTest {
         // Then
         assertThat(list.size()).isEqualTo(3);
         assertThat(list).containsExactly("one - 1", "two - 2", "three - 3");
+    }
+
+    @Test
+    public void should_zip_a_sorted_stream_correctly_and_in_an_unsorted_stream() {
+        // Given
+        Stream<String> sortedStream1 = new TreeSet<>(Arrays.asList("one", "two", "three")).stream();
+        Stream<String> sortedStream2 = new TreeSet<>(Arrays.asList("one", "two", "three")).stream();
+        BiFunction<String, String, String> zip = (s1, s2) -> s1 + " - " + s2;
+
+        // When
+        ZippingSpliterator<String, String, String> spliterator =
+                new ZippingSpliterator.Builder<String, String, String>()
+                        .with(sortedStream1.spliterator())
+                        .and(sortedStream2.spliterator())
+                        .mergedBy(zip)
+                        .build();
+        Stream<String> stream = StreamSupport.stream(spliterator, false);
+
+        // Then
+        assertThat(stream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(0);
     }
 }
