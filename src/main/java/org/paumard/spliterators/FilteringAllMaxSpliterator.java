@@ -90,4 +90,9 @@ public class FilteringAllMaxSpliterator<E> implements Spliterator<E> {
     public int characteristics() {
         return spliterator.characteristics();
     }
+
+    @Override
+    public Comparator<? super E> getComparator() {
+        return this.spliterator.getComparator();
+    }
 }
