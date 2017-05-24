@@ -149,7 +149,7 @@ public class FilteringMaxValuesSpliteratorTest {
     @Test
     public void should_be_able_to_filter_maxes_of_a_sorted_stream_in_a_sorted_filtered_stream() {
         // Given
-        SortedSet<String> sortedSet = new TreeSet(Arrays.asList("one", "two", "three"));
+        SortedSet<String> sortedSet = new TreeSet<>(Arrays.asList("one", "two", "three"));
         Comparator<String> comparator = Comparator.naturalOrder();
 
         // When

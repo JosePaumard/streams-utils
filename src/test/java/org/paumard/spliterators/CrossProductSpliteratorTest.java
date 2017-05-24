@@ -132,7 +132,7 @@ public class CrossProductSpliteratorTest {
     @Test
     public void should_be_able_to_cross_product_a_sorted_stream_in_an_non_sorted_cross_product_stream() {
         // Given
-        SortedSet<String> sortedSet = new TreeSet(Arrays.asList("one", "two", "three"));
+        SortedSet<String> sortedSet = new TreeSet<>(Arrays.asList("one", "two", "three"));
 
         // When
         Stream<Map.Entry<String, String>> stream = StreamsUtils.crossProduct(sortedSet.stream());

@@ -72,7 +72,7 @@ public class FilteringAllMaxSpliteratorTest {
     @Test
     public void should_be_able_to_filter_all_maxes_of_a_sorted_stream_in_an_sorted_filtered_stream() {
         // Given
-        SortedSet<String> sortedSet = new TreeSet(Arrays.asList("one", "two", "three"));
+        SortedSet<String> sortedSet = new TreeSet<>(Arrays.asList("one", "two", "three"));
 
         // When
         Stream<String> stream = StreamsUtils.filteringAllMax(sortedSet.stream());
