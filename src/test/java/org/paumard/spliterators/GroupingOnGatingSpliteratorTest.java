@@ -20,7 +20,7 @@ package org.paumard.spliterators;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -128,6 +128,20 @@ public class GroupingOnGatingSpliteratorTest {
         // When
         assertThat(collect.size()).isEqualTo(1);
         assertThat(collect.get(0)).containsExactly("o", "1", "2", "3", "4", "5", "6", "7", "8", "9", "c");
+    }
+
+    @Test
+    public void should_group_a_sorted_stream_correctly_and_in_an_unsorted_stream() {
+        // Given
+        SortedSet<String> sortedSet = new TreeSet<>(Arrays.asList("o", "1", "2", "3", "4", "5", "6", "7", "8", "9", "c"));
+        Predicate<String> open = s -> s.startsWith("o");
+        Predicate<String> close = s -> s.startsWith("c");
+
+        // When
+        Stream<Stream<String>> groupingStream = StreamsUtils.group(sortedSet.stream(), open, close);
+
+        // Then
+        assertThat(groupingStream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(0);
     }
 
     @Test(expectedExceptions = NullPointerException.class)
