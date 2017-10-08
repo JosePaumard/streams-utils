@@ -108,7 +108,7 @@ public class GroupingSpliteratorTest {
         long count = monitoredStream.count();
 
         // Then
-        assertThat(count).isEqualTo(11L);
+        assertThat(count).isEqualTo(7L);
     }
 
     @Test(expectedExceptions = NullPointerException.class)
