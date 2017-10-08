@@ -16,19 +16,15 @@
 
 package org.paumard.spliterators;
 
+import org.paumard.spliterators.util.TryAdvanceCheckingSpliterator;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
-import java.util.List;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.paumard.streams.StreamsUtils.cycle;
-import static org.paumard.streams.StreamsUtils.zip;
 
 /**
  * Created by José
@@ -70,6 +66,21 @@ public class AccumulatingSpliteratorTest {
 
         // Then
         assertThat(accumulate.collect(toList())).containsExactly(1, 2, 3, 4, 5);
+    }
+
+    @Test
+    public void should_conform_to_specified_trySplit_behavior() {
+        // Given
+        Stream<String> strings = Stream.of("one", "two", "three");
+        Stream<String> accumulatingStream = StreamsUtils.accumulate(strings, String::concat);
+        TryAdvanceCheckingSpliterator<String> spliterator = new TryAdvanceCheckingSpliterator<>(accumulatingStream.spliterator());
+        Stream<String> monitoredStream = StreamSupport.stream(spliterator, false);
+
+        // When
+        long count = monitoredStream.count();
+
+        // Then
+        assertThat(count).isEqualTo(3L);
     }
 
     @Test(expectedExceptions = NullPointerException.class)

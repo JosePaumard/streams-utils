@@ -16,12 +16,17 @@
 
 package org.paumard.spliterators;
 
+import org.paumard.spliterators.util.TryAdvanceCheckingSpliterator;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Spliterator;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -98,9 +103,24 @@ public class WeavingSpliteratorTest {
     public void should_not_build_a_weaving_spliterator_on_less_than_two_spliterators() {
         // Given
         Stream<String> strings = Stream.of("1", "2", "3", "4", "5", "6", "7");
-        int groupingFactor = 1;
 
         // When
         Stream<String> weavingStream = StreamsUtils.weave(strings);
+    }
+
+    @Test
+    public void should_conform_to_specified_trySplit_behavior() {
+        // Given
+        Stream<String> strings1 = Stream.of("one", "two", "three");
+        Stream<String> strings2 = Stream.of("one", "two", "three");
+        Stream<String> weavingStream = StreamsUtils.weave(strings1, strings2);
+        TryAdvanceCheckingSpliterator<String> spliterator = new TryAdvanceCheckingSpliterator<>(weavingStream.spliterator());
+        Stream<String> monitoredStream = StreamSupport.stream(spliterator, false);
+
+        // When
+        long count = monitoredStream.count();
+
+        // Then
+        assertThat(count).isEqualTo(6L);
     }
 }

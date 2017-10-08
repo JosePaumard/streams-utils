@@ -17,13 +17,16 @@
 package org.paumard.spliterators;
 
 
+import org.paumard.spliterators.util.TryAdvanceCheckingSpliterator;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -142,6 +145,24 @@ public class GroupingOnGatingSpliteratorTest {
 
         // Then
         assertThat(groupingStream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(0);
+    }
+
+    @Test
+    public void should_conform_to_specified_trySplit_behavior() {
+        // Given
+        Stream<String> strings = Stream.of("o", "1", "2", "3", "4", "5", "6", "7", "8", "9", "c");
+        Predicate<String> open = s -> s.startsWith("o");
+        Predicate<String> close = s -> s.startsWith("c");
+
+        Stream<Stream<String>> testedStream = StreamsUtils.group(strings, open, close);
+        TryAdvanceCheckingSpliterator<Stream<String>> spliterator = new TryAdvanceCheckingSpliterator<>(testedStream.spliterator());
+        Stream<String> monitoredStream = StreamSupport.stream(spliterator, false).flatMap(Function.identity());
+
+        // When
+        long count = monitoredStream.count();
+
+        // Then
+        assertThat(count).isEqualTo(11L);
     }
 
     @Test(expectedExceptions = NullPointerException.class)

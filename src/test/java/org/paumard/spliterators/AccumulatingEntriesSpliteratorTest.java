@@ -16,12 +16,14 @@
 
 package org.paumard.spliterators;
 
+import org.paumard.spliterators.util.TryAdvanceCheckingSpliterator;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
 import java.util.AbstractMap;
 import java.util.Map;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -84,6 +86,26 @@ public class AccumulatingEntriesSpliteratorTest {
                 new AbstractMap.SimpleEntry<>(3, "123"),
                 new AbstractMap.SimpleEntry<>(4, "1234")
         );
+    }
+
+    @Test
+    public void should_conform_to_specified_trySplit_behavior() {
+        // Given
+        Stream<Map.Entry<Integer, String>> entries =
+                Stream.of(
+                        new AbstractMap.SimpleEntry<>(1, "1"),
+                        new AbstractMap.SimpleEntry<>(2, "2"),
+                        new AbstractMap.SimpleEntry<>(3, "3")
+                );
+        Stream<Map.Entry<Integer, String>> accumulatingStream = StreamsUtils.accumulateEntries(entries, String::concat);
+        TryAdvanceCheckingSpliterator<Map.Entry<Integer, String>> spliterator = new TryAdvanceCheckingSpliterator<>(accumulatingStream.spliterator());
+        Stream<Map.Entry<Integer, String>> monitoredStream = StreamSupport.stream(spliterator, false);
+
+        // When
+        long count = monitoredStream.count();
+
+        // Then
+        assertThat(count).isEqualTo(3L);
     }
 
     @Test(expectedExceptions = NullPointerException.class)
