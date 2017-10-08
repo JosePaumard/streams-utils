@@ -17,11 +17,27 @@ You can use this API directly with Maven, by adding the following dependency.
 <dependency>
     <groupId>org.paumard</groupId>
     <artifactId>streams-utils</artifactId>
-    <version>1.6</version>
+    <version>1.7</version>
 </dependency>
 ```
 
 This project was previously called More Spliterators (you can see it on my more-spliterators Github repo). Quite oddly, nobody had any clue about what is was about. So I decided to rename it to a more explicit name. 
+
+## Acknowledgments
+
+I had the chance to present part of this project at JavaOne 2017. By the way you can watch it on YouTube [YouTube](http://www.youtube.com/watch?v=xgHGpsubL5M) and grab the slides on [Slideshare](http://www.slideshare.net/jpaumard/streams-in-the-wild), 
+Doctor Deprecator ([@DrDeprecator](https://www.twitter.com/DrDeprecator) aka Stuart Marks [@StuartMarks](https://twitter.com/StuartMarks)) was kind enough to come to my talk, and it was a great chance because he could spot a sneaky mistake I made both in the talk and in this API. 
+
+It turns out that there is a specification that states the following about the `tryAdvance(Consumer<T>)` method of the `Spliterator` interface: 
+- if this method returns true then the consumer passed as a parameter should be called once and only once;
+- if this method returns false, then this consumer should not be called. 
+
+Not conforming to this point may lead to unspecified behavior, including silent loss of elements in the produced stream. Even it you did not see this happening, it may in the future, including with future versions
+of the Stream API.   
+
+This bug was indeed there in Streams Utils, and is fixed in the 1.7 version. 
+
+Thank you Stuart for your most valuable comments and advice!  
 
 # Operations provided
 
@@ -195,7 +211,7 @@ The resulting stream, for an operator `op` is the following: ```a0, r1, r2, r3``
 
 This stream can also operate directly on map entries, accumulating the values of the entries. 
 
-## Acknowledgements
+## Acknowledgments
 
 Many thanks to Rémi Forax for his valuable advice during the development of this API. 
 
