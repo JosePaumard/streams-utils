@@ -16,12 +16,14 @@
 
 package org.paumard.spliterators;
 
+import org.paumard.spliterators.util.TryAdvanceCheckingSpliterator;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -60,6 +62,19 @@ public class GatingSpliteratorTest {
     }
 
     @Test
+    public void should_gate_a_stream_correctly_when_the_gate_does_not_open() {
+        // Given
+        Stream<String> strings = Stream.of("", "", "", "");
+
+        // When
+        Stream<String> gatingStream = StreamsUtils.gate(strings, s -> !s.isEmpty());
+        List<String> list = gatingStream.collect(toList());
+
+        // Then
+        assertThat(list.size()).isEqualTo(0);
+    }
+
+    @Test
     public void should_gate_a_sorted_stream_correctly_and_in_a_sorted_stream() {
         // Given
         SortedSet<String> sortedSet = new TreeSet<>(Arrays.asList("", "", "", "", "one", "two", "three"));
@@ -69,5 +84,20 @@ public class GatingSpliteratorTest {
 
         // Then
         assertThat(gatingStream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(Spliterator.SORTED);
+    }
+
+    @Test
+    public void should_conform_to_specified_trySplit_behavior() {
+        // Given
+        Stream<String> strings = Stream.of("", "", "", "", "one", "two", "three");
+        Stream<String> testedStream = StreamsUtils.gate(strings, s -> !s.isEmpty());
+        TryAdvanceCheckingSpliterator<String> spliterator = new TryAdvanceCheckingSpliterator<>(testedStream.spliterator());
+        Stream<String> monitoredStream = StreamSupport.stream(spliterator, false);
+
+        // When
+        long count = monitoredStream.count();
+
+        // Then
+        assertThat(count).isEqualTo(3L);
     }
 }
