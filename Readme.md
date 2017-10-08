@@ -25,7 +25,7 @@ This project was previously called More Spliterators (you can see it on my more-
 
 ## Acknowledgments
 
-I had the chance to present part of this project at JavaOne 2017. By the way you can watch it on YouTube [YouTube](http://www.youtube.com/watch?v=xgHGpsubL5M) and grab the slides on [Slideshare](http://www.slideshare.net/jpaumard/streams-in-the-wild), 
+I had the chance to present part of this project at JavaOne 2017. By the way you can watch it on [YouTube](http://www.youtube.com/watch?v=xgHGpsubL5M) and grab the slides on [Slideshare](http://www.slideshare.net/jpaumard/streams-in-the-wild), 
 Doctor Deprecator ([@DrDeprecator](https://www.twitter.com/DrDeprecator) aka Stuart Marks [@StuartMarks](https://twitter.com/StuartMarks)) was kind enough to come to my talk, and it was a great chance because he could spot a sneaky mistake I made both in the talk and in this API. 
 
 It turns out that there is a specification that states the following about the `tryAdvance(Consumer<T>)` method of the `Spliterator` interface: 
