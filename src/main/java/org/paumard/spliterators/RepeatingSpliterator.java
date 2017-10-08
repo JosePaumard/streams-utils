@@ -31,7 +31,10 @@ import java.util.stream.IntStream;
 public class RepeatingSpliterator<E> implements Spliterator<E> {
 
     private final int repeating;
+    private int currentRepeat = 0;
+    private boolean moveToNext = true;
     private final Spliterator<E> spliterator;
+    private E currentValue;
 
     public static <E> RepeatingSpliterator<E> of(Spliterator<E> spliterator, int repeating) {
         Objects.requireNonNull(spliterator);
@@ -52,10 +55,22 @@ public class RepeatingSpliterator<E> implements Spliterator<E> {
 
     @Override
     public boolean tryAdvance(Consumer<? super E> action) {
-        boolean hasMore = spliterator.tryAdvance(
-                e -> IntStream.range(0, repeating).forEach(i -> action.accept(e))
-        );
-
+        boolean hasMore = false;
+        if (moveToNext) {
+            hasMore = spliterator.tryAdvance(e -> {
+                this.currentValue = e;
+                action.accept(e);
+            });
+            moveToNext = false;
+            currentRepeat = 1;
+        } else {
+            if (currentRepeat < repeating) {
+                action.accept(currentValue);
+                currentRepeat++;
+                moveToNext = true;
+                hasMore = true;
+            }
+        }
         return hasMore;
     }
 

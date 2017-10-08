@@ -16,13 +16,14 @@
 
 package org.paumard.spliterators;
 
+import org.paumard.spliterators.util.TryAdvanceCheckingSpliterator;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -71,13 +72,28 @@ public class RepeatingSpliteratorTest {
         assertThat(stream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(0);
     }
 
+    @Test
+    public void should_conform_to_specified_trySplit_behavior() {
+        // Given
+        Stream<String> strings = Stream.of("one", "two", "three");
+        Stream<String> repeatingStream = StreamsUtils.repeat(strings, 2);
+        TryAdvanceCheckingSpliterator<String> spliterator = new TryAdvanceCheckingSpliterator<>(repeatingStream.spliterator());
+        Stream<String> monitoredStream = StreamSupport.stream(spliterator, false);
+
+        // When
+        long count = monitoredStream.count();
+
+        // Then
+        assertThat(count).isEqualTo(6L);
+    }
+
     @Test(expectedExceptions = NullPointerException.class)
     public void should_not_build_a_repeating_spliterator_on_a_null_spliterator() {
 
         Stream<String> repeatingStream = StreamsUtils.repeat(null, 3);
     }
 
-    @Test(expectedExceptions = IllegalArgumentException .class)
+    @Test(expectedExceptions = IllegalArgumentException.class)
     public void should_not_build_a_repeating_spliterator_with_a_repeating_factor_of_1() {
         // Given
         Stream<String> stream = Stream.of("a1", "a2");
