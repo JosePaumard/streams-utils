@@ -16,13 +16,16 @@
 
 package org.paumard.spliterators;
 
+import org.paumard.spliterators.util.TryAdvanceCheckingSpliterator;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
 import java.util.*;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -80,6 +83,23 @@ public class ShiftingWindowSummarizingDoubleTest {
 
         // Then
         assertThat(stream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(0);
+    }
+
+    @Test
+    public void should_conform_to_specified_trySplit_behavior() {
+        // Given
+        Stream<String> strings = Stream.of("2", "4", "2", "4", "2", "4", "2");
+        int groupingFactor = 3;
+
+        Stream<DoubleSummaryStatistics> testedStream = StreamsUtils.shiftingWindowSummarizingDouble(strings, groupingFactor, Double::parseDouble);
+        TryAdvanceCheckingSpliterator<DoubleSummaryStatistics> spliterator = new TryAdvanceCheckingSpliterator<>(testedStream.spliterator());
+        Stream<DoubleSummaryStatistics> monitoredStream = StreamSupport.stream(spliterator, false);
+
+        // When
+        long count = monitoredStream.count();
+
+        // Then
+        assertThat(count).isEqualTo(5L);
     }
 
     @Test(expectedExceptions = NullPointerException.class)

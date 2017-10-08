@@ -16,6 +16,7 @@
 
 package org.paumard.spliterators;
 
+import org.paumard.spliterators.util.TryAdvanceCheckingSpliterator;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
@@ -42,6 +43,7 @@ public class CyclingSpliteratorTest {
 
         // When
         long n = StreamSupport.stream(CyclingSpliterator.of(strings.spliterator()), false).limit(10).count();
+
         // Then
         assertThat(n).isEqualTo(10);
     }
@@ -74,13 +76,13 @@ public class CyclingSpliteratorTest {
         Stream<String> strings = Stream.of("one", "two");
 
         // When
-        List<String> list  = StreamSupport.stream(CyclingSpliterator.of(strings.spliterator()), false).limit(3).flatMap(identity()).collect(toList());
+        List<String> list = StreamSupport.stream(CyclingSpliterator.of(strings.spliterator()), false).limit(3).flatMap(identity()).collect(toList());
         // Then
         assertThat(list).containsExactly("one", "two", "one", "two", "one", "two");
     }
 
     @Test
-    public void should_be_able_to_cross_product_a_sorted_stream_in_an_non_sorted_cross_product_stream() {
+    public void should_be_able_to_cycle_a_sorted_stream_in_an_non_sorted_cycle_stream() {
         // Given
         SortedSet<String> sortedSet = new TreeSet<>(Arrays.asList("one", "two", "three"));
 
@@ -95,6 +97,21 @@ public class CyclingSpliteratorTest {
     public void should_not_build_a_cycling_spliterator_on_a_null_spliterator() {
 
         CyclingSpliterator<String> cyclingSpliterator = CyclingSpliterator.of(null);
+    }
+
+    @Test
+    public void should_conform_to_specified_trySplit_behavior() {
+        // Given
+        Stream<String> strings = Stream.of("one", "two", "three");
+        Stream<String> weavingStream = StreamsUtils.cycle(strings).limit(2);
+        TryAdvanceCheckingSpliterator<String> spliterator = new TryAdvanceCheckingSpliterator<>(weavingStream.spliterator());
+        Stream<String> monitoredStream = StreamSupport.stream(spliterator, false);
+
+        // When
+        long count = monitoredStream.count();
+
+        // Then
+        assertThat(count).isEqualTo(2L);
     }
 
     @Test
@@ -115,8 +132,8 @@ public class CyclingSpliteratorTest {
 
         // Then
         assertThat(fizzBuzzList).containsExactly(
-                         "1",    "2", "fizz",  "4",     "buzz", "fizz",  "7",    "8", "fizz",
-                "buzz", "11", "fizz",   "13", "14", "fizzbuzz",   "16", "17", "fizz",   "19",
+                "1", "2", "fizz", "4", "buzz", "fizz", "7", "8", "fizz",
+                "buzz", "11", "fizz", "13", "14", "fizzbuzz", "16", "17", "fizz", "19",
                 "buzz");
     }
 }

@@ -16,11 +16,14 @@
 
 package org.paumard.spliterators;
 
+import org.paumard.spliterators.util.TryAdvanceCheckingSpliterator;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -133,5 +136,28 @@ public class ZippingSpliteratorTest {
 
         // Then
         assertThat(stream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(0);
+    }
+
+    @Test
+    public void should_conform_to_specified_trySplit_behavior() {
+        // Given
+        Stream<String> strings = Stream.of("one", "two", "three");
+        Stream<Integer> ints = Stream.of(1, 2, 3);
+        BiFunction<String, Integer, String> zip = (s, i) -> s + " - " + i;
+
+        ZippingSpliterator<String, Integer, String> testedSpliterator =
+                new ZippingSpliterator.Builder<String, Integer, String>()
+                        .with(strings.spliterator())
+                        .and(ints.spliterator())
+                        .mergedBy(zip)
+                        .build();
+        TryAdvanceCheckingSpliterator<String> spliterator = new TryAdvanceCheckingSpliterator<>(testedSpliterator);
+        Stream<String> monitoredStream = StreamSupport.stream(spliterator, false);
+
+        // When
+        long count = monitoredStream.count();
+
+        // Then
+        assertThat(count).isEqualTo(3L);
     }
 }

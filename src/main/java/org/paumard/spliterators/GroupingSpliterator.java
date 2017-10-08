@@ -34,6 +34,7 @@ public class GroupingSpliterator<E> implements Spliterator<Stream<E>> {
     private final Spliterator<E> spliterator;
     private Stream.Builder<E> builder = Stream.builder();
     private boolean firstGroup = true;
+    private boolean lastBuilderHasBeenConsumed = false;
 
     public static <E> GroupingSpliterator<E> of(Spliterator<E> spliterator, long grouping) {
         Objects.requireNonNull(spliterator);
@@ -54,6 +55,9 @@ public class GroupingSpliterator<E> implements Spliterator<Stream<E>> {
 
     @Override
     public boolean tryAdvance(Consumer<? super Stream<E>> action) {
+        if (lastBuilderHasBeenConsumed) {
+            return false;
+        }
         boolean moreElements = true;
         if (firstGroup) {
             moreElements = spliterator.tryAdvance(builder::add);
@@ -61,7 +65,8 @@ public class GroupingSpliterator<E> implements Spliterator<Stream<E>> {
         }
         if (!moreElements) {
             action.accept(builder.build());
-            return false;
+            lastBuilderHasBeenConsumed = true;
+            return true;
         }
         for (int i = 1; i < grouping && moreElements; i++) {
             if (!spliterator.tryAdvance(builder::add)) {
@@ -75,7 +80,11 @@ public class GroupingSpliterator<E> implements Spliterator<Stream<E>> {
             moreElements = spliterator.tryAdvance(builder::add);
         }
 
-        return moreElements;
+        if (!moreElements) {
+            lastBuilderHasBeenConsumed = true;
+        }
+
+        return true;
     }
 
     @Override

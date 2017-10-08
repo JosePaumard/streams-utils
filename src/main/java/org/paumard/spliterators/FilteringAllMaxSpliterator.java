@@ -18,10 +18,9 @@ package org.paumard.spliterators;
 
 import org.paumard.streams.StreamsUtils;
 
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.Spliterator;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -36,6 +35,9 @@ public class FilteringAllMaxSpliterator<E> implements Spliterator<E> {
 
     private Stream.Builder<E> builder = Stream.builder();
     private E currentMax;
+    private boolean hasMore = true;
+    private boolean maxesBuilt = false;
+    private Iterator<E> maxes;
 
     public static <E> FilteringAllMaxSpliterator<E> of(
             Spliterator<E> spliterator,
@@ -56,7 +58,6 @@ public class FilteringAllMaxSpliterator<E> implements Spliterator<E> {
     @Override
     public boolean tryAdvance(Consumer<? super E> action) {
 
-        boolean hasMore = true;
         while (hasMore) {
             hasMore = spliterator.tryAdvance(e -> {
                 if (currentMax == null) {
@@ -72,7 +73,15 @@ public class FilteringAllMaxSpliterator<E> implements Spliterator<E> {
             });
         }
 
-        builder.build().forEach(action);
+        if (!maxesBuilt) {
+            maxes = builder.build().collect(Collectors.toList()).iterator();
+            maxesBuilt = true;
+        }
+        if (maxesBuilt && maxes.hasNext()) {
+            action.accept(maxes.next());
+            return true;
+        }
+
         return false;
     }
 

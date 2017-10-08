@@ -16,12 +16,15 @@
 
 package org.paumard.spliterators;
 
+import org.paumard.spliterators.util.TryAdvanceCheckingSpliterator;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -100,6 +103,23 @@ public class TraversingSpliteratorTest {
 
         // Then
         assertThat(stream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(0);
+    }
+
+    @Test
+    public void should_conform_to_specified_trySplit_behavior() {
+        // Given
+        Stream<String> streamA = Stream.of("a1", "a2", "a3");
+        Stream<String> streamB = Stream.of("b1", "b2", "b3");
+
+        Stream<Stream<String>> testedStream = StreamsUtils.traverse(streamA, streamB);
+        TryAdvanceCheckingSpliterator<Stream<String>> spliterator = new TryAdvanceCheckingSpliterator<>(testedStream.spliterator());
+        Stream<String> monitoredStream = StreamSupport.stream(spliterator, false).flatMap(Function.identity());
+
+        // When
+        long count = monitoredStream.count();
+
+        // Then
+        assertThat(count).isEqualTo(6L);
     }
 
     @Test(expectedExceptions = NullPointerException.class)
