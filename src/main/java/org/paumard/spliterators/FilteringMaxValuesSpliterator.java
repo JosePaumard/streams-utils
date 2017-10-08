@@ -21,6 +21,7 @@ import org.paumard.streams.StreamsUtils;
 import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -33,6 +34,9 @@ public class FilteringMaxValuesSpliterator<E> implements Spliterator<E> {
     private final Spliterator<E> spliterator;
     private final Comparator<? super E> comparator;
     private final int numberOfMaxes;
+    private boolean hasMore = true;
+    private boolean maxesBuilt = false;
+    private Iterator<E> maxes;
 
     public static <E> FilteringMaxValuesSpliterator<E> of(
             Spliterator<E> spliterator,
@@ -59,14 +63,19 @@ public class FilteringMaxValuesSpliterator<E> implements Spliterator<E> {
     @Override
     public boolean tryAdvance(Consumer<? super E> action) {
 
-        boolean hasMore = true;
         InsertionTab<E> insertionTab = new InsertionTab<>(this.numberOfMaxes, this.comparator);
         while (hasMore) {
             hasMore = spliterator.tryAdvance(insertionTab);
         }
 
-        Stream<E> result = insertionTab.getResult();
-        result.forEach(action);
+        if (!maxesBuilt) {
+            maxes = insertionTab.getResult().collect(Collectors.toList()).iterator();
+            maxesBuilt = true;
+        }
+        if (maxesBuilt && maxes.hasNext()) {
+            action.accept(maxes.next());
+            return true;
+        }
 
         return false;
     }
