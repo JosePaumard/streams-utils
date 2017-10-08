@@ -40,6 +40,7 @@ public class GroupingOnSplittingSpliterator<E> implements Spliterator<Stream<E>>
     private boolean gateOpen = false;
     private boolean groupReady = false;
     private boolean builderReady = true;
+    private boolean hasMore = true;
 
     public static <E> GroupingOnSplittingSpliterator<E> of(
             Spliterator<E> spliterator,
@@ -64,8 +65,10 @@ public class GroupingOnSplittingSpliterator<E> implements Spliterator<Stream<E>>
 
     @Override
     public boolean tryAdvance(Consumer<? super Stream<E>> action) {
-
-        boolean hasMore = true;
+        if (!hasMore) {
+            return false;
+        }
+        hasMore = true;
         while (hasMore && !groupReady) {
             hasMore = spliterator.tryAdvance(e -> {
                 if (gateOpen && splitter.test(e)) {
@@ -91,12 +94,13 @@ public class GroupingOnSplittingSpliterator<E> implements Spliterator<Stream<E>>
         if ((groupReady || !hasMore) && !builderReady) {
             action.accept(currentBuidler.build());
             currentBuidler = nextBuilder;
-            nextBuilder = Stream.builder();
             groupReady = false;
+            if (hasMore) {
+                nextBuilder = Stream.builder();
+            }
         }
 
-
-        return hasMore;
+        return true;
     }
 
     @Override
