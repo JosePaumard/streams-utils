@@ -17,7 +17,7 @@ You can use this API directly with Maven, by adding the following dependency.
 <dependency>
     <groupId>org.paumard</groupId>
     <artifactId>streams-utils</artifactId>
-    <version>1.2</version>
+    <version>1.6</version>
 </dependency>
 ```
 
