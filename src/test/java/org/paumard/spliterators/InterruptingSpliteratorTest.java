@@ -16,12 +16,15 @@
 
 package org.paumard.spliterators;
 
+import org.paumard.spliterators.util.TryAdvanceCheckingSpliterator;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -71,5 +74,22 @@ public class InterruptingSpliteratorTest {
 
         // Then
         assertThat(stream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(Spliterator.SORTED);
+    }
+
+    @Test
+    public void should_conform_to_specified_trySplit_behavior() {
+        // Given
+        Stream<String> strings = Stream.of("one", "two", "three", "", "", "", "", "");
+        Predicate<String> interruptor = String::isEmpty;
+
+        Stream<String> testedStream = StreamsUtils.interrupt(strings, interruptor);
+        TryAdvanceCheckingSpliterator<String> spliterator = new TryAdvanceCheckingSpliterator<>(testedStream.spliterator());
+        Stream<String> monitoredStream = StreamSupport.stream(spliterator, false);
+
+        // When
+        long count = monitoredStream.count();
+
+        // Then
+        assertThat(count).isEqualTo(3L);
     }
 }
