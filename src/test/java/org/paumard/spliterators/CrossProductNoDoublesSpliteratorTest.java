@@ -16,12 +16,14 @@
 
 package org.paumard.spliterators;
 
+import org.paumard.spliterators.util.TryAdvanceCheckingSpliterator;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -124,6 +126,21 @@ public class CrossProductNoDoublesSpliteratorTest {
 
         // Then
         assertThat(stream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(0);
+    }
+
+    @Test
+    public void should_conform_to_specified_trySplit_behavior() {
+        // Given
+        Stream<String> strings = Stream.of("a", "d", "c", "b");
+        Stream<Map.Entry<String, String>> stream = StreamsUtils.crossProductNoDoubles(strings);
+        TryAdvanceCheckingSpliterator<Map.Entry<String, String>> spliterator = new TryAdvanceCheckingSpliterator<>(stream.spliterator());
+        Stream<Map.Entry<String, String>> monitoredStream = StreamSupport.stream(spliterator, false);
+
+        // When
+        long count = monitoredStream.count();
+
+        // Then
+        assertThat(count).isEqualTo(12L);
     }
 
     @Test(expectedExceptions = NullPointerException.class)

@@ -20,6 +20,8 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by José
@@ -30,6 +32,9 @@ public class CrossProductOrderedSpliterator<E> implements Spliterator<Map.Entry<
     private List<E> buffer = new ArrayList<>();
 
     private final Function<Consumer<? super Map.Entry<E, E>>, BiConsumer<E, E>> function;
+    private boolean hasMore = true;
+    private Iterator<Map.Entry<E, E>> iterator;
+    private boolean consumingIterator = false;
 
     public static <E> CrossProductOrderedSpliterator<E> ordered(Spliterator<E> spliterator, Comparator<E> comparator) {
         return new CrossProductOrderedSpliterator<>(
@@ -80,9 +85,38 @@ public class CrossProductOrderedSpliterator<E> implements Spliterator<Map.Entry<
     @Override
     public boolean tryAdvance(Consumer<? super Map.Entry<E, E>> action) {
 
-        BiConsumer<E, E> biConsumer = function.apply(action);
+        Stream.Builder<Map.Entry<E, E>> builder = Stream.builder();
+        if (consumingIterator) {
+            if (iterator.hasNext()) {
+                action.accept(iterator.next());
+                return true;
+            } else {
+                consumingIterator = false;
+            }
+        }
+        if (hasMore) {
+            fillBuilder(builder);
+            consumingIterator = true;
+        }
 
-        return spliterator.tryAdvance(
+        List<Map.Entry<E, E>> entryList = builder.build().collect(Collectors.toList());
+        while (entryList.isEmpty() && hasMore) {
+            builder = Stream.builder();
+            fillBuilder(builder);
+            entryList = builder.build().collect(Collectors.toList());
+        }
+        iterator = entryList.iterator();
+        if (iterator.hasNext()) {
+            action.accept(iterator.next());
+            return true;
+        }
+
+        return false;
+    }
+
+    private void fillBuilder(Stream.Builder<Map.Entry<E, E>> builder) {
+        BiConsumer<E, E> biConsumer = function.apply(builder::add);
+        hasMore = spliterator.tryAdvance(
                 e1 -> {
                     buffer.add(e1);
                     buffer.forEach(e2 -> biConsumer.accept(e1, e2));
