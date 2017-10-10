@@ -92,7 +92,7 @@ The interrupting spliterator takes an interruptor as a parameter. If this interr
 It has been created to handle the following case. We created an iterating stream on a class hierarchy:
 
 ```
-String<Class<?>> streamOfClasses = Stream.iterate(myClass, c -> c == null ? null : c.getSuperclass());
+Stream<Class<?>> streamOfClasses = Stream.iterate(myClass, c -> c == null ? null : c.getSuperclass());
 ```
 
 The problem is that, once the `Object.class` has been met, this stream is null. We wanted to stop it. This is exactly what the interrupting spliterator does.
