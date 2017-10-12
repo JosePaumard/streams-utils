@@ -16,7 +16,6 @@
 
 package org.paumard.spliterators;
 
-import org.junit.Ignore;
 import org.paumard.spliterators.util.TryAdvanceCheckingSpliterator;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
