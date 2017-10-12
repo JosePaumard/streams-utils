@@ -16,7 +16,7 @@
 
     <groupId>org.paumard</groupId>
     <artifactId>streams-utils</artifactId>
-    <version>1.7</version>
+    <version>1.8-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>9</maven.compiler.source>
@@ -38,7 +38,7 @@
     </licenses>
 
     <prerequisites>
-        <maven>3.0.3</maven>
+        <maven>3.5.0</maven>
     </prerequisites>
 
     <scm>

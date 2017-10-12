@@ -132,8 +132,8 @@ public class CrossProductOrderedSpliterator<E> implements Spliterator<Map.Entry<
     @Override
     public long estimateSize() {
         long estimateSize = this.spliterator.estimateSize();
-        return (estimateSize == Long.MAX_VALUE) || (estimateSize * estimateSize / 2 < estimateSize) ?
-                Long.MAX_VALUE : estimateSize * estimateSize / 2;
+        return (estimateSize == Long.MAX_VALUE) || (estimateSize * (estimateSize - 1) / 2 < estimateSize) ?
+                Long.MAX_VALUE : estimateSize * (estimateSize - 1) / 2;
     }
 
     @Override
