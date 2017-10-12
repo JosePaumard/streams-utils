@@ -100,4 +100,17 @@ public class GatingSpliteratorTest {
         // Then
         assertThat(count).isEqualTo(3L);
     }
+
+    @Test
+    public void should_correctly_count_the_elements_of_a_sized_stream() {
+        // Given
+        Stream<String> strings = Arrays.asList("", "", "", "one", "two", "three", "four").stream();
+        Stream<String> stream = StreamsUtils.gate(strings, s -> !s.isEmpty());
+
+        // When
+        long count = stream.count();
+
+        // Then
+        assertThat(count).isEqualTo(4L);
+    }
 }

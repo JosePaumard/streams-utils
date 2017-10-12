@@ -21,6 +21,7 @@ import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -82,6 +83,20 @@ public class RepeatingSpliteratorTest {
 
         // When
         long count = monitoredStream.count();
+
+        // Then
+        assertThat(count).isEqualTo(6L);
+    }
+
+    @Test
+    public void should_correctly_count_the_elements_of_a_sized_stream() {
+        // Given
+        Stream<String> strings = Stream.of("a", "b", "c");
+        int repeating = 2;
+        Stream<String> stream = StreamsUtils.repeat(strings, repeating);
+
+        // When
+        long count = stream.count();
 
         // Then
         assertThat(count).isEqualTo(6L);

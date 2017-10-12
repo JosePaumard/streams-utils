@@ -20,6 +20,10 @@ import org.paumard.spliterators.util.TryAdvanceCheckingSpliterator;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
+import java.util.AbstractMap;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -81,6 +85,19 @@ public class AccumulatingSpliteratorTest {
 
         // Then
         assertThat(count).isEqualTo(3L);
+    }
+
+    @Test
+    public void should_correctly_count_the_elements_of_a_sized_stream() {
+        // Given
+        Stream<Integer> integers = Stream.of(1, 1, 1, 1, 1);
+        Stream<Integer> accumulate = StreamsUtils.accumulate(integers, Integer::sum);
+
+        // When
+        long count = accumulate.count();
+
+        // Then
+        assertThat(count).isEqualTo(5);
     }
 
     @Test(expectedExceptions = NullPointerException.class)

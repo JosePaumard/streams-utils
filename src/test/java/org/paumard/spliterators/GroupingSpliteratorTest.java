@@ -111,6 +111,21 @@ public class GroupingSpliteratorTest {
         assertThat(count).isEqualTo(7L);
     }
 
+    @Test
+    public void should_correctly_count_the_elements_of_a_sized_stream() {
+        // Given
+        Stream<String> strings = Stream.of("o", "1", "2", "3", "4", "5", "6", "7", "8", "9", "c");
+        int groupingFactor = 3;
+
+        Stream<Stream<String>> stream = StreamsUtils.group(strings, groupingFactor);
+
+        // When
+        long count = stream.count();
+
+        // Then
+        assertThat(count).isEqualTo(3L);
+    }
+
     @Test(expectedExceptions = NullPointerException.class)
     public void should_not_build_a_grouping_spliterator_on_a_null_spliterator() {
 

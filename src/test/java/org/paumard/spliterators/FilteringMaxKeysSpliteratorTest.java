@@ -164,13 +164,26 @@ public class FilteringMaxKeysSpliteratorTest {
     @Test
     public void should_conform_to_specified_trySplit_behavior() {
         // Given
-        Stream<String> strings = new TreeSet<>(Arrays.asList("one", "two", "three", "four")).stream();
+        Stream<String> strings = Arrays.asList("one", "two", "three", "four").stream();
         Stream<String> stream = StreamsUtils.filteringMaxKeys(strings, 2, Comparator.naturalOrder());
         TryAdvanceCheckingSpliterator<String> spliterator = new TryAdvanceCheckingSpliterator<>(stream.spliterator());
         Stream<String> monitoredStream = StreamSupport.stream(spliterator, false);
 
         // When
         long count = monitoredStream.count();
+
+        // Then
+        assertThat(count).isEqualTo(2L);
+    }
+
+    @Test
+    public void should_correctly_count_the_elements_of_a_sized_stream() {
+        // Given
+        Stream<String> strings = Arrays.asList("one", "two", "three", "four").stream();
+        Stream<String> stream = StreamsUtils.filteringMaxKeys(strings, 2, Comparator.naturalOrder());
+
+        // When
+        long count = stream.count();
 
         // Then
         assertThat(count).isEqualTo(2L);

@@ -176,6 +176,19 @@ public class FilteringMaxValuesSpliteratorTest {
         assertThat(count).isEqualTo(2L);
     }
 
+    @Test
+    public void should_correctly_count_the_elements_of_a_sized_stream() {
+        // Given
+        Stream<String> strings = Arrays.asList("one", "two", "three", "four").stream();
+        Stream<String> stream = StreamsUtils.filteringMaxValues(strings, 2, Comparator.naturalOrder());
+
+        // When
+        long count = stream.count();
+
+        // Then
+        assertThat(count).isEqualTo(2L);
+    }
+
     @Test(expectedExceptions = NullPointerException.class)
     public void should_not_build_a_filtering_spliterator_on_a_null_stream() {
 

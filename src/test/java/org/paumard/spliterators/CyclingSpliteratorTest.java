@@ -103,8 +103,8 @@ public class CyclingSpliteratorTest {
     public void should_conform_to_specified_trySplit_behavior() {
         // Given
         Stream<String> strings = Stream.of("one", "two", "three");
-        Stream<String> weavingStream = StreamsUtils.cycle(strings).limit(2);
-        TryAdvanceCheckingSpliterator<String> spliterator = new TryAdvanceCheckingSpliterator<>(weavingStream.spliterator());
+        Stream<String> cyclingStream = StreamsUtils.cycle(strings).limit(2);
+        TryAdvanceCheckingSpliterator<String> spliterator = new TryAdvanceCheckingSpliterator<>(cyclingStream.spliterator());
         Stream<String> monitoredStream = StreamSupport.stream(spliterator, false);
 
         // When

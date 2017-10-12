@@ -92,4 +92,18 @@ public class InterruptingSpliteratorTest {
         // Then
         assertThat(count).isEqualTo(3L);
     }
+
+    @Test
+    public void should_correctly_count_the_elements_of_a_sized_stream() {
+        // Given
+        Stream<String> strings = Stream.of("one", "two", "three", "", "", "", "", "");
+        Predicate<String> interruptor = String::isEmpty;
+        Stream<String> stream = StreamsUtils.interrupt(strings, interruptor);
+
+        // When
+        long count = stream.count();
+
+        // Then
+        assertThat(count).isEqualTo(3L);
+    }
 }
