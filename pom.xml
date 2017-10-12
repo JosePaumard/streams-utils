@@ -19,11 +19,11 @@
     <version>1.7</version>
 
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>9</maven.compiler.source>
+        <maven.compiler.target>9</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <testng.version>6.9.6</testng.version>
-        <assertj.version>3.6.2</assertj.version>
+        <testng.version>6.10</testng.version>
+        <assertj.version>3.8.0</assertj.version>
         <jacoco-maven-plugin.version>0.7.6.201602180812</jacoco-maven-plugin.version>
         <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
     </properties>
@@ -80,7 +80,7 @@
 
     </dependencies>
 
-
+<!--
     <build>
         <plugins>
 
@@ -106,7 +106,7 @@
 
         </plugins>
     </build>
-
+-->
 
     <profiles>
         <profile>
