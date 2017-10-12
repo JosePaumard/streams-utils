@@ -86,7 +86,7 @@ public class FilteringAllMaxSpliteratorTest {
     @Test
     public void should_conform_to_specified_trySplit_behavior() {
         // Given
-        Stream<String> strings = new TreeSet<>(Arrays.asList("one", "two", "three")).stream();
+        Stream<String> strings = Arrays.asList("one", "two", "three").stream();
         Stream<String> testedStream = StreamsUtils.filteringAllMax(strings);
         TryAdvanceCheckingSpliterator<String> spliterator = new TryAdvanceCheckingSpliterator<>(testedStream.spliterator());
         Stream<String> monitoredStream = StreamSupport.stream(spliterator, false);

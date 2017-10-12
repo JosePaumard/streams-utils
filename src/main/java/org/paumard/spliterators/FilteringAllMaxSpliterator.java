@@ -97,7 +97,7 @@ public class FilteringAllMaxSpliterator<E> implements Spliterator<E> {
 
     @Override
     public int characteristics() {
-        return spliterator.characteristics();
+        return spliterator.characteristics() & ~Spliterator.SIZED & ~Spliterator.SUBSIZED;
     }
 
     @Override

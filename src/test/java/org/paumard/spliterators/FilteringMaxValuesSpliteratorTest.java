@@ -164,7 +164,7 @@ public class FilteringMaxValuesSpliteratorTest {
     @Test
     public void should_conform_to_specified_trySplit_behavior() {
         // Given
-        Stream<String> strings = new TreeSet<>(Arrays.asList("one", "two", "three", "four")).stream();
+        Stream<String> strings = Arrays.asList("one", "two", "three", "four").stream();
         Stream<String> stream = StreamsUtils.filteringMaxValues(strings, 2, Comparator.naturalOrder());
         TryAdvanceCheckingSpliterator<String> spliterator = new TryAdvanceCheckingSpliterator<>(stream.spliterator());
         Stream<String> monitoredStream = StreamSupport.stream(spliterator, false);
