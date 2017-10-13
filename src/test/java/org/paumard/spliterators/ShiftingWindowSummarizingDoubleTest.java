@@ -21,11 +21,9 @@ import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
 import java.util.*;
-import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -122,7 +120,7 @@ public class ShiftingWindowSummarizingDoubleTest {
         StreamsUtils.shiftingWindowSummarizingDouble(null, 3, Double::parseDouble);
     }
 
-    @Test(expectedExceptions = IllegalArgumentException .class)
+    @Test(expectedExceptions = IllegalArgumentException.class)
     public void should_not_build_a_shifting_stream_with_a_grouping_factor_of_1() {
         // Given
         Stream<String> strings = Stream.of("1", "2", "3", "4", "5", "6", "7");

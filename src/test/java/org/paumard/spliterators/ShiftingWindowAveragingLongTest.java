@@ -118,7 +118,7 @@ public class ShiftingWindowAveragingLongTest {
         StreamsUtils.<String>shiftingWindowAveragingLong(null, 3, Long::parseLong);
     }
 
-    @Test(expectedExceptions = IllegalArgumentException .class)
+    @Test(expectedExceptions = IllegalArgumentException.class)
     public void should_not_build_a_shifting_stream_with_a_grouping_factor_of_1() {
         // Given
         Stream<String> strings = Stream.of("1", "2", "3", "4", "5", "6", "7");
