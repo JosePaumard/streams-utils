@@ -21,6 +21,8 @@ import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
 import java.util.AbstractMap;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -106,6 +108,24 @@ public class AccumulatingEntriesSpliteratorTest {
 
         // Then
         assertThat(count).isEqualTo(3L);
+    }
+
+    @Test
+    public void should_correctly_count_the_elements_of_a_sized_stream() {
+        // Given
+        List<Map.Entry<Integer, String>> entries = Arrays.asList(
+                new AbstractMap.SimpleEntry<>(1, "1"),
+                new AbstractMap.SimpleEntry<>(2, "2"),
+                new AbstractMap.SimpleEntry<>(3, "3"),
+                new AbstractMap.SimpleEntry<>(4, "4")
+        );
+        Stream<Map.Entry<Integer, String>> accumulatingStream = StreamsUtils.accumulateEntries(entries.stream(), String::concat);
+
+        // When
+        long count = accumulatingStream.count();
+
+        // Then
+        assertThat(count).isEqualTo(4);
     }
 
     @Test(expectedExceptions = NullPointerException.class)

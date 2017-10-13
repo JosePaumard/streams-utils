@@ -164,4 +164,20 @@ public class GroupingOnGatingClosedOpenedSpliteratorTest {
         // Then
         assertThat(count).isEqualTo(10L);
     }
+
+    @Test
+    public void should_correctly_count_the_elements_of_a_sized_stream() {
+        // Given
+        Stream<String> strings = Stream.of("o", "1", "2", "3", "4", "5", "6", "7", "8", "9", "c");
+        Predicate<String> open = s -> s.startsWith("o");
+        Predicate<String> close = s -> s.startsWith("c");
+
+        Stream<Stream<String>> stream = StreamsUtils.group(strings, open, true, close, false);
+
+        // When
+        long count = stream.count();
+
+        // Then
+        assertThat(count).isEqualTo(1L);
+    }
 }

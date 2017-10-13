@@ -20,10 +20,11 @@ import org.paumard.spliterators.util.TryAdvanceCheckingSpliterator;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Spliterator;
+import java.util.TreeSet;
 import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -43,13 +44,8 @@ public class ZippingSpliteratorTest {
         BiFunction<String, Integer, String> zip = (s, i) -> s + " - " + i;
 
         // When
-        ZippingSpliterator<String, Integer, String> zippingSpliterator =
-                new ZippingSpliterator.Builder<String, Integer, String>()
-                        .with(strings.spliterator())
-                        .and(ints.spliterator())
-                        .mergedBy(zip)
-                        .build();
-        long count = StreamSupport.stream(zippingSpliterator, false).count();
+        Stream<String> zippedStream = StreamsUtils.zip(strings, ints, zip);
+        long count = zippedStream.count();
 
         // Then
         assertThat(count).isEqualTo(0);
@@ -63,13 +59,8 @@ public class ZippingSpliteratorTest {
         BiFunction<String, Integer, String> zip = (s, i) -> s + " - " + i;
 
         // When
-        ZippingSpliterator<String, Integer, String> zippingSpliterator =
-                new ZippingSpliterator.Builder<String, Integer, String>()
-                        .with(strings.spliterator())
-                        .and(ints.spliterator())
-                        .mergedBy(zip)
-                        .build();
-        List<String> list = StreamSupport.stream(zippingSpliterator, false).collect(toList());
+        Stream<String> zippedStream = StreamsUtils.zip(strings, ints, zip);
+        List<String> list = zippedStream.collect(toList());
 
         // Then
         assertThat(list.size()).isEqualTo(3);
@@ -84,13 +75,8 @@ public class ZippingSpliteratorTest {
         BiFunction<String, Integer, String> zip = (s, i) -> s + " - " + i;
 
         // When
-        ZippingSpliterator<String, Integer, String> zippingSpliterator =
-                new ZippingSpliterator.Builder<String, Integer, String>()
-                        .with(strings.spliterator())
-                        .and(ints.spliterator())
-                        .mergedBy(zip)
-                        .build();
-        List<String> list = StreamSupport.stream(zippingSpliterator, false).collect(toList());
+        Stream<String> zippedStream = StreamsUtils.zip(strings, ints, zip);
+        List<String> list = zippedStream.collect(toList());
 
         // Then
         assertThat(list.size()).isEqualTo(3);
@@ -105,13 +91,8 @@ public class ZippingSpliteratorTest {
         BiFunction<String, Integer, String> zip = (s, i) -> s + " - " + i;
 
         // When
-        ZippingSpliterator<String, Integer, String> zippingSpliterator =
-                new ZippingSpliterator.Builder<String, Integer, String>()
-                        .with(strings.spliterator())
-                        .and(ints.spliterator())
-                        .mergedBy(zip)
-                        .build();
-        List<String> list = StreamSupport.stream(zippingSpliterator, false).collect(toList());
+        Stream<String> zippedStream = StreamsUtils.zip(strings, ints, zip);
+        List<String> list = zippedStream.collect(toList());
 
         // Then
         assertThat(list.size()).isEqualTo(3);
@@ -126,16 +107,10 @@ public class ZippingSpliteratorTest {
         BiFunction<String, String, String> zip = (s1, s2) -> s1 + " - " + s2;
 
         // When
-        ZippingSpliterator<String, String, String> spliterator =
-                new ZippingSpliterator.Builder<String, String, String>()
-                        .with(sortedStream1.spliterator())
-                        .and(sortedStream2.spliterator())
-                        .mergedBy(zip)
-                        .build();
-        Stream<String> stream = StreamSupport.stream(spliterator, false);
+        Stream<String> zippedStream = StreamsUtils.zip(sortedStream1, sortedStream2, zip);
 
         // Then
-        assertThat(stream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(0);
+        assertThat(zippedStream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(0);
     }
 
     @Test
@@ -145,13 +120,8 @@ public class ZippingSpliteratorTest {
         Stream<Integer> ints = Stream.of(1, 2, 3);
         BiFunction<String, Integer, String> zip = (s, i) -> s + " - " + i;
 
-        ZippingSpliterator<String, Integer, String> testedSpliterator =
-                new ZippingSpliterator.Builder<String, Integer, String>()
-                        .with(strings.spliterator())
-                        .and(ints.spliterator())
-                        .mergedBy(zip)
-                        .build();
-        TryAdvanceCheckingSpliterator<String> spliterator = new TryAdvanceCheckingSpliterator<>(testedSpliterator);
+        Stream<String> zippedStream = StreamsUtils.zip(strings, ints, zip);
+        TryAdvanceCheckingSpliterator<String> spliterator = new TryAdvanceCheckingSpliterator<>(zippedStream.spliterator());
         Stream<String> monitoredStream = StreamSupport.stream(spliterator, false);
 
         // When
@@ -159,5 +129,35 @@ public class ZippingSpliteratorTest {
 
         // Then
         assertThat(count).isEqualTo(3L);
+    }
+
+    @Test
+    public void should_correctly_count_the_elements_of_a_sized_stream_with_same_length() {
+        // Given
+        Stream<String> strings = Stream.of("one", "two", "three", "four");
+        Stream<Integer> ints = Stream.of(1, 2, 3, 4);
+        BiFunction<String, Integer, String> zip = (s, i) -> s + " - " + i;
+        Stream<String> stream = StreamsUtils.zip(strings, ints, zip);
+
+        // When
+        long count = stream.count();
+
+        // Then
+        assertThat(count).isEqualTo(4L);
+    }
+
+    @Test
+    public void should_correctly_count_the_elements_of_a_sized_stream_with_different_length() {
+        // Given
+        Stream<String> strings = Stream.of("one", "two", "three", "four");
+        Stream<Integer> ints = Stream.of(1, 2, 3, 4, 5, 6);
+        BiFunction<String, Integer, String> zip = (s, i) -> s + " - " + i;
+        Stream<String> stream = StreamsUtils.zip(strings, ints, zip);
+
+        // When
+        long count = stream.count();
+
+        // Then
+        assertThat(count).isEqualTo(4L);
     }
 }

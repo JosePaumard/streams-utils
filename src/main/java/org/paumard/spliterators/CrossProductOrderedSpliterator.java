@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,6 +31,7 @@ public class CrossProductOrderedSpliterator<E> implements Spliterator<Map.Entry<
 
     private Spliterator<E> spliterator;
     private List<E> buffer = new ArrayList<>();
+    private UnaryOperator<Long> estimateSize;
 
     private final Function<Consumer<? super Map.Entry<E, E>>, BiConsumer<E, E>> function;
     private boolean hasMore = true;
@@ -46,7 +48,9 @@ public class CrossProductOrderedSpliterator<E> implements Spliterator<Map.Entry<
                     } else if (compare < 0) {
                         a.accept(new AbstractMap.SimpleImmutableEntry<>(e2, e1));
                     }
-                });
+                },
+                estimateSize -> (estimateSize == Long.MAX_VALUE) || (estimateSize * (estimateSize - 1) / 2 < estimateSize) ?
+                        Long.MAX_VALUE : estimateSize * (estimateSize - 1) / 2);
     }
 
     public static <E> CrossProductOrderedSpliterator<E> noDoubles(Spliterator<E> spliterator) {
@@ -57,7 +61,9 @@ public class CrossProductOrderedSpliterator<E> implements Spliterator<Map.Entry<
                         a.accept(new AbstractMap.SimpleImmutableEntry<>(e1, e2));
                         a.accept(new AbstractMap.SimpleImmutableEntry<>(e2, e1));
                     }
-                });
+                },
+                estimateSize -> (estimateSize == Long.MAX_VALUE) || (estimateSize * (estimateSize - 1) < estimateSize) ?
+                        Long.MAX_VALUE : (estimateSize * (estimateSize - 1)));
     }
 
     public static <E> CrossProductOrderedSpliterator<E> of(Spliterator<E> spliterator) {
@@ -70,16 +76,20 @@ public class CrossProductOrderedSpliterator<E> implements Spliterator<Map.Entry<
                         a.accept(new AbstractMap.SimpleImmutableEntry<>(e1, e2));
                         a.accept(new AbstractMap.SimpleImmutableEntry<>(e2, e1));
                     }
-                }
+                },
+                estimateSize -> (estimateSize == Long.MAX_VALUE) || (estimateSize * estimateSize < estimateSize) ?
+                        Long.MAX_VALUE : estimateSize * estimateSize
         );
     }
 
     private CrossProductOrderedSpliterator(
             Spliterator<E> spliterator,
-            Function<Consumer<? super Map.Entry<E, E>>, BiConsumer<E, E>> function) {
+            Function<Consumer<? super Map.Entry<E, E>>, BiConsumer<E, E>> function,
+            UnaryOperator<Long> estimateSize) {
 
         this.spliterator = spliterator;
         this.function = function;
+        this.estimateSize = estimateSize;
     }
 
     @Override
@@ -132,8 +142,7 @@ public class CrossProductOrderedSpliterator<E> implements Spliterator<Map.Entry<
     @Override
     public long estimateSize() {
         long estimateSize = this.spliterator.estimateSize();
-        return (estimateSize == Long.MAX_VALUE) || (estimateSize * estimateSize / 2 < estimateSize) ?
-                Long.MAX_VALUE : estimateSize * estimateSize / 2;
+        return this.estimateSize.apply(estimateSize);
     }
 
     @Override

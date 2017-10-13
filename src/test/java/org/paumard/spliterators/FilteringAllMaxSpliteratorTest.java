@@ -21,7 +21,6 @@ import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -86,13 +85,26 @@ public class FilteringAllMaxSpliteratorTest {
     @Test
     public void should_conform_to_specified_trySplit_behavior() {
         // Given
-        Stream<String> strings = new TreeSet<>(Arrays.asList("one", "two", "three")).stream();
+        Stream<String> strings = Arrays.asList("one", "two", "three").stream();
         Stream<String> testedStream = StreamsUtils.filteringAllMax(strings);
         TryAdvanceCheckingSpliterator<String> spliterator = new TryAdvanceCheckingSpliterator<>(testedStream.spliterator());
         Stream<String> monitoredStream = StreamSupport.stream(spliterator, false);
 
         // When
         long count = monitoredStream.count();
+
+        // Then
+        assertThat(count).isEqualTo(1L);
+    }
+
+    @Test
+    public void should_correctly_count_the_elements_of_a_sized_stream() {
+        // Given
+        Stream<String> strings = Arrays.asList("one", "two", "three").stream();
+        Stream<String> stream = StreamsUtils.filteringAllMax(strings);
+
+        // When
+        long count = stream.count();
 
         // Then
         assertThat(count).isEqualTo(1L);

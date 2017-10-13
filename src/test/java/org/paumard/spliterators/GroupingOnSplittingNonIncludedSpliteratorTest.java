@@ -21,7 +21,9 @@ import org.paumard.spliterators.util.TryAdvanceCheckingSpliterator;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Spliterator;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -115,14 +117,29 @@ public class GroupingOnSplittingNonIncludedSpliteratorTest {
     @Test
     public void should_group_a_sorted_stream_correctly_and_in_an_unsorted_stream() {
         // Given
-        SortedSet<String> sortedSet = new TreeSet<>(Arrays.asList("o", "1", "2", "3", "4", "5", "6", "7", "8", "9", "c"));
+        List<String> strings = Arrays.asList("o", "1", "2", "3", "4", "5", "6", "7", "8", "9", "c");
         Predicate<String> splitter = s -> s.startsWith("o");
 
         // When
-        Stream<Stream<String>> groupingStream = StreamsUtils.group(sortedSet.stream(), splitter, false);
+        Stream<Stream<String>> groupingStream = StreamsUtils.group(strings.stream(), splitter, false);
 
         // Then
         assertThat(groupingStream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(0);
+    }
+
+    @Test
+    public void should_correctly_count_the_elements_of_a_sized_stream() {
+        // Given
+        Stream<String> strings = Stream.of("o", "1", "2", "3", "4", "5", "6", "7", "8", "9", "c");
+        Predicate<String> splitter = s -> s.startsWith("o");
+
+        Stream<Stream<String>> stream = StreamsUtils.group(strings, splitter, false);
+
+        // When
+        long count = stream.count();
+
+        // Then
+        assertThat(count).isEqualTo(1L);
     }
 
     @Test

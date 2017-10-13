@@ -21,7 +21,6 @@ import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
 import java.util.*;
-import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -98,13 +97,27 @@ public class ShiftingWindowCollectTest {
         assertThat(count).isEqualTo(5L);
     }
 
+    @Test
+    public void should_correctly_count_the_elements_of_a_sized_stream() {
+        // Given
+        Stream<String> strings = Stream.of("1", "2", "3", "4", "5", "6", "7");
+        int groupingFactor = 3;
+        Stream<String> stream = StreamsUtils.shiftingWindowCollect(strings, groupingFactor, joining());
+
+        // When
+        long count = stream.count();
+
+        // Then
+        assertThat(count).isEqualTo(5L);
+    }
+
     @Test(expectedExceptions = NullPointerException.class)
     public void should_not_build_a_rolling_spliterator_on_a_null_spliterator() {
 
         StreamsUtils.shiftingWindowCollect(null, 3, joining());
     }
 
-    @Test(expectedExceptions = IllegalArgumentException .class)
+    @Test(expectedExceptions = IllegalArgumentException.class)
     public void should_not_build_a_rolling_spliterator_with_a_grouping_factor_of_1() {
         // Given
         Stream<String> strings = Stream.of("1", "2", "3", "4", "5", "6", "7");

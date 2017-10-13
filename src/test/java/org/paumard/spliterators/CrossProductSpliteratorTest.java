@@ -158,6 +158,19 @@ public class CrossProductSpliteratorTest {
         assertThat(count).isEqualTo(16L);
     }
 
+    @Test
+    public void should_correctly_count_the_elements_of_a_sized_stream() {
+        // Given
+        Stream<String> strings = Stream.of("a", "d", "c", "b");
+        Stream<Map.Entry<String, String>> stream = StreamsUtils.crossProduct(strings);
+
+        // When
+        long count = stream.count();
+
+        // Then
+        assertThat(count).isEqualTo(16L);
+    }
+
     @Test(expectedExceptions = NullPointerException.class)
     public void should_not_build_a_crossing_spliterator_on_a_null_spliterator() {
 
