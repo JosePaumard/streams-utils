@@ -20,7 +20,10 @@ import org.paumard.spliterators.util.TryAdvanceCheckingSpliterator;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Spliterator;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -46,7 +49,7 @@ public class TraversingSpliteratorTest {
 
         // Then
         List<List<String>> collect =
-        traversingStream.map(str -> str.collect(Collectors.toList()))
+                traversingStream.map(str -> str.collect(Collectors.toList()))
                         .collect(Collectors.toList());
 
         assertThat(collect.size()).isEqualTo(1);
@@ -65,7 +68,7 @@ public class TraversingSpliteratorTest {
         // Then
         List<List<String>> strings =
                 traversingStream.map(str -> str.collect(Collectors.toList()))
-                                .collect(Collectors.toList());
+                        .collect(Collectors.toList());
 
         assertThat(strings.size()).isEqualTo(3);
         assertThat(strings.get(0)).containsSequence("a1", "b1");
@@ -122,13 +125,41 @@ public class TraversingSpliteratorTest {
         assertThat(count).isEqualTo(6L);
     }
 
+    @Test
+    public void should_correctly_count_the_elements_of_a_sized_stream_for_same_length_streams() {
+        // Given
+        Stream<String> streamA = Stream.of("a1", "a2", "a3");
+        Stream<String> streamB = Stream.of("b1", "b2", "b3");
+        Stream<Stream<String>> stream = StreamsUtils.traverse(streamA, streamB);
+
+        // When
+        long count = stream.count();
+
+        // Then
+        assertThat(count).isEqualTo(3L);
+    }
+
+    @Test
+    public void should_correctly_count_the_elements_of_a_sized_stream_for_different_length_streams() {
+        // Given
+        Stream<String> streamA = Stream.of("a1", "a2", "a3");
+        Stream<String> streamB = Stream.of("b1", "b2", "b3", "b4");
+        Stream<Stream<String>> stream = StreamsUtils.traverse(streamA, streamB);
+
+        // When
+        long count = stream.count();
+
+        // Then
+        assertThat(count).isEqualTo(3L);
+    }
+
     @Test(expectedExceptions = NullPointerException.class)
     public void should_not_build_a_transversal_spliterator_on_a_null_spliterator() {
 
         Stream<Stream<String>> traversingStream = StreamsUtils.traverse(null);
     }
 
-    @Test(expectedExceptions = IllegalArgumentException .class)
+    @Test(expectedExceptions = IllegalArgumentException.class)
     public void should_not_build_a_transversal_spliterator_on_only_one_spliterator() {
         // Given
         Stream<String> streamA = Stream.of("a1", "a2");

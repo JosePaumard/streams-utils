@@ -98,7 +98,7 @@ public class WeavingSpliterator<E> implements Spliterator<E> {
 
     @Override
     public long estimateSize() {
-        return (hasMaxValueSize() || hasSumOverflowed()) ? Long.MAX_VALUE : Stream.of(spliterators).mapToLong(Spliterator::estimateSize).sum();
+        return hasMaxValueSize() ? Long.MAX_VALUE : Stream.of(spliterators).mapToLong(Spliterator::estimateSize).min().getAsLong()*spliterators.length;
     }
 
     private boolean hasSumOverflowed() {

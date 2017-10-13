@@ -20,7 +20,10 @@ import org.paumard.spliterators.util.TryAdvanceCheckingSpliterator;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Spliterator;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -98,6 +101,23 @@ public class ValidatingSpliteratorTest {
 
         // When
         long count = monitoredStream.count();
+
+        // Then
+        assertThat(count).isEqualTo(3L);
+    }
+
+    @Test
+    public void should_correctly_count_the_elements_of_a_sized_stream() {
+        // Given
+        Stream<String> strings = Stream.of("one", "two", "three");
+        Predicate<String> validator = s -> s.length() == 3;
+        Function<String, String> transformIfValid = String::toUpperCase;
+        Function<String, String> transformIfNotValid = s -> "-";
+        Stream<String> stream =
+                StreamsUtils.validate(strings, validator, transformIfValid, transformIfNotValid);
+
+        // When
+        long count = stream.count();
 
         // Then
         assertThat(count).isEqualTo(3L);

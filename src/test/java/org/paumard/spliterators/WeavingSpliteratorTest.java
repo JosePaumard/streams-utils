@@ -52,7 +52,7 @@ public class WeavingSpliteratorTest {
     @Test
     public void should_weave_a_non_empty_stream_with_correct_substreams_content() {
         // Given
-        Stream<String> strings1 = Stream.of( "1",  "2",  "3",  "4");
+        Stream<String> strings1 = Stream.of("1", "2", "3", "4");
         Stream<String> strings2 = Stream.of("11", "12", "13", "14");
 
         // When
@@ -67,7 +67,7 @@ public class WeavingSpliteratorTest {
     @Test
     public void should_weave_a_non_empty_stream_with_correct_substreams_content_of_different_sizes() {
         // Given
-        Stream<String> strings1 = Stream.of( "1",  "2",  "3",  "4");
+        Stream<String> strings1 = Stream.of("1", "2", "3", "4");
         Stream<String> strings2 = Stream.of("11", "12", "13", "14", "15");
 
         // When
@@ -82,7 +82,7 @@ public class WeavingSpliteratorTest {
     @Test
     public void should_weave_a_sorted_stream_correctly_and_in_an_unsorted_stream() {
         // Given
-        Stream<String> sortedStream1 = new TreeSet<>(Arrays.asList("1",  "2",  "3",  "4")).stream();
+        Stream<String> sortedStream1 = new TreeSet<>(Arrays.asList("1", "2", "3", "4")).stream();
         Stream<String> sortedStream2 = new TreeSet<>(Arrays.asList("11", "12", "13", "14", "15")).stream();
         int repeating = 2;
 
@@ -99,7 +99,7 @@ public class WeavingSpliteratorTest {
         Stream<String> weavingStream = StreamsUtils.weave(null);
     }
 
-    @Test(expectedExceptions = IllegalArgumentException .class)
+    @Test(expectedExceptions = IllegalArgumentException.class)
     public void should_not_build_a_weaving_spliterator_on_less_than_two_spliterators() {
         // Given
         Stream<String> strings = Stream.of("1", "2", "3", "4", "5", "6", "7");
@@ -119,6 +119,34 @@ public class WeavingSpliteratorTest {
 
         // When
         long count = monitoredStream.count();
+
+        // Then
+        assertThat(count).isEqualTo(6L);
+    }
+
+    @Test
+    public void should_correctly_count_the_elements_of_a_sized_stream_with_same_length() {
+        // Given
+        Stream<String> strings1 = Stream.of("one", "two", "three");
+        Stream<String> strings2 = Stream.of("one", "two", "three");
+        Stream<String> stream = StreamsUtils.weave(strings1, strings2);
+
+        // When
+        long count = stream.count();
+
+        // Then
+        assertThat(count).isEqualTo(6L);
+    }
+
+    @Test
+    public void should_correctly_count_the_elements_of_a_sized_stream_with_different_length() {
+        // Given
+        Stream<String> strings1 = Stream.of("one", "two", "three");
+        Stream<String> strings2 = Stream.of("one", "two", "three", "four", "five");
+        Stream<String> stream = StreamsUtils.weave(strings1, strings2);
+
+        // When
+        long count = stream.count();
 
         // Then
         assertThat(count).isEqualTo(6L);
