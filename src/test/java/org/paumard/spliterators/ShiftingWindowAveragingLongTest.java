@@ -98,6 +98,20 @@ public class ShiftingWindowAveragingLongTest {
         assertThat(count).isEqualTo(5L);
     }
 
+    @Test
+    public void should_correctly_count_the_elements_of_a_sized_stream() {
+        // Given
+        Stream<String> strings = Stream.of("1", "2", "3", "4", "5", "6", "7");
+        int groupingFactor = 3;
+        DoubleStream stream = StreamsUtils.shiftingWindowAveragingLong(strings, groupingFactor, Long::parseLong);
+
+        // When
+        long count = stream.count();
+
+        // Then
+        assertThat(count).isEqualTo(5L);
+    }
+
     @Test(expectedExceptions = NullPointerException.class)
     public void should_not_build_a_shifting_stream_on_a_null_stream() {
 
