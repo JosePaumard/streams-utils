@@ -20,11 +20,13 @@ import org.paumard.spliterators.util.TryAdvanceCheckingSpliterator;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
+import java.util.function.BinaryOperator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 /**
  * Created by José
@@ -83,15 +85,29 @@ public class AccumulatingSpliteratorTest {
         assertThat(count).isEqualTo(3L);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_an_accumulate_stream_on_a_null_stream() {
+        // Given
+        BinaryOperator<Integer> operator = Integer::sum;
+        Stream<Integer> stream = null;
 
-        StreamsUtils.accumulate(null, Integer::sum);
+        // When
+        Throwable throwable = catchThrowable(() -> StreamsUtils.accumulate(stream, operator));
+
+        // Then
+        assertThat(throwable).isInstanceOf(NullPointerException.class);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_an_accumulate_stream_on_a_null_operator() {
+        // Given
+        Stream<Integer> stream = Stream.of(1, 1, 1, 1, 1);
+        BinaryOperator<Integer> operator = null;
 
-        StreamsUtils.accumulate(Stream.of(1, 1, 1, 1, 1), null);
+        // When
+        Throwable throwable = catchThrowable(() -> StreamsUtils.accumulate(stream, operator));
+
+        // Then
+        assertThat(throwable).isInstanceOf(NullPointerException.class);
     }
 }

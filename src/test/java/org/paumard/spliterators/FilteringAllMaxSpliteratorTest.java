@@ -27,6 +27,7 @@ import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 /**
  * Created by José
@@ -98,23 +99,35 @@ public class FilteringAllMaxSpliteratorTest {
         assertThat(count).isEqualTo(1L);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_filtering_spliterator_on_a_null_stream() {
-
         // Given
+        Stream<String> stream = null;
         Comparator<String> comparator = Comparator.naturalOrder();
 
         // When
-        List<String> list = StreamsUtils.filteringAllMax(null, comparator).collect(toList());
+        Throwable throwable = catchThrowable(() ->
+                    StreamsUtils.filteringAllMax(stream, comparator)
+                            .collect(toList())
+        );
+
+        // Then
+        assertThat(throwable).isInstanceOf(NullPointerException.class);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_filtering_spliterator_on_a_null_comparator() {
-
         // Given
         Stream<String> strings = Stream.of("1", "1", "2", "2", "3", "3");
+        Comparator<String> comparator = null;
 
         // When
-        List<String> list = StreamsUtils.filteringAllMax(strings, null).collect(toList());
+        Throwable throwable = catchThrowable(() ->
+                StreamsUtils.filteringAllMax(strings, comparator)
+                        .collect(toList())
+        );
+
+        // Then
+        assertThat(throwable).isInstanceOf(NullPointerException.class);
     }
 }

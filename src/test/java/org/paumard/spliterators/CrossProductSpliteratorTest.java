@@ -27,6 +27,7 @@ import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 /**
  * Created by José
@@ -158,9 +159,15 @@ public class CrossProductSpliteratorTest {
         assertThat(count).isEqualTo(16L);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_crossing_spliterator_on_a_null_spliterator() {
+        // Given
+        Stream<Object> stream = null;
 
-        Stream<Map.Entry<String, String>> stream = StreamsUtils.crossProduct(null);
+        // When
+        Throwable throwable = catchThrowable(() -> StreamsUtils.crossProduct(stream));
+
+        // Then
+        assertThat(throwable).isInstanceOf(NullPointerException.class);
     }
 }

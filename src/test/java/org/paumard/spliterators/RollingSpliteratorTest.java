@@ -16,20 +16,18 @@
 
 package org.paumard.spliterators;
 
-import org.junit.Ignore;
 import org.paumard.spliterators.util.TryAdvanceCheckingSpliterator;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
-import java.text.ParseException;
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 /**
  * Created by José
@@ -40,7 +38,7 @@ public class RollingSpliteratorTest {
     public void should_roll_an_empty_stream_into_a_stream_of_an_empty_stream() {
         // Given
         // a trick to create an empty ORDERED stream
-        Stream<String> strings = Stream.of("one").filter(s -> s.isEmpty());
+        Stream<String> strings = Stream.of("one").filter(String::isEmpty);
         int groupingFactor = 2;
 
         // When
@@ -102,19 +100,29 @@ public class RollingSpliteratorTest {
         assertThat(count).isEqualTo(12L);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_rolling_spliterator_on_a_null_spliterator() {
+        // Given
+        Spliterator<Object> spliterator = null;
+        int grouping = 3;
 
-        RollingSpliterator<String> rollingSpliterator = RollingSpliterator.of(null, 3);
+        // When
+        Throwable throwable = catchThrowable(() -> RollingSpliterator.of(spliterator, grouping));
+
+        // Then
+        assertThat(throwable).isInstanceOf(NullPointerException.class);
     }
 
-    @Test(expectedExceptions = IllegalArgumentException .class)
+    @Test
     public void should_not_build_a_rolling_spliterator_with_a_grouping_factor_of_1() {
         // Given
         Stream<String> strings = Stream.of("1", "2", "3", "4", "5", "6", "7");
         int groupingFactor = 1;
 
         // When
-        RollingSpliterator<String> rollingSpliterator = RollingSpliterator.of(strings.spliterator(), groupingFactor);
+        Throwable throwable = catchThrowable(() -> RollingSpliterator.of(strings.spliterator(), groupingFactor));
+
+        // Then
+        assertThat(throwable).isInstanceOf(IllegalArgumentException.class);
     }
 }

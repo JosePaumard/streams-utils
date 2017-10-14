@@ -21,11 +21,13 @@ import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
 import java.util.*;
+import java.util.function.ToIntFunction;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 /**
  * Created by José
@@ -100,19 +102,31 @@ public class ShiftingWindowSummarizingIntTest {
         assertThat(count).isEqualTo(5L);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_shifting_stream_on_a_null_stream() {
+        // Given
+        Stream<String> stream = null;
+        int rollingFactor = 3;
+        ToIntFunction<String> mapper = Integer::parseInt;
 
-        StreamsUtils.<String>shiftingWindowSummarizingInt(null, 3, Integer::parseInt);
+        // When
+        Throwable throwable = catchThrowable(() -> StreamsUtils.shiftingWindowSummarizingInt(stream, rollingFactor, mapper));
+
+        // Then
+        assertThat(throwable).isInstanceOf(NullPointerException.class);
     }
 
-    @Test(expectedExceptions = IllegalArgumentException .class)
+    @Test
     public void should_not_build_a_shifting_stream_with_a_grouping_factor_of_1() {
         // Given
         Stream<String> strings = Stream.of("1", "2", "3", "4", "5", "6", "7");
         int groupingFactor = 1;
+        ToIntFunction<String> mapper = Integer::parseInt;
 
         // When
-        StreamsUtils.shiftingWindowSummarizingInt(strings, groupingFactor, Integer::parseInt);
+        Throwable throwable = catchThrowable(() -> StreamsUtils.shiftingWindowSummarizingInt(strings, groupingFactor, mapper));
+
+        // Then
+        assertThat(throwable).isInstanceOf(IllegalArgumentException.class);
     }
 }

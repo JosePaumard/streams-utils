@@ -21,13 +21,14 @@ import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
 import java.util.*;
-import java.util.function.Function;
+import java.util.function.ToDoubleFunction;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 /**
  * Created by José
@@ -99,19 +100,31 @@ public class ShiftingWindowAveragingDoubleTest {
         assertThat(count).isEqualTo(5L);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_shifting_stream_on_a_null_stream() {
+        // Given
+        ToDoubleFunction<String> mapper = Double::parseDouble;
+        Stream<String> stream = null;
+        int rollingFactor = 3;
 
-        StreamsUtils.shiftingWindowAveragingDouble(null, 3, Double::parseDouble);
+        // When
+        Throwable throwable = catchThrowable(() -> StreamsUtils.shiftingWindowAveragingDouble(stream, rollingFactor, mapper));
+
+        // Then
+        assertThat(throwable).isInstanceOf(NullPointerException.class);
     }
 
-    @Test(expectedExceptions = IllegalArgumentException .class)
+    @Test
     public void should_not_build_a_shifting_stream_with_a_grouping_factor_of_1() {
         // Given
         Stream<String> strings = Stream.of("1", "2", "3", "4", "5", "6", "7");
         int groupingFactor = 1;
+        ToDoubleFunction<String> mapper = Double::parseDouble;
 
         // When
-        StreamsUtils.shiftingWindowAveragingDouble(strings, groupingFactor, Double::parseDouble);
+        Throwable throwable = catchThrowable(() -> StreamsUtils.shiftingWindowAveragingDouble(strings, groupingFactor, mapper));
+
+        // Then
+        assertThat(throwable).isInstanceOf(IllegalArgumentException.class);
     }
 }
