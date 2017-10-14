@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.LongFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,6 +36,7 @@ public class CrossProductOrderedSpliterator<E> implements Spliterator<Map.Entry<
     private boolean hasMore = true;
     private Iterator<Map.Entry<E, E>> iterator;
     private boolean consumingIterator = false;
+    private final LongFunction<Long> sizeEstimator;
 
     public static <E> CrossProductOrderedSpliterator<E> ordered(Spliterator<E> spliterator, Comparator<E> comparator) {
         return new CrossProductOrderedSpliterator<>(
@@ -46,7 +48,9 @@ public class CrossProductOrderedSpliterator<E> implements Spliterator<Map.Entry<
                     } else if (compare < 0) {
                         a.accept(new AbstractMap.SimpleImmutableEntry<>(e2, e1));
                     }
-                });
+                },
+                estimatedSuperSize -> factorial(estimatedSuperSize - 1)
+        );
     }
 
     public static <E> CrossProductOrderedSpliterator<E> noDoubles(Spliterator<E> spliterator) {
@@ -57,7 +61,9 @@ public class CrossProductOrderedSpliterator<E> implements Spliterator<Map.Entry<
                         a.accept(new AbstractMap.SimpleImmutableEntry<>(e1, e2));
                         a.accept(new AbstractMap.SimpleImmutableEntry<>(e2, e1));
                     }
-                });
+                },
+                estimatedSuperSize -> factorial(estimatedSuperSize) / 2
+        );
     }
 
     public static <E> CrossProductOrderedSpliterator<E> of(Spliterator<E> spliterator) {
@@ -70,16 +76,49 @@ public class CrossProductOrderedSpliterator<E> implements Spliterator<Map.Entry<
                         a.accept(new AbstractMap.SimpleImmutableEntry<>(e1, e2));
                         a.accept(new AbstractMap.SimpleImmutableEntry<>(e2, e1));
                     }
-                }
+                },
+                estimatedSuperSize -> estimatedSuperSize * estimatedSuperSize
         );
+    }
+
+    private static long factorial(long base) {
+        if (base < 0L) {
+            throw new IllegalArgumentException("Factorial for values smaller than 0 is not defined");
+        }
+        // Algorithm explained at https://sites.google.com/site/examath/research/factorials
+        long result, previousFirstNumber, previousSecondNumber;
+        if (isEven(base) || (base < 2L)) {
+            result = base;
+            previousFirstNumber = base;
+            previousSecondNumber = base - 2L;
+        } else {
+            result = base * (base - 1L);
+            previousFirstNumber = base - 1L;
+            previousSecondNumber = base - 3L;
+        }
+
+        while (previousSecondNumber >= 2L) {
+            long intermediateFactor = previousFirstNumber + previousSecondNumber;
+            result *= intermediateFactor;
+            previousFirstNumber = intermediateFactor;
+            previousSecondNumber -= 2;
+        }
+
+        return result;
+    }
+
+    private static boolean isEven(long base) {
+        return base % 2L == 0L;
     }
 
     private CrossProductOrderedSpliterator(
             Spliterator<E> spliterator,
-            Function<Consumer<? super Map.Entry<E, E>>, BiConsumer<E, E>> function) {
+            Function<Consumer<? super Map.Entry<E, E>>, BiConsumer<E, E>> function,
+            LongFunction<Long> sizeEstimator) {
 
         this.spliterator = spliterator;
         this.function = function;
+        this.sizeEstimator = sizeEstimator;
     }
 
     @Override
@@ -132,8 +171,13 @@ public class CrossProductOrderedSpliterator<E> implements Spliterator<Map.Entry<
     @Override
     public long estimateSize() {
         long estimateSize = this.spliterator.estimateSize();
-        return (estimateSize == Long.MAX_VALUE) || (estimateSize * estimateSize / 2 < estimateSize) ?
-                Long.MAX_VALUE : estimateSize * estimateSize / 2;
+        if (estimateSize == Long.MAX_VALUE) {
+            return Long.MAX_VALUE;
+        } else if (estimateSize <= 1L) {
+            return 0L;
+        } else {
+            return sizeEstimator.apply(estimateSize);
+        }
     }
 
     @Override

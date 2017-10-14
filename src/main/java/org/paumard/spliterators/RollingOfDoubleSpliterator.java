@@ -103,7 +103,7 @@ public class RollingOfDoubleSpliterator implements Spliterator<DoubleStream> {
 	@Override
 	public long estimateSize() {
 		long estimateSize = spliterator.estimateSize();
-		return estimateSize == Long.MAX_VALUE ? Long.MAX_VALUE : estimateSize - grouping;
+		return estimateSize == Long.MAX_VALUE ? Long.MAX_VALUE : estimateSize - grouping + 1;
 	}
 
 	@Override
