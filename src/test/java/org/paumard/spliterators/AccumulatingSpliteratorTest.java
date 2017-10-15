@@ -20,6 +20,7 @@ import org.paumard.spliterators.util.TryAdvanceCheckingSpliterator;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
+import java.util.Map;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -94,6 +95,17 @@ public class AccumulatingSpliteratorTest {
 
         // Then
         assertThat(count).isEqualTo(5);
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void should_not_build_an_accumulate_stream_on_a_non_ordered_stream() {
+
+        // Given
+        Map<Integer, String> map = Map.of(1, "1", 2, "2");
+        Stream<Integer> accumulate = map.keySet().stream();
+
+        // When
+        Stream<Integer> stream = StreamsUtils.accumulate(accumulate, Integer::sum);
     }
 
     @Test(expectedExceptions = NullPointerException.class)

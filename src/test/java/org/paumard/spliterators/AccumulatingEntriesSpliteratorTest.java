@@ -128,6 +128,17 @@ public class AccumulatingEntriesSpliteratorTest {
         assertThat(count).isEqualTo(4);
     }
 
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void should_not_build_an_accumulate_stream_on_a_non_ordered_stream() {
+
+        // Given
+        Map<Integer, String> map = Map.of(1, "1", 2, "2");
+        Stream<Map.Entry<Integer, String>> entryStream = map.entrySet().stream();
+
+        // When
+        Stream<Map.Entry<Integer, String>> stream = StreamsUtils.accumulateEntries(entryStream, String::concat);
+    }
+
     @Test(expectedExceptions = NullPointerException.class)
     public void should_not_build_an_accumulate_stream_on_a_null_stream() {
 
