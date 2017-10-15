@@ -24,6 +24,7 @@ import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -154,5 +155,23 @@ public class AccumulatingEntriesSpliteratorTest {
                         new AbstractMap.SimpleEntry<>(2, "2")
                 ),
                 null);
+    }
+
+    @Test
+    public void should_correctly_call_the_onClose_callbacks_of_the_underlying_streams() {
+        // Given
+        AtomicBoolean b = new AtomicBoolean(false);
+        Stream<Map.Entry<Integer, String>> entries =
+                Stream.of(
+                        new AbstractMap.SimpleEntry<>(1, "1"),
+                        new AbstractMap.SimpleEntry<>(2, "2")
+                );
+        Stream<Map.Entry<Integer, String>> stream = entries.onClose(() -> b.set(true));
+
+        // When
+        StreamsUtils.accumulateEntries(stream, String::concat).close();
+
+        // Then
+        assertThat(b.get()).isEqualTo(true);
     }
 }

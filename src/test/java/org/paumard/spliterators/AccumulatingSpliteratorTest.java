@@ -20,7 +20,9 @@ import org.paumard.spliterators.util.TryAdvanceCheckingSpliterator;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
+import java.util.AbstractMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -118,5 +120,18 @@ public class AccumulatingSpliteratorTest {
     public void should_not_build_an_accumulate_stream_on_a_null_operator() {
 
         StreamsUtils.accumulate(Stream.of(1, 1, 1, 1, 1), null);
+    }
+
+    @Test
+    public void should_correctly_call_the_onClose_callbacks_of_the_underlying_streams() {
+        // Given
+        AtomicBoolean b = new AtomicBoolean(false);
+        Stream<Integer> integers = Stream.of(1, 1, 1, 1, 1).onClose(() -> b.set(true));
+
+        // When
+        StreamsUtils.accumulate(integers, Integer::sum).close();
+
+        // Then
+        assertThat(b.get()).isEqualTo(true);
     }
 }
