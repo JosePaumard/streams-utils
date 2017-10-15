@@ -101,11 +101,6 @@ public class WeavingSpliterator<E> implements Spliterator<E> {
         return hasMaxValueSize() ? Long.MAX_VALUE : Stream.of(spliterators).mapToLong(Spliterator::estimateSize).min().getAsLong()*spliterators.length;
     }
 
-    private boolean hasSumOverflowed() {
-        Stream<Stream<Long>> rolledStream = roll(Stream.of(spliterators).map(Spliterator::estimateSize), 2);
-        return rolledStream.map(stream -> stream.collect(toList())).allMatch(list -> list.get(0) < list.get(1));
-    }
-
     private boolean hasMaxValueSize() {
         return Stream.of(spliterators).mapToLong(Spliterator::estimateSize).anyMatch(l -> l == Long.MAX_VALUE);
     }
