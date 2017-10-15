@@ -22,7 +22,9 @@ import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -108,6 +110,20 @@ public class GroupingSpliteratorTest {
 
         // Then
         assertThat(count).isEqualTo(7L);
+    }
+
+    @Test
+    public void should_correctly_call_the_onClose_callbacks_of_the_underlying_streams() {
+        // Given
+        AtomicBoolean b = new AtomicBoolean(false);
+        Stream<String> strings = Stream.of("1", "2", "3", "4", "5", "6", "7").onClose(() -> b.set(true));
+        int groupingFactor = 3;
+
+        // When
+        StreamsUtils.group(strings, groupingFactor).close();
+
+        // Then
+        assertThat(b.get()).isEqualTo(true);
     }
 
     @Test

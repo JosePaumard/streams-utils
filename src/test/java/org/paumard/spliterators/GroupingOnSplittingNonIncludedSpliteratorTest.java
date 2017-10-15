@@ -24,6 +24,7 @@ import org.testng.annotations.Test;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Spliterator;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -157,5 +158,19 @@ public class GroupingOnSplittingNonIncludedSpliteratorTest {
 
         // Then
         assertThat(count).isEqualTo(10L);
+    }
+
+    @Test
+    public void should_correctly_call_the_onClose_callbacks_of_the_underlying_streams() {
+        // Given
+        AtomicBoolean b = new AtomicBoolean(false);
+        Stream<String> strings = Stream.of("o", "1", "2", "3", "4", "5", "6", "7", "8", "9", "c").onClose(() -> b.set(true));
+        Predicate<String> splitter = s -> s.startsWith("o");
+
+        // When
+        StreamsUtils.group(strings, splitter, false).close();
+
+        // Then
+        assertThat(b.get()).isEqualTo(true);
     }
 }
