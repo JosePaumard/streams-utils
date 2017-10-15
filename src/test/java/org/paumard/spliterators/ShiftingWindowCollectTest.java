@@ -21,6 +21,7 @@ import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -95,6 +96,20 @@ public class ShiftingWindowCollectTest {
 
         // Then
         assertThat(count).isEqualTo(5L);
+    }
+
+    @Test
+    public void should_correctly_call_the_onClose_callbacks_of_the_underlying_streams() {
+        // Given
+        AtomicBoolean b = new AtomicBoolean(false);
+        Stream<String> strings = Stream.of("2", "4", "2", "4", "2", "4", "2").onClose(() -> b.set(true));
+        int groupingFactor = 3;
+
+        // When
+        StreamsUtils.shiftingWindowCollect(strings, groupingFactor, joining()).close();
+
+        // Then
+        assertThat(b.get()).isEqualTo(true);
     }
 
     @Test
