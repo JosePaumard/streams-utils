@@ -88,11 +88,7 @@ public class GatingSpliterator<E> implements Spliterator<E> {
 
     @Override
     public long estimateSize() {
-        if (gateIsOpenned) {
-            return this.spliterator.estimateSize();
-        } else {
-            return 0;
-        }
+        return 0L;
     }
 
     @Override
