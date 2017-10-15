@@ -20,16 +20,14 @@ import org.paumard.spliterators.util.TryAdvanceCheckingSpliterator;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Spliterator;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Created by José
@@ -165,5 +163,18 @@ public class WeavingSpliteratorTest {
 
         // Then
         assertThat(count).isEqualTo(6L);
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void should_not_weave_a_non_ordered_stream() {
+        // Given
+        Stream<String> strings1 = Set.of("one", "two", "three").stream();
+        Stream<String> strings2 = List.of("one", "two", "three").stream();
+
+        // When
+        StreamsUtils.weave(strings1, strings2);
+
+        // Then
+
     }
 }
