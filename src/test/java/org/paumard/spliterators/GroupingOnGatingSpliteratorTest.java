@@ -223,4 +223,14 @@ public class GroupingOnGatingSpliteratorTest {
 
         Stream<Stream<String>> groupingStream = StreamsUtils.group(strings, open, null);
     }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void should_not_build_a_grouping_spliterator_on_a_non_ordered_stream() {
+
+        Stream<String> strings = Set.of("one", "two").stream();
+        Predicate<String> open = s -> s.startsWith("o");
+        Predicate<String> close = s -> s.startsWith("t");
+
+        Stream<Stream<String>> groupingStream = StreamsUtils.group(strings, open, close);
+    }
 }
