@@ -21,6 +21,7 @@ import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -187,6 +188,19 @@ public class FilteringMaxValuesSpliteratorTest {
 
         // Then
         assertThat(count).isEqualTo(2L);
+    }
+
+    @Test
+    public void should_correctly_call_the_onClose_callbacks_of_the_underlying_streams() {
+        // Given
+        AtomicBoolean b = new AtomicBoolean(false);
+        Stream<String> strings = Stream.of("one", "two", "three", "four").onClose(() -> b.set(true));
+
+        // When
+        StreamsUtils.filteringMaxValues(strings, 2, Comparator.naturalOrder()).close();
+
+        // Then
+        assertThat(b.get()).isEqualTo(true);
     }
 
     @Test(expectedExceptions = NullPointerException.class)
