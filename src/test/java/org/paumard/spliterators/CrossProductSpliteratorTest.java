@@ -21,6 +21,7 @@ import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -169,6 +170,19 @@ public class CrossProductSpliteratorTest {
 
         // Then
         assertThat(count).isEqualTo(16L);
+    }
+
+    @Test
+    public void should_correctly_call_the_onClose_callbacks_of_the_underlying_streams() {
+        // Given
+        AtomicBoolean b = new AtomicBoolean(false);
+        Stream<String> strings = Stream.of("a", "d", "c", "b").onClose(() -> b.set(true));
+
+        // When
+        StreamsUtils.crossProduct(strings).close();
+
+        // Then
+        assertThat(b.get()).isEqualTo(true);
     }
 
     @Test(expectedExceptions = NullPointerException.class)
