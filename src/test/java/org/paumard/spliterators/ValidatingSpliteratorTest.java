@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -104,6 +105,22 @@ public class ValidatingSpliteratorTest {
 
         // Then
         assertThat(count).isEqualTo(3L);
+    }
+
+    @Test
+    public void should_correctly_call_the_onClose_callbacks_of_the_underlying_streams() {
+        // Given
+        AtomicBoolean b = new AtomicBoolean(false);
+        Stream<String> strings = Stream.of("one", "two", "three").onClose(() -> b.set(true));
+        Predicate<String> validator = s -> s.length() == 3;
+        Function<String, String> transformIfValid = String::toUpperCase;
+        Function<String, String> transformIfNotValid = s -> "-";
+
+        // When
+        StreamsUtils.validate(strings, validator, transformIfValid, transformIfNotValid).close();
+
+        // Then
+        assertThat(b.get()).isEqualTo(true);
     }
 
     @Test

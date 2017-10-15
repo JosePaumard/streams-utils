@@ -24,6 +24,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -123,6 +125,20 @@ public class TraversingSpliteratorTest {
 
         // Then
         assertThat(count).isEqualTo(6L);
+    }
+
+    @Test
+    public void should_correctly_call_the_onClose_callbacks_of_the_underlying_streams() {
+        // Given
+        AtomicInteger i = new AtomicInteger(0);
+        Stream<String> streamA = Stream.of("a1", "a2", "a3").onClose(i::incrementAndGet);
+        Stream<String> streamB = Stream.of("b1", "b2", "b3").onClose(i::incrementAndGet);
+
+        // When
+        StreamsUtils.traverse(streamA, streamB).close();
+
+        // Then
+        assertThat(i.get()).isEqualTo(2);
     }
 
     @Test

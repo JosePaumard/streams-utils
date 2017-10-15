@@ -24,6 +24,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -122,6 +126,20 @@ public class WeavingSpliteratorTest {
 
         // Then
         assertThat(count).isEqualTo(6L);
+    }
+
+    @Test
+    public void should_correctly_call_the_onClose_callbacks_of_the_underlying_streams() {
+        // Given
+        AtomicInteger i = new AtomicInteger(0);
+        Stream<String> strings1 = Stream.of("one", "two", "three").onClose(i::incrementAndGet);
+        Stream<String> strings2 = Stream.of("one", "two", "three").onClose(i::incrementAndGet);
+
+        // When
+        StreamsUtils.weave(strings1, strings2).close();
+
+        // Then
+        assertThat(i.get()).isEqualTo(2);
     }
 
     @Test

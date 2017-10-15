@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -129,6 +130,21 @@ public class ZippingSpliteratorTest {
 
         // Then
         assertThat(count).isEqualTo(3L);
+    }
+
+    @Test
+    public void should_correctly_call_the_onClose_callbacks_of_the_underlying_streams() {
+        // Given
+        AtomicInteger count = new AtomicInteger(0);
+        Stream<String> strings = Stream.of("one", "two", "three").onClose(count::incrementAndGet);
+        Stream<Integer> ints = Stream.of(1, 2, 3).onClose(count::incrementAndGet);
+        BiFunction<String, Integer, String> zip = (s, i) -> s + " - " + i;
+
+        // When
+        StreamsUtils.zip(strings, ints, zip).close();
+
+        // Then
+        assertThat(count.get()).isEqualTo(2);
     }
 
     @Test
