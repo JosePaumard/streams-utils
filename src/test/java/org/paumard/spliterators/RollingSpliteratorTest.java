@@ -143,4 +143,12 @@ public class RollingSpliteratorTest {
         // When
         RollingSpliterator<String> rollingSpliterator = RollingSpliterator.of(strings.spliterator(), groupingFactor);
     }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void should_not_build_a_rolling_spliterator_on_a_non_ordered_stream() {
+
+        Stream<String> stringsA = Set.of("one", "two").stream();
+
+        Stream<Stream<String>> stream = StreamsUtils.roll(stringsA, 2);
+    }
 }

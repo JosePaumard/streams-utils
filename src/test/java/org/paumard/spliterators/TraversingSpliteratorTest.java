@@ -20,12 +20,10 @@ import org.paumard.spliterators.util.TryAdvanceCheckingSpliterator;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Spliterator;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -181,5 +179,14 @@ public class TraversingSpliteratorTest {
 
         // When
         Stream<Stream<String>> traversingStream = StreamsUtils.traverse(streamA);
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void should_not_build_a_traversing_spliterator_on_a_non_ordered_stream() {
+
+        Stream<String> stringsA = Set.of("one", "two").stream();
+        Stream<String> stringsB = Stream.of("one", "two");
+
+        Stream<Stream<String>> groupingStream = StreamsUtils.traverse(stringsA, stringsB);
     }
 }

@@ -187,4 +187,13 @@ public class GroupingOnSplittingSpliteratorTest {
 
         Stream<Stream<String>> groupingStream = StreamsUtils.group(strings, null);
     }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void should_not_build_a_grouping_spliterator_on_a_non_ordered_stream() {
+
+        Stream<String> strings = Set.of("one", "two").stream();
+        Predicate<String> splitter = s -> s.startsWith("o");
+
+        Stream<Stream<String>> groupingStream = StreamsUtils.group(strings, splitter);
+    }
 }
