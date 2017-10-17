@@ -140,6 +140,15 @@ public class GroupingSpliteratorTest {
         assertThat(count).isEqualTo(3L);
     }
 
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void should_not_build_a_shifting_stream_on_a_non_ordered_stream() {
+        // Given
+        Stream<String> strings = Set.of("1", "2", "3", "4", "5", "6", "7").stream();
+
+        // When
+        StreamsUtils.group(strings, 3);
+    }
+
     @Test(expectedExceptions = NullPointerException.class)
     public void should_not_build_a_grouping_spliterator_on_a_null_spliterator() {
 
