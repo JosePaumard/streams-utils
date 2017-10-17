@@ -127,6 +127,15 @@ public class ShiftingWindowAveragingLongTest {
         assertThat(count).isEqualTo(5L);
     }
 
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void should_not_build_a_shifting_stream_on_a_non_ordered_stream() {
+        // Given
+        Stream<String> strings = Set.of("1", "2", "3", "4", "5", "6", "7").stream();
+
+        // When
+        StreamsUtils.shiftingWindowAveragingLong(strings, 3, Long::parseLong);
+    }
+
     @Test(expectedExceptions = NullPointerException.class)
     public void should_not_build_a_shifting_stream_on_a_null_stream() {
 
