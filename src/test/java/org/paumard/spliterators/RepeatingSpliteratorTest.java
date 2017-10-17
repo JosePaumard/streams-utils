@@ -22,6 +22,7 @@ import org.testng.annotations.Test;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -113,6 +114,15 @@ public class RepeatingSpliteratorTest {
 
         // Then
         assertThat(count).isEqualTo(6L);
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void should_not_build_a_repeating_stream_on_a_non_sized_stream() {
+        // Given
+        Stream<String> strings = Stream.iterate("+", s -> s);
+
+        // When
+        StreamsUtils.repeat(strings, 3);
     }
 
     @Test(expectedExceptions = NullPointerException.class)
