@@ -45,7 +45,7 @@ public class FilteringMaxValuesSpliterator<E> implements Spliterator<E> {
         Objects.requireNonNull(spliterator);
         Objects.requireNonNull(comparator);
         if (numberOfMaxes < 2) {
-            throw new IllegalArgumentException("numberOfMaxes should not be less than 2?");
+            throw new IllegalArgumentException("numberOfMaxes should not be less than 2");
         }
 
         return new FilteringMaxValuesSpliterator<>(spliterator, numberOfMaxes, comparator);

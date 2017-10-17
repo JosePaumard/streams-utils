@@ -203,6 +203,15 @@ public class FilteringMaxKeysSpliteratorTest {
         assertThat(b.get()).isEqualTo(true);
     }
 
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void should_not_build_a_filtering_stream_with_only_one_max() {
+        // Given
+        Stream<String> strings = Set.of("1", "2", "3", "4", "5", "6", "7").stream();
+
+        // When
+        StreamsUtils.filteringMaxKeys(strings, 1);
+    }
+
     @Test(expectedExceptions = NullPointerException.class)
     public void should_not_build_a_filtering_spliterator_on_a_null_stream() {
 
