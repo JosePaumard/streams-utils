@@ -24,7 +24,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <testng.version>6.9.6</testng.version>
         <assertj.version>3.6.2</assertj.version>
-        <jacoco-maven-plugin.version>0.7.6.201602180812</jacoco-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.7.9</jacoco-maven-plugin.version>
         <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
     </properties>
 
