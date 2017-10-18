@@ -92,7 +92,7 @@ public class FilteringAllMaxSpliterator<E> implements Spliterator<E> {
 
     @Override
     public long estimateSize() {
-        return 0L;
+        return spliterator.estimateSize() > 0 ? 1L : 0L;
     }
 
     @Override

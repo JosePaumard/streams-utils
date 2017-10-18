@@ -16,17 +16,17 @@
 
 package org.paumard.spliterators;
 
-import org.paumard.spliterators.util.TryAdvanceCheckingSpliterator;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
+import static org.paumard.spliterators.util.TryAdvanceCheckingSpliterator.monitorStream;
 
 
 /**
@@ -150,23 +150,45 @@ public class CrossProductNaturalyOrderedSpliteratorTest {
     }
 
     @Test
-    public void should_conform_to_specified_trySplit_behavior() {
+    public void should_produce_number_of_original_elements_minus_one_factorial_new_elements() {
         // Given
-        Stream<String> strings = Stream.of("a", "d", "c", "b");
-        Stream<Map.Entry<String, String>> stream = StreamsUtils.crossProductNaturallyOrdered(strings);
-        TryAdvanceCheckingSpliterator<Map.Entry<String, String>> spliterator = new TryAdvanceCheckingSpliterator<>(stream.spliterator());
-        Stream<Map.Entry<String, String>> monitoredStream = StreamSupport.stream(spliterator, false);
+        List<String> strings = Arrays.asList("a", "d", "c", "b");
 
         // When
+        Stream<Map.Entry<String, String>> monitoredStream = monitorStream(StreamsUtils.crossProductNaturallyOrdered(strings.stream()));
         long count = monitoredStream.count();
 
         // Then
-        assertThat(count).isEqualTo(6L);
+        assertThat(count).isEqualTo(factorial(strings.size() - 1));
+    }
+
+    @Test
+    public void should_produce_cross_product_in_natural_order_without_backtracking() {
+        // Given
+        Stream<String> strings = Stream.of("a", "d", "c", "b");
+
+        // When
+        Stream<Map.Entry<String, String>> monitoredStream = monitorStream(StreamsUtils.crossProductNaturallyOrdered(strings));
+
+        // Then
+        assertThat(monitoredStream).containsExactlyInAnyOrder(
+                entry("a", "b"), entry("a", "c"), entry("a", "d"),
+                entry("b", "c"), entry("b", "d"),
+                entry("c", "d")
+        );
     }
 
     @Test(expectedExceptions = NullPointerException.class)
     public void should_not_build_a_crossing_spliterator_on_a_null_spliterator() {
 
         Stream<Map.Entry<String, String>> stream = StreamsUtils.crossProductOrdered(null, null);
+    }
+
+    private static long factorial(long base) {
+        if (base <= 1L) {
+            return 1L;
+        } else {
+            return base * factorial(base - 1L);
+        }
     }
 }

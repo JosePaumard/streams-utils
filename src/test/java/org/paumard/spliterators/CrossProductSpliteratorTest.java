@@ -16,17 +16,17 @@
 
 package org.paumard.spliterators;
 
-import org.paumard.spliterators.util.TryAdvanceCheckingSpliterator;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
+import static org.paumard.spliterators.util.TryAdvanceCheckingSpliterator.monitorStream;
 
 /**
  * Created by José
@@ -144,18 +144,33 @@ public class CrossProductSpliteratorTest {
     }
 
     @Test
-    public void should_conform_to_specified_trySplit_behavior() {
+    public void should_produce_number_of_original_elements_squared_new_elements() {
         // Given
-        Stream<String> strings = Stream.of("a", "d", "c", "b");
-        Stream<Map.Entry<String, String>> stream = StreamsUtils.crossProduct(strings);
-        TryAdvanceCheckingSpliterator<Map.Entry<String, String>> spliterator = new TryAdvanceCheckingSpliterator<>(stream.spliterator());
-        Stream<Map.Entry<String, String>> monitoredStream = StreamSupport.stream(spliterator, false);
+        List<String> strings = Arrays.asList("a", "d", "c", "b");
 
         // When
+        Stream<Map.Entry<String, String>> monitoredStream = monitorStream(StreamsUtils.crossProduct(strings.stream()));
         long count = monitoredStream.count();
 
         // Then
-        assertThat(count).isEqualTo(16L);
+        assertThat(count).isEqualTo(strings.size() * strings.size());
+    }
+
+    @Test
+    public void should_produce_full_cross_product_of_elements() {
+        // Given
+        Stream<String> strings = Stream.of("a", "d", "c", "b");
+
+        // When
+        Stream<Map.Entry<String, String>> monitoredStream = monitorStream(StreamsUtils.crossProduct(strings));
+
+        // Then
+        assertThat(monitoredStream).containsExactlyInAnyOrder(
+                entry("a", "a"), entry("a", "b"), entry("a", "c"), entry("a", "d"),
+                entry("b", "a"), entry("b", "b"), entry("b", "c"), entry("b", "d"),
+                entry("c", "a"), entry("c", "b"), entry("c", "c"), entry("c", "d"),
+                entry("d", "a"), entry("d", "b"), entry("d", "c"), entry("d", "d")
+        );
     }
 
     @Test(expectedExceptions = NullPointerException.class)

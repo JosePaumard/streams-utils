@@ -87,7 +87,8 @@ public class FilteringMaxValuesSpliterator<E> implements Spliterator<E> {
 
     @Override
     public long estimateSize() {
-        return 0L;
+        long maxSize = spliterator.estimateSize();
+        return maxSize >= numberOfMaxes ? numberOfMaxes : maxSize;
     }
 
     @Override
