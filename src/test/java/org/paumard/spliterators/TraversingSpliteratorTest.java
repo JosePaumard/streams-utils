@@ -29,6 +29,8 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 /**
  * Created by José
@@ -166,27 +168,28 @@ public class TraversingSpliteratorTest {
         assertThat(count).isEqualTo(3L);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_transversal_spliterator_on_a_null_spliterator() {
-
-        Stream<Stream<String>> traversingStream = StreamsUtils.traverse(null);
+        // Then
+        assertThatNullPointerException().isThrownBy(() -> StreamsUtils.traverse(null));
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test
     public void should_not_build_a_transversal_spliterator_on_only_one_spliterator() {
         // Given
         Stream<String> streamA = Stream.of("a1", "a2");
 
         // When
-        Stream<Stream<String>> traversingStream = StreamsUtils.traverse(streamA);
+        assertThatIllegalArgumentException().isThrownBy(() -> StreamsUtils.traverse(streamA));
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test
     public void should_not_build_a_traversing_spliterator_on_a_non_ordered_stream() {
-
+        // Given
         Stream<String> stringsA = Set.of("one", "two").stream();
         Stream<String> stringsB = Stream.of("one", "two");
 
-        Stream<Stream<String>> groupingStream = StreamsUtils.traverse(stringsA, stringsB);
+        // When
+        assertThatIllegalArgumentException().isThrownBy(() -> StreamsUtils.traverse(stringsA, stringsB));
     }
 }

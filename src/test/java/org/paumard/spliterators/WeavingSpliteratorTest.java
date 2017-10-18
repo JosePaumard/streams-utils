@@ -26,8 +26,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 /**
  * Created by José
@@ -83,7 +82,6 @@ public class WeavingSpliteratorTest {
         // Given
         Stream<String> sortedStream1 = new TreeSet<>(Arrays.asList("1", "2", "3", "4")).stream();
         Stream<String> sortedStream2 = new TreeSet<>(Arrays.asList("11", "12", "13", "14", "15")).stream();
-        int repeating = 2;
 
         // When
         Stream<String> stream = StreamsUtils.weave(sortedStream1, sortedStream2);
@@ -92,19 +90,19 @@ public class WeavingSpliteratorTest {
         assertThat(stream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(0);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_weaving_spliterator_on_null() {
-
-        Stream<String> weavingStream = StreamsUtils.weave(null);
+        // Then
+        assertThatNullPointerException().isThrownBy(() -> StreamsUtils.weave(null));
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test
     public void should_not_build_a_weaving_spliterator_on_less_than_two_spliterators() {
         // Given
         Stream<String> strings = Stream.of("1", "2", "3", "4", "5", "6", "7");
 
-        // When
-        Stream<String> weavingStream = StreamsUtils.weave(strings);
+        // Then
+        assertThatIllegalArgumentException().isThrownBy(() -> StreamsUtils.weave(strings));
     }
 
     @Test
@@ -165,16 +163,13 @@ public class WeavingSpliteratorTest {
         assertThat(count).isEqualTo(6L);
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test
     public void should_not_weave_a_non_ordered_stream() {
         // Given
         Stream<String> strings1 = Set.of("one", "two", "three").stream();
         Stream<String> strings2 = List.of("one", "two", "three").stream();
 
-        // When
-        StreamsUtils.weave(strings1, strings2);
-
         // Then
-
+        assertThatIllegalArgumentException().isThrownBy(() -> StreamsUtils.weave(strings1, strings2));
     }
 }
