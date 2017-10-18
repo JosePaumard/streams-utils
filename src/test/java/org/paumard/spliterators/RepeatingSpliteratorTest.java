@@ -28,6 +28,8 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 /**
  * Created by José
@@ -130,28 +132,28 @@ public class RepeatingSpliteratorTest {
         assertThat(count).isEqualTo(6L);
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test
     public void should_not_build_a_repeating_stream_on_a_non_sized_stream() {
         // Given
         Stream<String> strings = Stream.iterate("+", s -> s);
 
-        // When
-        StreamsUtils.repeat(strings, 3);
+        // Then
+        assertThatIllegalArgumentException().isThrownBy(() -> StreamsUtils.repeat(strings, 3));
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_repeating_spliterator_on_a_null_spliterator() {
-
-        Stream<String> repeatingStream = StreamsUtils.repeat(null, 3);
+        // Then
+        assertThatNullPointerException().isThrownBy(() -> StreamsUtils.repeat(null, 3));
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test
     public void should_not_build_a_repeating_spliterator_with_a_repeating_factor_of_1() {
         // Given
         Stream<String> stream = Stream.of("a1", "a2");
 
-        // When
-        Stream<String> repeatingStream = StreamsUtils.repeat(stream, 1);
+        // Then
+        assertThatIllegalArgumentException().isThrownBy(() -> StreamsUtils.repeat(stream, 1));
 
     }
 }

@@ -94,7 +94,7 @@ public class CyclingSpliteratorTest {
         assertThat(stream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(0);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_cycling_spliterator_on_a_null_spliterator() {
         // Then
         assertThatNullPointerException().isThrownBy(() -> CyclingSpliterator.of(null));

@@ -28,6 +28,8 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 /**
  * Created by José
@@ -128,27 +130,28 @@ public class RollingSpliteratorTest {
         assertThat(count).isEqualTo(5L);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_rolling_spliterator_on_a_null_spliterator() {
-
-        RollingSpliterator<String> rollingSpliterator = RollingSpliterator.of(null, 3);
+        // Then
+        assertThatNullPointerException().isThrownBy(() -> RollingSpliterator.of(null, 3));
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test
     public void should_not_build_a_rolling_spliterator_with_a_grouping_factor_of_1() {
         // Given
         Stream<String> strings = Stream.of("1", "2", "3", "4", "5", "6", "7");
         int groupingFactor = 1;
 
-        // When
-        RollingSpliterator<String> rollingSpliterator = RollingSpliterator.of(strings.spliterator(), groupingFactor);
+        // Then
+        assertThatIllegalArgumentException().isThrownBy(() -> RollingSpliterator.of(strings.spliterator(), groupingFactor));
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test
     public void should_not_build_a_rolling_spliterator_on_a_non_ordered_stream() {
-
+        // Given
         Stream<String> stringsA = Set.of("one", "two").stream();
 
-        Stream<Stream<String>> stream = StreamsUtils.roll(stringsA, 2);
+        // Then
+        assertThatIllegalArgumentException().isThrownBy(() -> StreamsUtils.roll(stringsA, 2));
     }
 }
