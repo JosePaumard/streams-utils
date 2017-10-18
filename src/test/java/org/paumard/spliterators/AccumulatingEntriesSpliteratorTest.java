@@ -29,7 +29,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 /**
  * Created by José
@@ -129,32 +129,29 @@ public class AccumulatingEntriesSpliteratorTest {
         assertThat(count).isEqualTo(4);
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test
     public void should_not_build_an_accumulate_stream_on_a_non_ordered_stream() {
-
         // Given
         Map<Integer, String> map = Map.of(1, "1", 2, "2");
         Stream<Map.Entry<Integer, String>> entryStream = map.entrySet().stream();
 
-        // When
-        Stream<Map.Entry<Integer, String>> stream = StreamsUtils.accumulateEntries(entryStream, String::concat);
+        // Then
+        assertThatIllegalArgumentException().isThrownBy(() -> StreamsUtils.accumulateEntries(entryStream, String::concat));
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_an_accumulate_stream_on_a_null_stream() {
-
-        StreamsUtils.accumulateEntries(null, Integer::sum);
+        // When
+        assertThatNullPointerException().isThrownBy(() -> StreamsUtils.accumulateEntries(null, Integer::sum));
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_an_accumulate_stream_on_a_null_operator() {
+        // Given
+        Stream<Map.Entry<Integer, String>> stream = Map.of(1, "1", 2, "2").entrySet().stream();
 
-        StreamsUtils.accumulateEntries(
-                Stream.of(
-                        new AbstractMap.SimpleEntry<>(1, "1"),
-                        new AbstractMap.SimpleEntry<>(2, "2")
-                ),
-                null);
+        // Then
+        assertThatNullPointerException().isThrownBy(() -> StreamsUtils.accumulateEntries(stream, null));
     }
 
     @Test

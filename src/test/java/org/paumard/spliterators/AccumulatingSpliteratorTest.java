@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 /**
  * Created by José
@@ -98,27 +98,29 @@ public class AccumulatingSpliteratorTest {
         assertThat(count).isEqualTo(5);
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test
     public void should_not_build_an_accumulate_stream_on_a_non_ordered_stream() {
-
         // Given
         Map<Integer, String> map = Map.of(1, "1", 2, "2");
         Stream<Integer> accumulate = map.keySet().stream();
 
-        // When
-        Stream<Integer> stream = StreamsUtils.accumulate(accumulate, Integer::sum);
+        // Then
+        assertThatIllegalArgumentException().isThrownBy(() -> StreamsUtils.accumulate(accumulate, Integer::sum));
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_an_accumulate_stream_on_a_null_stream() {
-
-        StreamsUtils.accumulate(null, Integer::sum);
+        // Then
+        assertThatNullPointerException().isThrownBy(() -> StreamsUtils.accumulate(null, Integer::sum));
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_an_accumulate_stream_on_a_null_operator() {
+        // Given
+        Stream<Integer> stream = Stream.of(1, 1, 1, 1, 1);
 
-        StreamsUtils.accumulate(Stream.of(1, 1, 1, 1, 1), null);
+        // Then
+        assertThatNullPointerException().isThrownBy(() -> StreamsUtils.accumulate(stream, null));
     }
 
     @Test
