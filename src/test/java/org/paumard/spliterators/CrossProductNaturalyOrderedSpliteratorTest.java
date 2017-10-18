@@ -28,6 +28,7 @@ import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 
 /**
@@ -191,9 +192,9 @@ public class CrossProductNaturalyOrderedSpliteratorTest {
         assertThat(b.get()).isEqualTo(true);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_crossing_spliterator_on_a_null_spliterator() {
-
-        Stream<Map.Entry<String, String>> stream = StreamsUtils.crossProductOrdered(null, null);
+        // Then
+        assertThatNullPointerException().isThrownBy(() -> StreamsUtils.crossProductOrdered(null, null));
     }
 }
