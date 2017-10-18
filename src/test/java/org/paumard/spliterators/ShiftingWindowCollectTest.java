@@ -28,6 +28,8 @@ import java.util.stream.StreamSupport;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 /**
  * Created by José
@@ -126,19 +128,19 @@ public class ShiftingWindowCollectTest {
         assertThat(count).isEqualTo(5L);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_rolling_spliterator_on_a_null_spliterator() {
-
-        StreamsUtils.shiftingWindowCollect(null, 3, joining());
+        // Then
+        assertThatNullPointerException().isThrownBy(() -> StreamsUtils.shiftingWindowCollect(null, 3, joining()));
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test
     public void should_not_build_a_rolling_spliterator_with_a_grouping_factor_of_1() {
         // Given
         Stream<String> strings = Stream.of("1", "2", "3", "4", "5", "6", "7");
         int groupingFactor = 1;
 
-        // When
-        StreamsUtils.shiftingWindowCollect(strings, groupingFactor, joining());
+        // Then
+        assertThatIllegalArgumentException().isThrownBy(() -> StreamsUtils.shiftingWindowCollect(strings, groupingFactor, joining()));
     }
 }

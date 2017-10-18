@@ -28,6 +28,8 @@ import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 /**
  * Created by José
@@ -127,28 +129,28 @@ public class ShiftingWindowAveragingIntTest {
         assertThat(count).isEqualTo(5L);
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test
     public void should_not_build_a_shifting_stream_on_a_non_ordered_stream() {
         // Given
         Stream<String> strings = Set.of("1", "2", "3", "4", "5", "6", "7").stream();
 
-        // When
-        StreamsUtils.shiftingWindowAveragingInt(strings, 3, Integer::parseInt);
+        // Then
+        assertThatIllegalArgumentException().isThrownBy(() -> StreamsUtils.shiftingWindowAveragingInt(strings, 3, Integer::parseInt));
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_shifting_stream_on_a_null_stream() {
-
-        StreamsUtils.<String>shiftingWindowAveragingInt(null, 3, Integer::parseInt);
+        // Then
+        assertThatNullPointerException().isThrownBy(() -> StreamsUtils.<String>shiftingWindowAveragingInt(null, 3, Integer::parseInt));
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test
     public void should_not_build_a_shifting_stream_with_a_grouping_factor_of_1() {
         // Given
         Stream<String> strings = Stream.of("1", "2", "3", "4", "5", "6", "7");
         int groupingFactor = 1;
 
-        // When
-        StreamsUtils.shiftingWindowAveragingInt(strings, groupingFactor, Integer::parseInt);
+        // Then
+        assertThatIllegalArgumentException().isThrownBy(() -> StreamsUtils.shiftingWindowAveragingInt(strings, groupingFactor, Integer::parseInt));
     }
 }
