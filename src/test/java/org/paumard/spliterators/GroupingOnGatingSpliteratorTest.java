@@ -30,6 +30,8 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 public class GroupingOnGatingSpliteratorTest {
 
@@ -197,40 +199,44 @@ public class GroupingOnGatingSpliteratorTest {
         assertThat(count).isEqualTo(1L);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_grouping_spliterator_on_a_null_spliterator() {
-
+        // Given
         Predicate<String> open = s -> s.startsWith("o");
         Predicate<String> close = s -> s.startsWith("c");
 
-        Stream<Stream<String>> groupingStream = StreamsUtils.group(null, open, close);
+        // Then
+        assertThatNullPointerException().isThrownBy(() -> StreamsUtils.group(null, open, close));
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_grouping_spliterator_on_a_null_opening_predicate() {
-
-        Stream<String> strings = Stream.of("one").filter(s -> s.isEmpty());
+        // Given
+        Stream<String> strings = Stream.of("one").filter(String::isEmpty);
         Predicate<String> close = s -> s.startsWith("c");
 
-        Stream<Stream<String>> groupingStream = StreamsUtils.group(strings, null, close);
+        // Then
+        assertThatNullPointerException().isThrownBy(() -> StreamsUtils.group(strings, null, close));
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_grouping_spliterator_on_a_null_closing_predicate() {
-
-        Stream<String> strings = Stream.of("one").filter(s -> s.isEmpty());
+        // Given
+        Stream<String> strings = Stream.of("one").filter(String::isEmpty);
         Predicate<String> open = s -> s.startsWith("o");
 
-        Stream<Stream<String>> groupingStream = StreamsUtils.group(strings, open, null);
+        // Then
+        assertThatNullPointerException().isThrownBy(() -> StreamsUtils.group(strings, open, null));
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test
     public void should_not_build_a_grouping_spliterator_on_a_non_ordered_stream() {
-
+        // Given
         Stream<String> strings = Set.of("one", "two").stream();
         Predicate<String> open = s -> s.startsWith("o");
         Predicate<String> close = s -> s.startsWith("t");
 
-        Stream<Stream<String>> groupingStream = StreamsUtils.group(strings, open, close);
+        // Then
+        assertThatIllegalArgumentException().isThrownBy(() -> StreamsUtils.group(strings, open, close));
     }
 }

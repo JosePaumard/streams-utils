@@ -29,6 +29,8 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 public class GroupingSpliteratorTest {
 
@@ -140,28 +142,27 @@ public class GroupingSpliteratorTest {
         assertThat(count).isEqualTo(3L);
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test
     public void should_not_build_a_grouping_stream_on_a_non_ordered_stream() {
         // Given
         Stream<String> strings = Set.of("1", "2", "3", "4", "5", "6", "7").stream();
 
-        // When
-        StreamsUtils.group(strings, 3);
+        // Then
+        assertThatIllegalArgumentException().isThrownBy(() -> StreamsUtils.group(strings, 3));
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_grouping_spliterator_on_a_null_spliterator() {
 
-        Stream<Stream<String>> groupingStream = StreamsUtils.group(null, 3);
+        assertThatNullPointerException().isThrownBy(() -> StreamsUtils.group(null, 3));
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test
     public void should_not_build_a_grouping_spliterator_with_a_grouping_factor_of_1() {
         // Given
         Stream<String> strings = Stream.of("1", "2", "3", "4", "5", "6", "7");
-        int groupingFactor = 1;
 
-        // When
-        Stream<Stream<String>> groupingStream = StreamsUtils.group(strings, 1);
+        // Then
+        assertThatIllegalArgumentException().isThrownBy(() -> StreamsUtils.group(strings, 1));
     }
 }

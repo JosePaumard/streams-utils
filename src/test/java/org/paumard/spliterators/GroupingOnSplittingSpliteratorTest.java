@@ -30,6 +30,8 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 public class GroupingOnSplittingSpliteratorTest {
 
@@ -172,28 +174,31 @@ public class GroupingOnSplittingSpliteratorTest {
         assertThat(count).isEqualTo(1L);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_grouping_spliterator_on_a_null_spliterator() {
-
+        // Given
         Predicate<String> splitter = s -> s.startsWith("o");
 
-        Stream<Stream<String>> groupingStream = StreamsUtils.group(null, splitter);
+        // Then
+        assertThatNullPointerException().isThrownBy(() -> StreamsUtils.group(null, splitter));
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_grouping_spliterator_on_a_null_opening_predicate() {
-
+        // Given
         Stream<String> strings = Stream.of("one").filter(s -> s.isEmpty());
 
-        Stream<Stream<String>> groupingStream = StreamsUtils.group(strings, null);
+        // Then
+        assertThatNullPointerException().isThrownBy(() -> StreamsUtils.group(strings, null));
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test
     public void should_not_build_a_grouping_spliterator_on_a_non_ordered_stream() {
-
+        // Given
         Stream<String> strings = Set.of("one", "two").stream();
         Predicate<String> splitter = s -> s.startsWith("o");
 
-        Stream<Stream<String>> groupingStream = StreamsUtils.group(strings, splitter);
+        // Then
+        assertThatIllegalArgumentException().isThrownBy(() -> StreamsUtils.group(strings, splitter));
     }
 }
