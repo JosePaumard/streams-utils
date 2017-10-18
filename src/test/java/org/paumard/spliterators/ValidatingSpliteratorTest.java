@@ -20,13 +20,11 @@ import org.paumard.spliterators.util.TryAdvanceCheckingSpliterator;
 import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Spliterator;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -54,7 +52,24 @@ public class ValidatingSpliteratorTest {
     }
 
     @Test
-    public void should_validated_a_stream_correctly() {
+    public void should_validated_a_stream_correctly_with_one_transformation_for_invalid_elements() {
+        // Given
+        Stream<String> strings = Stream.of("one", null, "two", null, "three");
+        Predicate<String> validator = Objects::nonNull;
+        UnaryOperator<String> transformIfNotValid = s -> "";
+
+        // When
+        Stream<String> validateStream =
+                StreamsUtils.validate(strings, validator, transformIfNotValid);
+        List<String> list = validateStream.collect(toList());
+
+        // Then
+        assertThat(list.size()).isEqualTo(5);
+        assertThat(list).containsExactly("one", "", "two", "", "three");
+    }
+
+    @Test
+    public void should_validated_a_stream_correctly_with_two_transformations_for_valid_and_invalid_elements() {
         // Given
         Stream<String> strings = Stream.of("one", "two", "three");
         Predicate<String> validator = s -> s.length() == 3;
