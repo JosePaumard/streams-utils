@@ -27,6 +27,7 @@ import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 /**
  * Created by José
@@ -124,23 +125,21 @@ public class FilteringAllMaxSpliteratorTest {
         assertThat(b.get()).isEqualTo(true);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_filtering_spliterator_on_a_null_stream() {
-
         // Given
         Comparator<String> comparator = Comparator.naturalOrder();
 
-        // When
-        List<String> list = StreamsUtils.filteringAllMax(null, comparator).collect(toList());
+        // Then
+        assertThatNullPointerException().isThrownBy(() -> StreamsUtils.filteringAllMax(null, comparator));
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_filtering_spliterator_on_a_null_comparator() {
-
         // Given
         Stream<String> strings = Stream.of("1", "1", "2", "2", "3", "3");
 
         // When
-        List<String> list = StreamsUtils.filteringAllMax(strings, null).collect(toList());
+        assertThatNullPointerException().isThrownBy(() -> StreamsUtils.filteringAllMax(strings, null).collect(toList()));
     }
 }

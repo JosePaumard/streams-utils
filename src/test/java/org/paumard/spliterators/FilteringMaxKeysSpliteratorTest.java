@@ -27,6 +27,8 @@ import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 
 /**
  * Created by José
@@ -203,32 +205,30 @@ public class FilteringMaxKeysSpliteratorTest {
         assertThat(b.get()).isEqualTo(true);
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test
     public void should_not_build_a_filtering_stream_with_only_one_max() {
         // Given
         Stream<String> strings = Set.of("1", "2", "3", "4", "5", "6", "7").stream();
 
         // When
-        StreamsUtils.filteringMaxKeys(strings, 1);
+        assertThatIllegalArgumentException().isThrownBy(() -> StreamsUtils.filteringMaxKeys(strings, 1));
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_filtering_spliterator_on_a_null_stream() {
-
         // Given
         Comparator<String> comparator = Comparator.naturalOrder();
 
         // When
-        List<String> list = StreamsUtils.filteringMaxKeys(null, 10, comparator).collect(toList());
+        assertThatNullPointerException().isThrownBy(() -> StreamsUtils.filteringMaxKeys(null, 10, comparator));
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_filtering_spliterator_on_a_null_comparator() {
-
         // Given
         Stream<String> strings = Stream.of("3", "3", "2", "2", "1", "1");
 
         // When
-        List<String> list = StreamsUtils.filteringMaxKeys(strings, 10, null).collect(toList());
+        assertThatNullPointerException().isThrownBy(() -> StreamsUtils.filteringMaxKeys(strings, 10, null));
     }
 }
