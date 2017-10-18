@@ -61,6 +61,18 @@ public class FilteringMaxValuesSpliteratorTest {
     }
 
     @Test
+    public void should_filter_a_non_empty_comparable_stream_into_the_right_stream_when_no_duplicates() {
+        // Given
+        Stream<String> strings = Stream.of("1", "2", "3", "4");
+
+        // When
+        List<String> list = StreamsUtils.filteringMaxValues(strings, 2).collect(toList());
+
+        // Then
+        assertThat(list).containsExactly("4", "3");
+    }
+
+    @Test
     public void should_filter_a_non_empty_stream_into_the_right_stream_when_no_duplicates_and_shuffle() {
         // Given
         Stream<String> strings = Stream.of("4", "1", "2", "3");

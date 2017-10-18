@@ -998,8 +998,6 @@ public class StreamsUtils {
      */
     public static <E extends Comparable<? super E>> Stream<E> filteringMaxValues(Stream<E> stream, int numberOfMaxes) {
 
-        Objects.requireNonNull(stream);
-
         return filteringMaxValues(stream, numberOfMaxes, Comparator.naturalOrder());
     }
 
@@ -1048,8 +1046,6 @@ public class StreamsUtils {
      * @return the filtered stream
      */
     public static <E extends Comparable<? super E>> Stream<E> filteringMaxKeys(Stream<E> stream, int numberOfMaxes) {
-
-        Objects.requireNonNull(stream);
 
         return filteringMaxKeys(stream, numberOfMaxes, Comparator.naturalOrder());
     }
