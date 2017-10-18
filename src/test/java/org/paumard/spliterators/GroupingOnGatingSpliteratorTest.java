@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class GroupingOnGatingSpliteratorTest {
 
@@ -165,30 +166,44 @@ public class GroupingOnGatingSpliteratorTest {
         assertThat(count).isEqualTo(11L);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_grouping_spliterator_on_a_null_spliterator() {
-
+        // Given
         Predicate<String> open = s -> s.startsWith("o");
         Predicate<String> close = s -> s.startsWith("c");
 
-        Stream<Stream<String>> groupingStream = StreamsUtils.group(null, open, close);
+        // When
+        Throwable throwable = catchThrowable(() -> StreamsUtils.group(null, open, close));
+
+        // Then
+        assertThat(throwable).isInstanceOf(NullPointerException.class);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_grouping_spliterator_on_a_null_opening_predicate() {
-
-        Stream<String> strings = Stream.of("one").filter(s -> s.isEmpty());
+        // Given
+        Stream<String> strings = Stream.of("one").filter(String::isEmpty);
+        Predicate<? super String> open = null;
         Predicate<String> close = s -> s.startsWith("c");
 
-        Stream<Stream<String>> groupingStream = StreamsUtils.group(strings, null, close);
+        // When
+        Throwable throwable = catchThrowable(() -> StreamsUtils.group(strings, open, close));
+
+        // Then
+        assertThat(throwable).isInstanceOf(NullPointerException.class);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_grouping_spliterator_on_a_null_closing_predicate() {
-
-        Stream<String> strings = Stream.of("one").filter(s -> s.isEmpty());
+        // Given
+        Stream<String> strings = Stream.of("one").filter(String::isEmpty);
         Predicate<String> open = s -> s.startsWith("o");
+        Predicate<String> close = null;
 
-        Stream<Stream<String>> groupingStream = StreamsUtils.group(strings, open, null);
+        // When
+        Throwable throwable = catchThrowable(() -> StreamsUtils.group(strings, open, close));
+
+        // Then
+        assertThat(throwable).isInstanceOf(NullPointerException.class);
     }
 }

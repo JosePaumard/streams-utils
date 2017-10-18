@@ -27,12 +27,12 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 /**
  * Created by José
  */
 public class TraversingSpliteratorTest {
-
 
     @Test
     public void should_a_return_stream_of_empty_stream_if_provided_streams_are_empty() {
@@ -122,18 +122,27 @@ public class TraversingSpliteratorTest {
         assertThat(count).isEqualTo(6L);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_transversal_spliterator_on_a_null_spliterator() {
+        // Given
+        Stream<Object>[] streams = null;
 
-        Stream<Stream<String>> traversingStream = StreamsUtils.traverse(null);
+        // When
+        Throwable throwable = catchThrowable(() -> StreamsUtils.traverse(streams));
+
+        // Then
+        assertThat(throwable).isInstanceOf(NullPointerException.class);
     }
 
-    @Test(expectedExceptions = IllegalArgumentException .class)
+    @Test
     public void should_not_build_a_transversal_spliterator_on_only_one_spliterator() {
         // Given
         Stream<String> streamA = Stream.of("a1", "a2");
 
         // When
-        Stream<Stream<String>> traversingStream = StreamsUtils.traverse(streamA);
+        Throwable throwable = catchThrowable(() -> StreamsUtils.traverse(streamA));
+
+        // Then
+        assertThat(throwable).isInstanceOf(IllegalArgumentException.class);
     }
 }

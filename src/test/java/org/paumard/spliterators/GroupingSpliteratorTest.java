@@ -23,12 +23,12 @@ import org.testng.annotations.Test;
 
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class GroupingSpliteratorTest {
 
@@ -111,19 +111,29 @@ public class GroupingSpliteratorTest {
         assertThat(count).isEqualTo(7L);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_grouping_spliterator_on_a_null_spliterator() {
+        // Given
+        Stream<String> strings = null;
+        int groupingFactor = 3;
 
-        Stream<Stream<String>> groupingStream = StreamsUtils.group(null, 3);
+        // When
+        Throwable throwable = catchThrowable(() -> StreamsUtils.group(strings, groupingFactor));
+
+        // Then
+        assertThat(throwable).isInstanceOf(NullPointerException.class);
     }
 
-    @Test(expectedExceptions = IllegalArgumentException .class)
+    @Test
     public void should_not_build_a_grouping_spliterator_with_a_grouping_factor_of_1() {
         // Given
         Stream<String> strings = Stream.of("1", "2", "3", "4", "5", "6", "7");
         int groupingFactor = 1;
 
         // When
-        Stream<Stream<String>> groupingStream = StreamsUtils.group(strings, 1);
+        Throwable throwable = catchThrowable(() -> StreamsUtils.group(strings, groupingFactor));
+
+        // Then
+        assertThat(throwable).isInstanceOf(IllegalArgumentException.class);
     }
 }

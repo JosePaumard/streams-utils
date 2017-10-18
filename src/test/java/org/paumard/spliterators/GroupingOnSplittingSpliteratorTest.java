@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 public class GroupingOnSplittingSpliteratorTest {
 
@@ -36,9 +37,8 @@ public class GroupingOnSplittingSpliteratorTest {
     public void should_group_an_empty_stream_into_an_empty_stream() {
         // Given
         // a trick to create an empty ORDERED stream
-        Stream<String> strings = Stream.of("one").filter(s -> s.isEmpty());
+        Stream<String> strings = Stream.of("one").filter(String::isEmpty);
         Predicate<String> splitter = s -> s.startsWith("o");
-        Predicate<String> close = s -> s.startsWith("c");
 
         // When
         Stream<Stream<String>> groupingOnSplittingStream = StreamsUtils.group(strings, splitter, true);
@@ -142,19 +142,29 @@ public class GroupingOnSplittingSpliteratorTest {
         assertThat(count).isEqualTo(11L);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_grouping_spliterator_on_a_null_spliterator() {
-
+        // Given
+        Stream<String> strings = null;
         Predicate<String> splitter = s -> s.startsWith("o");
 
-        Stream<Stream<String>> groupingStream = StreamsUtils.group(null, splitter);
+        // When
+        Throwable throwable = catchThrowable(() -> StreamsUtils.group(strings, splitter));
+
+        // Then
+        assertThat(throwable).isInstanceOf(NullPointerException.class);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_grouping_spliterator_on_a_null_opening_predicate() {
+        // Given
+        Stream<String> strings = Stream.of("one").filter(String::isEmpty);
+        Predicate<? super String> splitter = null;
 
-        Stream<String> strings = Stream.of("one").filter(s -> s.isEmpty());
+        // When
+        Throwable throwable = catchThrowable(() -> StreamsUtils.group(strings, splitter));
 
-        Stream<Stream<String>> groupingStream = StreamsUtils.group(strings, null);
+        // Then
+        assertThat(throwable).isInstanceOf(NullPointerException.class);
     }
 }

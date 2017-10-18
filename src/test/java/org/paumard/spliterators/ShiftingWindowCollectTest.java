@@ -21,13 +21,14 @@ import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
 import java.util.*;
-import java.util.stream.DoubleStream;
+import java.util.stream.Collector;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 /**
  * Created by José
@@ -98,19 +99,31 @@ public class ShiftingWindowCollectTest {
         assertThat(count).isEqualTo(5L);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_rolling_spliterator_on_a_null_spliterator() {
+        // Given
+        Stream<CharSequence> stream = null;
+        int rollingFactor = 3;
+        Collector<CharSequence, ?, String> collector = joining();
 
-        StreamsUtils.shiftingWindowCollect(null, 3, joining());
+        // When
+        Throwable throwable = catchThrowable(() -> StreamsUtils.shiftingWindowCollect(stream, rollingFactor, collector));
+
+        // Then
+        assertThat(throwable).isInstanceOf(NullPointerException.class);
     }
 
-    @Test(expectedExceptions = IllegalArgumentException .class)
+    @Test
     public void should_not_build_a_rolling_spliterator_with_a_grouping_factor_of_1() {
         // Given
         Stream<String> strings = Stream.of("1", "2", "3", "4", "5", "6", "7");
         int groupingFactor = 1;
+        Collector<CharSequence, ?, String> collector = joining();
 
         // When
-        StreamsUtils.shiftingWindowCollect(strings, groupingFactor, joining());
+        Throwable throwable = catchThrowable(() -> StreamsUtils.shiftingWindowCollect(strings, groupingFactor, collector));
+
+        // Then
+        assertThat(throwable).isInstanceOf(IllegalArgumentException.class);
     }
 }

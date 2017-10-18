@@ -26,6 +26,7 @@ import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 /**
  * Created by José
@@ -176,23 +177,37 @@ public class FilteringMaxValuesSpliteratorTest {
         assertThat(count).isEqualTo(2L);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_filtering_spliterator_on_a_null_stream() {
-
         // Given
+        Stream<String> strings = null;
+        int numberOfMaxes = 10;
         Comparator<String> comparator = Comparator.naturalOrder();
 
         // When
-        List<String> list = StreamsUtils.filteringMaxValues(null, 10, comparator).collect(toList());
+        Throwable throwable = catchThrowable(() ->
+                StreamsUtils.filteringMaxValues(strings, numberOfMaxes, comparator)
+                        .collect(toList())
+        );
+
+        // Then
+        assertThat(throwable).isInstanceOf(NullPointerException.class);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_filtering_spliterator_on_a_null_comparator() {
-
         // Given
         Stream<String> strings = Stream.of("3", "3", "2", "2", "1", "1");
+        int numberOfMaxes = 10;
+        Comparator<String> comparator = null;
 
         // When
-        List<String> list = StreamsUtils.filteringMaxValues(strings, 10, null).collect(toList());
+        Throwable throwable = catchThrowable(() ->
+                StreamsUtils.filteringMaxValues(strings, numberOfMaxes, comparator)
+                        .collect(toList())
+        );
+
+        // Then
+        assertThat(throwable).isInstanceOf(NullPointerException.class);
     }
 }

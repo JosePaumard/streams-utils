@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 /**
  * Created by José
@@ -39,8 +40,8 @@ public class WeavingSpliteratorTest {
     public void should_weave_empty_streams_into_a_stream_of_an_empty_stream() {
         // Given
         // a trick to create an empty ORDERED stream
-        Stream<String> strings1 = Stream.of("one").filter(s -> s.isEmpty());
-        Stream<String> strings2 = Stream.of("one").filter(s -> s.isEmpty());
+        Stream<String> strings1 = Stream.of("one").filter(String::isEmpty);
+        Stream<String> strings2 = Stream.of("one").filter(String::isEmpty);
 
         // When
         Stream<String> weavingStream = StreamsUtils.weave(strings1, strings2);
@@ -93,19 +94,28 @@ public class WeavingSpliteratorTest {
         assertThat(stream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(0);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_weaving_spliterator_on_null() {
+        // Given
+        Stream<String>[] streams = null;
 
-        Stream<String> weavingStream = StreamsUtils.weave(null);
+        // When
+        Throwable throwable = catchThrowable(() -> StreamsUtils.weave(streams));
+
+        // Then
+        assertThat(throwable).isInstanceOf(NullPointerException.class);
     }
 
-    @Test(expectedExceptions = IllegalArgumentException .class)
+    @Test
     public void should_not_build_a_weaving_spliterator_on_less_than_two_spliterators() {
         // Given
         Stream<String> strings = Stream.of("1", "2", "3", "4", "5", "6", "7");
 
         // When
-        Stream<String> weavingStream = StreamsUtils.weave(strings);
+        Throwable throwable = catchThrowable(() -> StreamsUtils.weave(strings));
+
+        // Then
+        assertThat(throwable).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test

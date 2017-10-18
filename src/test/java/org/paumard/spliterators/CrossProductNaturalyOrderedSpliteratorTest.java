@@ -27,6 +27,7 @@ import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 
 /**
@@ -164,9 +165,16 @@ public class CrossProductNaturalyOrderedSpliteratorTest {
         assertThat(count).isEqualTo(6L);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_crossing_spliterator_on_a_null_spliterator() {
+        // Given
+        Stream<Object> stream = null;
+        Comparator<Object> comparator = null;
 
-        Stream<Map.Entry<String, String>> stream = StreamsUtils.crossProductOrdered(null, null);
+        // When
+        Throwable throwable = catchThrowable(() -> StreamsUtils.crossProductOrdered(stream, comparator));
+
+        // Then
+        assertThat(throwable).isInstanceOf(NullPointerException.class);
     }
 }

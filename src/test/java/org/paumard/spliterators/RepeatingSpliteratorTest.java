@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 /**
  * Created by José
@@ -101,19 +102,29 @@ public class RepeatingSpliteratorTest {
         assertThat(count).isEqualTo(6L);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_repeating_spliterator_on_a_null_spliterator() {
+        // Given
+        Stream<Object> stream = null;
+        int repeatingFactor = 3;
 
-        Stream<String> repeatingStream = StreamsUtils.repeat(null, 3);
+        // When
+        Throwable throwable = catchThrowable(() -> StreamsUtils.repeat(stream, repeatingFactor));
+
+        // Then
+        assertThat(throwable).isInstanceOf(NullPointerException.class);
     }
 
-    @Test(expectedExceptions = IllegalArgumentException.class)
+    @Test
     public void should_not_build_a_repeating_spliterator_with_a_repeating_factor_of_1() {
         // Given
         Stream<String> stream = Stream.of("a1", "a2");
+        int repeatingFactor = 1;
 
         // When
-        Stream<String> repeatingStream = StreamsUtils.repeat(stream, 1);
+        Throwable throwable = catchThrowable(() -> StreamsUtils.repeat(stream, repeatingFactor));
 
+        // Then
+        assertThat(throwable).isInstanceOf(IllegalArgumentException.class);
     }
 }

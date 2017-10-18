@@ -21,6 +21,7 @@ import org.paumard.streams.StreamsUtils;
 import org.testng.annotations.Test;
 
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -28,6 +29,7 @@ import java.util.stream.StreamSupport;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.paumard.streams.StreamsUtils.cycle;
 import static org.paumard.streams.StreamsUtils.zip;
 
@@ -93,10 +95,16 @@ public class CyclingSpliteratorTest {
         assertThat(stream.spliterator().characteristics() & Spliterator.SORTED).isEqualTo(0);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_a_cycling_spliterator_on_a_null_spliterator() {
+        // Given
+        Spliterator<Object> spliterator = null;
 
-        CyclingSpliterator<String> cyclingSpliterator = CyclingSpliterator.of(null);
+        // When
+        Throwable throwable = catchThrowable(() -> CyclingSpliterator.of(spliterator));
+
+        // Then
+        assertThat(throwable).isInstanceOf(NullPointerException.class);
     }
 
     @Test
@@ -116,17 +124,22 @@ public class CyclingSpliteratorTest {
 
     @Test
     public void should_solve_fizzbuzz_correctly() {
+        // Given
+        Stream<Integer> range = IntStream.range(0, 101).boxed();
+        Stream<String> fizzes = cycle(Stream.of("fizz", "", ""));
+        Stream<String> buzzes = cycle(Stream.of("buzz", "", "", "", ""));
+        BiFunction<Integer, String, String> rangeAndFizzBuzzZipper = (i, string) -> string.isEmpty() ? i.toString() : string;
 
         // When
         Stream<String> fizzBuzz =
                 zip(
-                        IntStream.range(0, 101).boxed(),
+                        range,
                         zip(
-                                cycle(Stream.of("fizz", "", "")),
-                                cycle(Stream.of("buzz", "", "", "", "")),
+                                fizzes,
+                                buzzes,
                                 String::concat
                         ),
-                        (i, string) -> string.isEmpty() ? i.toString() : string
+                        rangeAndFizzBuzzZipper
                 );
         List<String> fizzBuzzList = fizzBuzz.skip(1).limit(20).collect(toList());
 

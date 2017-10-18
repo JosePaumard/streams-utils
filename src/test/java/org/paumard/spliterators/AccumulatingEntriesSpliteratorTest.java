@@ -22,11 +22,13 @@ import org.testng.annotations.Test;
 
 import java.util.AbstractMap;
 import java.util.Map;
+import java.util.function.BinaryOperator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 /**
  * Created by José
@@ -108,20 +110,32 @@ public class AccumulatingEntriesSpliteratorTest {
         assertThat(count).isEqualTo(3L);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_an_accumulate_stream_on_a_null_stream() {
+        // Given
+        Stream<Map.Entry<Object, Integer>> stream = null;
+        BinaryOperator<Integer> operator = Integer::sum;
 
-        StreamsUtils.accumulateEntries(null, Integer::sum);
+        // When
+        Throwable throwable = catchThrowable(() -> StreamsUtils.accumulateEntries(stream, operator));
+
+        // Then
+        assertThat(throwable).isInstanceOf(NullPointerException.class);
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
+    @Test
     public void should_not_build_an_accumulate_stream_on_a_null_operator() {
+        // Given
+        Stream<Map.Entry<Integer, String>> stream = Stream.of(
+                new AbstractMap.SimpleEntry<>(1, "1"),
+                new AbstractMap.SimpleEntry<>(2, "2")
+        );
+        BinaryOperator<String> operator = null;
 
-        StreamsUtils.accumulateEntries(
-                Stream.of(
-                        new AbstractMap.SimpleEntry<>(1, "1"),
-                        new AbstractMap.SimpleEntry<>(2, "2")
-                ),
-                null);
+        // When
+        Throwable throwable = catchThrowable(() -> StreamsUtils.accumulateEntries(stream, operator));
+
+        // Then
+        assertThat(throwable).isInstanceOf(NullPointerException.class);
     }
 }
