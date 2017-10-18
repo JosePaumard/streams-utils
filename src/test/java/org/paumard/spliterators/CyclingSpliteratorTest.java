@@ -28,6 +28,7 @@ import java.util.stream.StreamSupport;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.paumard.streams.StreamsUtils.cycle;
 import static org.paumard.streams.StreamsUtils.zip;
 
@@ -95,8 +96,8 @@ public class CyclingSpliteratorTest {
 
     @Test(expectedExceptions = NullPointerException.class)
     public void should_not_build_a_cycling_spliterator_on_a_null_spliterator() {
-
-        CyclingSpliterator<String> cyclingSpliterator = CyclingSpliterator.of(null);
+        // Then
+        assertThatNullPointerException().isThrownBy(() -> CyclingSpliterator.of(null));
     }
 
     @Test
