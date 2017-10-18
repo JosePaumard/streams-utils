@@ -478,7 +478,11 @@ public class StreamsUtils {
      *                    Will throw a <code>NullPointerException</code> if <code>null</code>.
      * @param <E>         the type of the stream and the returned stream.
      * @return a stream that is a copy of the input stream, until the interruptor becomes false.
+     * @deprecated Java 9 added the
+     * <a href="https://docs.oracle.com/javase/9/docs/api/java/util/stream/Stream.html#takeWhile-java.util.function.Predicate-">
+     *     Stream.takeWhile(Predicate)</a> method that does the same.
      */
+    @Deprecated(since="2.0")
     public static <E> Stream<E> interrupt(Stream<E> stream, Predicate<? super E> interruptor) {
         Objects.requireNonNull(stream);
         Objects.requireNonNull(interruptor);
@@ -498,7 +502,11 @@ public class StreamsUtils {
      *                  Will throw a <code>NullPointerException</code> if <code>null</code>.
      * @param <E>       the type of the stream and the returned stream.
      * @return a stream that starts when the validator becomes true.
+     * @deprecated Java 9 added the
+     * <a href="https://docs.oracle.com/javase/9/docs/api/java/util/stream/Stream.html#dropWhile-java.util.function.Predicate-">
+     *     Stream.dropWhile(Predicate)</a> that does the same.
      */
+    @Deprecated(since="2.0")
     public static <E> Stream<E> gate(Stream<E> stream, Predicate<? super E> validator) {
         Objects.requireNonNull(stream);
         Objects.requireNonNull(validator);
