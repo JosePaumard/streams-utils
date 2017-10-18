@@ -23,6 +23,10 @@ You can use this API directly with Maven, by adding the following dependency.
 
 This project was previously called More Spliterators (you can see it on my more-spliterators Github repo). Quite oddly, nobody had any clue about what is was about. So I decided to rename it to a more explicit name. 
 
+## Current version supports Java 9
+
+I'm glad to announce that starting with 2.0, Streams Utils supports Java 9.  
+
 ## Acknowledgments
 
 I had the chance to present part of this project at JavaOne 2017. By the way you can watch it on [YouTube](http://www.youtube.com/watch?v=xgHGpsubL5M) and grab the slides on [Slideshare](http://www.slideshare.net/jpaumard/streams-in-the-wild), 
