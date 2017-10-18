@@ -32,7 +32,6 @@ public class RepeatingSpliterator<E> implements Spliterator<E> {
 
     private final int repeating;
     private int currentRepeat = 0;
-    private boolean moveToNext = true;
     private final Spliterator<E> spliterator;
     private E currentValue;
 
@@ -55,23 +54,17 @@ public class RepeatingSpliterator<E> implements Spliterator<E> {
 
     @Override
     public boolean tryAdvance(Consumer<? super E> action) {
-        boolean hasMore = false;
-        if (moveToNext) {
-            hasMore = spliterator.tryAdvance(e -> {
-                this.currentValue = e;
-                action.accept(e);
-            });
-            moveToNext = false;
-            currentRepeat = 1;
+        if (currentRepeat > 0) {
+            currentRepeat--;
+            action.accept(currentValue);
+            return true;
+        } else if (spliterator.tryAdvance(e -> { currentValue = e; })) {
+            currentRepeat = repeating - 1;
+            action.accept(currentValue);
+            return true;
         } else {
-            if (currentRepeat < repeating) {
-                action.accept(currentValue);
-                currentRepeat++;
-                moveToNext = true;
-                hasMore = true;
-            }
+            return false;
         }
-        return hasMore;
     }
 
     @Override

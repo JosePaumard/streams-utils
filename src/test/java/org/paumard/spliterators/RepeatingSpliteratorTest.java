@@ -62,6 +62,20 @@ public class RepeatingSpliteratorTest {
     }
 
     @Test
+    public void should_return_a_repeating_stream_when_called_on_a_non_empty_stream_3x() {
+        // Given
+        Stream<String> stream = Stream.of("a", "b", "c");
+        int repeating = 3;
+
+        // When
+        Stream<String> repeatingStream = StreamsUtils.repeat(stream, repeating);
+        List<String> result = repeatingStream.collect(Collectors.toList());
+
+        // Then
+        assertThat(result).containsExactly("a", "a", "a", "b", "b", "b", "c", "c", "c");
+    }
+
+    @Test
     public void should_repeat_a_sorted_stream_correctly_and_in_an_unsorted_stream() {
         // Given
         SortedSet<String> sortedSet = new TreeSet<>(Arrays.asList("a", "b", "c"));
