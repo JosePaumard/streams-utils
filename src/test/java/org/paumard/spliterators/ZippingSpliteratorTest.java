@@ -26,6 +26,7 @@ import java.util.Spliterator;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -89,6 +90,38 @@ public class ZippingSpliteratorTest {
         // Given
         Stream<String> strings = Stream.of("one", "two", "three");
         Stream<Integer> ints = Stream.of(1, 2, 3, 4);
+        BiFunction<String, Integer, String> zip = (s, i) -> s + " - " + i;
+
+        // When
+        Stream<String> zippedStream = StreamsUtils.zip(strings, ints, zip);
+        List<String> list = zippedStream.collect(toList());
+
+        // Then
+        assertThat(list.size()).isEqualTo(3);
+        assertThat(list).containsExactly("one - 1", "two - 2", "three - 3");
+    }
+
+    @Test
+    public void should_zip_two_streams_together_when_the_first_is_infinite() {
+        // Given
+        Stream<Integer> ints = IntStream.iterate(1, i -> i + 1).boxed();
+        Stream<String> strings = Stream.of("one", "two", "three", "four");
+        BiFunction<Integer, String, String> zip = (i, s) -> i + " - " + s;
+
+        // When
+        Stream<String> zippedStream = StreamsUtils.zip(ints, strings, zip);
+        List<String> list = zippedStream.collect(toList());
+
+        // Then
+        assertThat(list.size()).isEqualTo(4);
+        assertThat(list).containsExactly("1 - one", "2 - two", "3 - three", "4 - four");
+    }
+
+    @Test
+    public void should_zip_two_streams_together_when_the_second_is_infinite() {
+        // Given
+        Stream<String> strings = Stream.of("one", "two", "three");
+        Stream<Integer> ints = IntStream.iterate(1, i -> i + 1).boxed();
         BiFunction<String, Integer, String> zip = (s, i) -> s + " - " + i;
 
         // When

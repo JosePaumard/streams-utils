@@ -20,8 +20,7 @@ import org.paumard.streams.StreamsUtils;
 
 import java.util.Objects;
 import java.util.Spliterator;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
+import java.util.function.*;
 
 /**
  * See the documentation and patterns to be used in this class in the {@link StreamsUtils} factory class.
@@ -71,15 +70,41 @@ public class ZippingSpliterator<E1, E2, R> implements Spliterator<R> {
         this.zipper = Objects.requireNonNull(zipper, "zipper");
     }
 
+    private static class Wrapper<E> {
+
+        private E e;
+
+        public E get() {
+            return this.e;
+        }
+
+        public void set(E e) {
+            this.e = e;
+        }
+
+        static <E> Wrapper<E> empty() {
+            return new Wrapper<>();
+        }
+    }
+
     @Override
     public boolean tryAdvance(Consumer<? super R> action) {
-        return spliterator1.tryAdvance(
-                e1 -> {
-                    spliterator2.tryAdvance(e2 -> {
-                        action.accept(Objects.requireNonNull(zipper.apply(e1, e2)));
-                    });
-                }
-        );
+
+        Wrapper<E1> wrapper1 = Wrapper.empty();
+        boolean advanced1 = spliterator1.tryAdvance(wrapper1::set);
+        if (advanced1) {
+            Wrapper<E2> wrapper2 = Wrapper.empty();
+            boolean advanced2 = spliterator2.tryAdvance(wrapper2::set);
+
+            if (advanced2) {
+                action.accept(Objects.requireNonNull(zipper.apply(wrapper1.get(), wrapper2.get())));
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
     @Override
