@@ -226,7 +226,7 @@ Stream<String> fizzBuzz =
       IntStream.range(0, 101).boxed(), 
       zip(
          cycle(Stream.of("fizz", "", "")), 
-         cycle(Stream.of("buzz, "", "", "", ""))
+         cycle(Stream.of("buzz", "", "", "", "")),
          String::concat
       ), 
       (i, string) -> string.isEmpty() ? i.toString() : string
